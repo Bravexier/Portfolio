@@ -1,0 +1,275 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  "basics": {
+    "name": "Xavier Erb",
+    "label": "Développeur logiciel",
+    "tagline": "Back web, .NET et agents IA",
+    "summary": "Développeur majoritairement back web et .NET. Familier des méthodes agiles, je dispose d'une grande adaptabilité et de bonnes facultés d'analyse et de développement.",
+    "highlights": [
+      "Aujourd'hui chez Econocom, en centre de service pour les Hospices Civils de Lyon : module de gestion des parcours et protocoles de soins.",
+      "Auparavant en ESN chez Audensiel : missions C# / .NET pour Betclic, Crédit Agricole, Cdiscount, Tessi et Ociane.",
+      "Sur mes projets personnels, pilotage d'agents IA avec Claude Code et orchestration multi-agents.",
+      "Formé à Epitech, avec une année à l'université Tongji de Shanghai.",
+      "Anglais lu, écrit et parlé : TOEIC 825."
+    ],
+    "status": ["En poste", "Ouvert aux opportunités"],
+    "image": "assets/photo.jpg",
+    "email": "xavier.erb@bravexier.com",
+    "url": "",
+    "location": {
+      "city": "Genas",
+      "postalCode": "69740",
+      "region": "Auvergne-Rhône-Alpes",
+      "countryCode": "FR",
+      "label": "Genas (69), près de Lyon"
+    },
+    "mobility": "Permis de conduire",
+    "profiles": [
+      { "network": "GitHub", "username": "Bravexier", "url": "https://github.com/Bravexier" }
+    ]
+  },
+  "work": [
+    {
+      "name": "Econocom",
+      "url": "https://www.econocom.com/fr",
+      "position": "Ingénieur développement",
+      "contract": "CDI",
+      "location": "Villeurbanne",
+      "startDate": "2023-01",
+      "summary": "Développeur full stack en centre de service pour les Hospices Civils de Lyon (HCL).",
+      "highlights": [
+        "Depuis février 2026, équipe VPM : maintenance et évolutions techniques du module de gestion des parcours et protocoles de soins.",
+        "Auparavant, équipe ABL : maintenance et évolutions techniques du module de gestion de bloc opératoire."
+      ],
+      "keywords": ["C#", ".NET Framework 4.7.2", "JavaScript", "jQuery", "Kendo", "Entity Framework"]
+    },
+    {
+      "name": "Audensiel Technologies Sud-Ouest Développement",
+      "description": "Filiale bordelaise de l'ESN Audensiel.",
+      "url": "https://www.audensiel.com/",
+      "position": "Ingénieur d'études et développement",
+      "contract": "CDI",
+      "location": "Bordeaux",
+      "startDate": "2019-03",
+      "endDate": "2022-05",
+      "summary": "Prestations de développement C# / .NET auprès de plusieurs clients.",
+      "highlights": [
+        "Betclic : maintenance et évolution, compliance.",
+        "Crédit Agricole : maintenance et évolution.",
+        "Cdiscount : projet Recouvrement multi-parcours 2.0.",
+        "Tessi : finalisation du projet de refonte d'outils de gestion de chèques.",
+        "Ociane : projet de refonte, nouvelle offre Santé vous bien."
+      ],
+      "keywords": ["C#", ".NET"]
+    },
+    {
+      "name": "Sys1",
+      "url": "https://sys1.fr/",
+      "position": "Développeur web",
+      "contract": "CDD",
+      "location": "Mérignac",
+      "startDate": "2018-03",
+      "endDate": "2018-09",
+      "summary": "Développement de l'ERP interne de l'entreprise. Adaptation aux besoins des utilisateurs et amélioration du système existant.",
+      "highlights": [
+        "Évolution du cahier des charges en cours de développement, en méthode semi-agile.",
+        "Tests et suivi du projet."
+      ],
+      "keywords": ["PHP", "jQuery", "Bootstrap 4", "SQL"]
+    },
+    {
+      "name": "Logyline",
+      "url": "https://logyline.com/",
+      "position": "Développeur Unity3D",
+      "contract": "CDD",
+      "location": "Mérignac",
+      "startDate": "2017-10",
+      "endDate": "2018-02",
+      "summary": "Développement d'un logiciel de rendu 3D.",
+      "keywords": ["Unity 2017", "C#"]
+    },
+    {
+      "name": "GRDF",
+      "url": "https://www.grdf.fr/",
+      "position": "Développeur web",
+      "contract": "Stage",
+      "location": "Nancy",
+      "startDate": "2016-04",
+      "endDate": "2016-08",
+      "summary": "Maintenance et mise à niveau d'un outil de gestion du patrimoine gazier. Suivi et amélioration de l'outil, optimisation des ressources disponibles, ajout de fonctionnalités.",
+      "keywords": ["AngularJS 1.5", "PHP Silex", "HTML5", "CSS3"]
+    },
+    {
+      "name": "Eclatec",
+      "url": "https://www.eclatec.fr/",
+      "position": "Développeur progiciel",
+      "contract": "Stage",
+      "location": "Maxéville",
+      "startDate": "2015-09",
+      "endDate": "2016-02",
+      "summary": "Développement d'outils de gestion de bases de données. Suite du précédent stage, à temps partiel.",
+      "keywords": ["C#", "Visual Studio", "SQLite"]
+    },
+    {
+      "name": "Eclatec",
+      "url": "https://www.eclatec.fr/",
+      "position": "Développeur progiciel",
+      "contract": "Stage",
+      "location": "Maxéville",
+      "startDate": "2015-04",
+      "endDate": "2015-07",
+      "summary": "Développement d'outils de gestion de bases de données.",
+      "keywords": ["C#", "Visual Studio", "SQLite"]
+    },
+    {
+      "name": "com Vous voudrez",
+      "url": "https://www.comvousvoudrez.com/",
+      "position": "Développement web",
+      "contract": "Stage",
+      "location": "Cattenom",
+      "startDate": "2014-09",
+      "endDate": "2015-02",
+      "highlights": [
+        "Référencement des sites clients.",
+        "Optimisation des sites clients.",
+        "Création d'une carte de vœux."
+      ],
+      "keywords": ["JavaScript", "HTML / CSS", "CMS"]
+    },
+    {
+      "name": "Inria",
+      "url": "https://www.inria.fr/fr",
+      "description": "Laboratoire de recherche en informatique.",
+      "position": "Recherche",
+      "contract": "Stage",
+      "location": "Nancy",
+      "startDate": "2013-09",
+      "endDate": "2013-12",
+      "summary": "Recherche au sein de l'équipe Maia, dans la continuité du travail de 2012.",
+      "highlights": [
+        "Familiarisation avec le système ROS.",
+        "Présentations et démonstrations."
+      ],
+      "keywords": ["C++", "ROS"]
+    },
+    {
+      "name": "Inria / Loria",
+      "url": "https://www.loria.fr/fr/",
+      "position": "Recherche",
+      "contract": "Stage",
+      "location": "Nancy",
+      "startDate": "2012-08",
+      "endDate": "2012-12",
+      "summary": "Recherche au sein de l'équipe Maia : développement d'un programme pour un Habitat Intelligent pour la Santé (HIS).",
+      "highlights": [
+        "Détection de personnes sur un réseau de dalles équipées de multiples capteurs.",
+        "Reconstitution de la marche, calcul de la longueur de pas."
+      ],
+      "keywords": ["C"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Epitech",
+      "title": "Licence informatique",
+      "studyType": "Licence",
+      "area": "Informatique",
+      "startDate": "2011-10",
+      "endDate": "2018-06",
+      "url": "https://www.epitech.eu/",
+      "summary": "École privée d'expertise en informatique. Quatrième année en échange à l'université Tongji de Shanghai (2016-2017)."
+    },
+    {
+      "institution": "Université Henri Poincaré",
+      "title": "Études de santé",
+      "studyType": "Première année commune des études de santé",
+      "area": "Santé",
+      "startDate": "2009-09",
+      "endDate": "2011-06",
+      "summary": "Première année commune des études de santé, admis au concours de pharmacie."
+    },
+    {
+      "institution": "Notre-Dame de la Providence",
+      "title": "Baccalauréat S",
+      "studyType": "Baccalauréat",
+      "area": "Scientifique",
+      "endDate": "2009-06"
+    }
+  ],
+  "skills": [
+    { "category": "Conception et architecture", "name": "Conception logicielle", "level": "Avancé" },
+    { "category": "Conception et architecture", "name": "Architecture logicielle", "level": "Avancé" },
+    { "category": "IA et agents (projets personnels)", "name": "Pilotage d'agents IA", "level": "Bon niveau" },
+    { "category": "IA et agents (projets personnels)", "name": "Claude Code", "level": "Avancé" },
+    { "category": "IA et agents (projets personnels)", "name": "Orchestration multi-agents", "level": "Bon niveau" },
+    { "category": "Domaines", "name": "Back web", "level": "Avancé" },
+    { "category": "Domaines", "name": "Bases de données", "level": "Bon niveau" },
+    { "category": "Domaines", "name": "Scripts", "level": "Bon niveau" },
+    { "category": "Domaines", "name": "Front web", "level": "Intermédiaire" },
+    { "category": "Langages", "name": "C# / .NET", "level": "Expert" },
+    { "category": "Langages", "name": "JavaScript", "level": "Expert" },
+    { "category": "Langages", "name": "SQL", "level": "Expert" },
+    { "category": "Langages", "name": "HTML5 / CSS", "level": "Avancé" },
+    { "category": "Langages", "name": "PHP", "level": "Bon niveau" },
+    { "category": "Langages", "name": "C / C++", "level": "Bon niveau" },
+    { "category": "Logiciels", "name": "Visual Studio", "level": "Expert" },
+    { "category": "Logiciels", "name": "Visual Studio Code", "level": "Avancé" },
+    { "category": "Logiciels", "name": "Unity", "level": "Bon niveau" },
+    { "category": "Logiciels", "name": "Word / Excel / PowerPoint", "level": "Bon niveau" }
+  ],
+  "languages": [
+    { "language": "Français", "fluency": "Langue maternelle" },
+    {
+      "language": "Anglais",
+      "fluency": "Lu, écrit et parlé",
+      "certifications": ["TOEIC 825 (janvier 2016)", "TOEFL 71"]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Maverick Center",
+      "startDate": "2026-10",
+      "description": "Wiki et générateur de fiches de personnage pour le jeu de rôle Maverick JDR.",
+      "highlights": [
+        "Site statique Astro : pages reliées par mots-clés, rétroliens, recherche, générateur de fiches piloté par des données de règles.",
+        "Contenu importé par scripts depuis Google Docs et Google Sheets.",
+        "Intégration continue GitHub Actions, déploiement Docker et nginx sur un NAS.",
+        "Développé en pilotant des agents Claude Code : plus de 100 pull requests fusionnées et plus de 400 commits la première semaine."
+      ],
+      "keywords": ["Astro", "JavaScript", "Node.js", "Python", "Docker", "nginx", "GitHub Actions", "Claude Code"]
+    },
+    {
+      "name": "Ce portfolio",
+      "startDate": "2026-10",
+      "endDate": "2026-10",
+      "description": "Ce CV en ligne : une page statique sans dépendance, le même contenu décliné en trois thèmes.",
+      "highlights": [
+        "Trois thèmes écrits en parallèle par des agents Claude Code, chacun repris par un agent critique puis par un agent de recette indépendants.",
+        "Tests automatisés et audit dans un vrai navigateur : texte masqué ou rogné, contraste, débordement, bascule de thème."
+      ],
+      "keywords": ["Node.js", "HTML", "CSS", "JavaScript", "Claude Code"]
+    },
+    {
+      "name": "Domotique",
+      "description": "Maison pilotée par Home Assistant sur Raspberry Pi : automatisations, tableaux de bord, capteurs Zigbee et ESPHome.",
+      "highlights": [
+        "Filtrage DNS AdGuard et services Docker hébergés sur un NAS Synology.",
+        "Quatre agents Claude Code spécialisés : deux pour l'usage courant, limités à la consultation et aux commandes existantes, deux experts appelés sur demande."
+      ],
+      "keywords": ["Home Assistant", "YAML", "Zigbee2MQTT", "ESPHome", "Docker", "Claude Code"]
+    }
+  ],
+  "organisations": [
+    { "name": "Hospices Civils de Lyon", "url": "https://www.chu-lyon.fr/" },
+    { "name": "Betclic", "url": "https://betclicgroup.com/" },
+    { "name": "Crédit Agricole", "url": "https://www.ca-aquitaine.fr/" },
+    { "name": "Cdiscount", "url": "https://www.cdiscount.com/" },
+    { "name": "Tessi", "url": "https://www.tessi.eu/fr/" },
+    { "name": "Ociane", "url": "https://www.matmut.fr/" }
+  ],
+  "meta": {
+    "version": "v1.0.0",
+    "lastModified": "2026-10-13",
+    "compactSkillCategories": ["Langages", "Logiciels"]
+  }
+}

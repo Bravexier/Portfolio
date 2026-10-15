@@ -106,13 +106,26 @@ Un thème recolore le sélecteur avec les variables `--switcher-bg`, `--switcher
 
 Chaque thème fournit ses règles `@media print` (fond blanc, pas de coupure au milieu d'un poste) : le bouton « Imprimer / PDF » sert d'export.
 
+## Publier sur GitHub Pages
+
+[.github/workflows/pages.yml](.github/workflows/pages.yml) lance les tests et le build à chaque pull request, et publie `dist/`
+sur GitHub Pages à chaque poussée sur `main`. À faire une fois sur GitHub : *Settings → Pages → Source : GitHub Actions*.
+
+Les liens du site sont relatifs : il fonctionne aussi bien à la racine d'un domaine que sous `https://<compte>.github.io/<dépôt>/`.
+Une fois l'adresse connue, renseigne `basics.url` dans `content/resume.json` : la page gagne ses balises `canonical` et Open Graph,
+et la photo devient une adresse complète pour les aperçus de lien et les données structurées.
+
+L'audit navigateur ne tourne pas sur GitHub : sous Linux, les polices de repli changent la mise en page. Lance `npm run audit`
+en local avant de fusionner une modification des thèmes.
+
 ## Structure
 
 ```
 content/   resume.json, la seule source du contenu
 src/       rendu : HTML, Markdown, llms.txt, données structurées, validation
-static/    base.css, app.js, themes/
-tools/     serveur local, captures d'écran, audit navigateur
+static/    base.css, app.js, photo.jpg, themes/
+tools/     serveur local, captures d'écran, audit navigateur, vérification des liens
 test/      tests (node --test)
 build.mjs  construit dist/
+.github/   publication sur GitHub Pages
 ```

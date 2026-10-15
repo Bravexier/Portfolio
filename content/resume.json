@@ -15,7 +15,7 @@
     "status": ["En poste", "Ouvert aux opportunités"],
     "image": "assets/photo.jpg",
     "email": "xavier.erb@bravexier.com",
-    "url": "",
+    "url": "https://bravexier.github.io/Portfolio/",
     "location": {
       "city": "Genas",
       "postalCode": "69740",

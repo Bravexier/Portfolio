@@ -1,0 +1,1389 @@
+/* Thème Tech — une session de terminal : fond sombre, chasse fixe, un seul phosphore.
+   Le contenu est celui des autres thèmes. Invites, commandes, jauges et puces sont du décor
+   (::before / ::after, avec un texte alternatif vide) et n'énoncent aucun fait. */
+
+/* ---------- Jetons ---------- */
+
+:root {
+  color-scheme: dark;
+
+  /* Palette : des neutres verdâtres, un phosphore (vert), une couleur de métadonnées (ambre). */
+  --void: #040605;
+  --bg: #0a0f0c;
+  --bar-bg: #131b16;
+  --rule: #25332b;
+  --rule-strong: #3a4d42;
+  --fg: #c4d0c8;
+  --fg-strong: #eff6f1;
+  --dim: #8b9d92;
+  --accent: #4bef88;
+  --meta: #efb350;
+
+  /* Décor : soulignement des liens discrets, lueur du nom et de la photo, rémanence du
+     curseur, trame de l'écran, rendu de la photo (en gris, un peu assombrie pour ne pas
+     éblouir sur fond noir). */
+  --link-rule: color-mix(in srgb, var(--accent) 55%, transparent);
+  --glow: color-mix(in srgb, var(--accent) 35%, transparent);
+  --afterglow: color-mix(in srgb, var(--accent) 26%, transparent);
+  --scanlines: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.022) 0 1px, transparent 1px 3px);
+  --photo-tone: grayscale(1) contrast(1.06) brightness(0.9);
+
+  /* Typographie : pile système à chasse fixe, corps fluide de 15 à 17 px. */
+  --mono: 'Cascadia Code', 'Cascadia Mono', Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace;
+  --fs-root: clamp(0.9375rem, 0.6875rem + 0.3125vw, 1.0625rem);
+  --fs-small: 0.8667rem;
+  --fs-title: 1.0667rem;
+  --fs-section: 1.2rem;
+  --fs-name: clamp(1.9rem, 1.4rem + 2.4vw, 2.8rem);
+  --lh: 1.55;
+  --lh-tight: 1.3;
+
+  /* Espacements. */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2.25rem;
+  --pad: 1rem;
+
+  /* Géométrie. Sur téléphone, la fenêtre occupe tout l'écran, sans marge ni arrondi.
+     --skill-row loge la plus longue ligne de compétence (nom, niveau, jauge) sans repli :
+     c'est la largeur utile du volet de gauche. */
+  --page: 0px;
+  --edge: 0px;
+  --radius: 0px;
+  --window: none;
+  --rail: 2ch;
+  --gutter: 15ch;
+  --card: 34ch;
+  --skill-row: 44ch;
+  --side: calc(var(--skill-row) + 2 * var(--pad));
+  --measure: 96ch;
+
+  /* Photo : largeur du cadre et écart avec le nom. L'image y perd 8 px de liseré : il lui
+     en reste au moins 88 à l'écran, 72 sur papier. À l'écran, la commande « whoami » passe
+     au-dessus d'elle : --photo-col la ramène à la marge, --photo-top descend le cadre d'une
+     ligne, jusqu'au haut des capitales du nom. */
+  --photo: 6.4rem;
+  --photo-gap: var(--sp-4);
+  --photo-col: calc(var(--photo) + var(--photo-gap));
+  --photo-top: calc(var(--lh) * 1rem + var(--sp-1) + var(--fs-name) * 0.2);
+
+  /* Le sélecteur de thème (36 px, à 14 px du coin) se loge dans la barre de titre :
+     une barre de 40 px dont le milieu tombe toujours à 32 px du haut de la page. */
+  --bar: 40px;
+  --bar-offset: calc(12px - var(--page));
+  --switcher-bg: var(--bar-bg);
+  --switcher-fg: var(--accent);
+  --switcher-border: var(--rule-strong);
+  --switcher-active-bg: var(--accent);
+  --switcher-active-fg: var(--bg);
+  --switcher-font: var(--mono);
+  --switcher-radius: 4px;
+  --switcher-shadow: none;
+}
+
+@media screen and (min-width: 720px) {
+  :root {
+    --page: 12px;
+    --edge: 1px;
+    --radius: 8px;
+    --pad: 1.5rem;
+    --rail: 3ch;
+  }
+}
+
+/* Au-delà, la fenêtre est centrée et laisse le coin au sélecteur. */
+@media screen and (min-width: 1426px) {
+  :root {
+    --window: 84rem;
+    --pad: 1.75rem;
+  }
+}
+
+/* ---------- Socle ---------- */
+
+html {
+  background: var(--void);
+  font-size: var(--fs-root);
+  scrollbar-color: var(--rule-strong) var(--void);
+}
+
+body {
+  padding: var(--page) var(--page) calc(var(--page) * 3);
+  color: var(--fg);
+  font: 400 1rem / var(--lh) var(--mono);
+  font-variant-ligatures: none;
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+/* Employeurs et organisations citées : des liens discrets, de la couleur de leur ligne
+   sous un soulignement atténué, pour ne pas disputer le phosphore aux titres. */
+.entry__org a,
+.mention {
+  color: inherit;
+  text-decoration-color: var(--link-rule);
+}
+
+/* Survol en vidéo inverse, comme une sélection dans un terminal. */
+a:hover {
+  background: var(--accent);
+  color: var(--bg);
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--meta);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* ---------- Fenêtre de terminal ----------
+   La fiche et le pied de page forment une seule fenêtre : barre de titre en haut,
+   dernière invite en bas. */
+
+.sheet,
+.colophon {
+  max-width: var(--window);
+  margin-inline: auto;
+  border: solid var(--rule-strong);
+  border-width: 1px var(--edge);
+  background: var(--scanlines), var(--bg);
+}
+
+.sheet {
+  border-bottom: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+/* Barre de titre : trois pastilles et le nom de la session. */
+.sheet::before {
+  content: "xavier@erb: ~/cv" / "";
+  display: block;
+  padding: var(--bar-offset) 4.5rem 0;
+  border-bottom: 1px solid var(--rule);
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 20px calc(var(--bar-offset) + var(--bar) / 2), var(--rule-strong) 0 5px, transparent 5.5px),
+    radial-gradient(circle at 38px calc(var(--bar-offset) + var(--bar) / 2), var(--rule-strong) 0 5px, transparent 5.5px),
+    radial-gradient(circle at 56px calc(var(--bar-offset) + var(--bar) / 2), var(--rule-strong) 0 5px, transparent 5.5px),
+    var(--bar-bg);
+  color: var(--dim);
+  font-size: var(--fs-small);
+  line-height: var(--bar);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.identity,
+.sheet > .section,
+.sheet__side,
+.sheet__main,
+.colophon {
+  padding: var(--pad);
+}
+
+.identity,
+.sheet > .section,
+.sheet__side {
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ---------- Invites et commandes (décor) ----------
+   Chaque bloc s'ouvre sur une ligne « $ commande », en retrait derrière le vrai titre :
+   la commande en ::before, l'invite en ::after, posée en tête de cette même ligne. */
+
+.identity__heading,
+.section,
+.subsection,
+.colophon__updated {
+  position: relative;
+
+  &::before {
+    content: var(--cmd) / "";
+    display: block;
+    padding-left: 2ch;
+    color: var(--dim);
+  }
+
+  &::after {
+    content: "$" / "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: var(--meta);
+  }
+}
+
+.sheet > .section::after {
+  top: var(--pad);
+  left: var(--pad);
+}
+
+/* Commande par défaut, tirée du nom du bloc : une section ajoutée plus tard aura la sienne. */
+.section {
+  --cmd: "cat " attr(data-section) ".md";
+}
+
+.subsection {
+  --cmd: "ls " attr(data-subsection) "/";
+}
+
+.identity__heading {
+  --cmd: "whoami";
+}
+
+[data-section="competences"] {
+  --cmd: "skills --list";
+}
+
+[data-section="langues"] {
+  --cmd: "locale -a";
+}
+
+[data-section="experiences"] {
+  --cmd: "git log --graph experiences/";
+}
+
+[data-subsection="stages"] {
+  --cmd: "git shortlog stages/";
+}
+
+[data-section="formations"] {
+  --cmd: "git log --oneline formations/";
+}
+
+[data-section="projets"] {
+  --cmd: "tree projets/";
+}
+
+.colophon__updated {
+  --cmd: "date -r cv.md";
+}
+
+/* ---------- Identité ---------- */
+
+.identity {
+  display: grid;
+  grid-template-areas:
+    "heading"
+    "status"
+    "facts"
+    "links";
+  gap: var(--sp-4) var(--sp-6);
+}
+
+.identity__heading {
+  grid-area: heading;
+}
+
+/* Photo : un aperçu d'image dans la sortie de « whoami », à gauche du nom ; la commande
+   reste à la marge, au-dessus. Tout ce qui lui fait de la place dépend de sa présence :
+   sans photo, rien ne bouge. */
+.identity:has(.identity__photo) {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "photo  heading"
+    "status status"
+    "facts  facts"
+    "links  links";
+  column-gap: var(--photo-gap);
+
+  &::before,
+  & .identity__photo {
+    grid-area: photo;
+  }
+
+  & .identity__heading {
+    align-self: start;
+  }
+
+  & .identity__heading::before {
+    margin-left: calc(var(--photo-col) * -1);
+  }
+
+  & .identity__heading::after {
+    left: calc(var(--photo-col) * -1);
+  }
+}
+
+/* Le cadre et la photo occupent la même case, aux mêmes dimensions. Le cadre, un filet au
+   phosphore sur fond noir, avec la lueur du nom, est dessiné par l'identité : le filtre de
+   la photo griserait sa propre bordure. La photo, en gris, se pose dessus, en retrait du
+   filet et d'un liseré. Sa taille ne dépend pas de :has() : sous :is(), un navigateur qui
+   l'ignore garde la règle et montre la photo à cette taille, sous les touches. */
+:is(.identity:has(.identity__photo))::before,
+.identity__photo {
+  align-self: start;
+  width: var(--photo);
+  aspect-ratio: 7 / 8;
+  margin-top: var(--photo-top);
+}
+
+.identity:has(.identity__photo)::before {
+  content: "";
+  border: 1px solid var(--accent);
+  background: var(--void);
+  box-shadow: 0 0 1.2rem var(--glow);
+}
+
+.identity__photo {
+  padding: 4px;
+  object-fit: cover;
+  filter: var(--photo-tone);
+}
+
+.identity__name {
+  margin-block: var(--sp-1) var(--sp-2);
+  color: var(--accent);
+  font-size: var(--fs-name);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: 0 0 1.2rem var(--glow);
+}
+
+/* Intitulé et accroche sur une même ligne, l'accroche en commentaire. */
+.identity__title,
+.identity__tagline {
+  display: inline-block;
+}
+
+/* L'intitulé garde la largeur de son texte tant qu'elle tient dans la colonne : sa marge
+   de droite ne le replie pas à côté de la photo. */
+.identity__title {
+  width: max-content;
+  max-width: 100%;
+  margin-right: 1ch;
+  color: var(--fg-strong);
+  font-size: var(--fs-section);
+  font-weight: 700;
+}
+
+/* À côté de la photo, l'accroche se replie sur téléphone : en deux lignes égales, sans mot seul. */
+.identity__tagline {
+  text-wrap: balance;
+}
+
+.identity__tagline::before {
+  content: "// " / "";
+  color: var(--dim);
+}
+
+/* Situation : des lignes de démarrage de service. */
+.identity__status {
+  grid-area: status;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 3ch;
+  color: var(--fg-strong);
+}
+
+.identity__status li::before {
+  content: "[ OK ] " / "";
+  color: var(--accent);
+  font-weight: 700;
+  white-space: pre;
+}
+
+/* Faits : paires CLÉ : valeur, les deux-points alignés. */
+.facts {
+  grid-area: facts;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: 1ch;
+}
+
+.fact {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  align-items: baseline;
+}
+
+.fact dt {
+  display: flex;
+  justify-content: space-between;
+  gap: 1ch;
+  color: var(--meta);
+  font-size: var(--fs-small);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.fact dt::after {
+  content: ":" / "";
+  color: var(--dim);
+}
+
+.fact dd {
+  color: var(--fg-strong);
+}
+
+.identity__links {
+  grid-area: links;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) 1ch;
+}
+
+/* Liens et bouton : une même famille de touches. */
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 1.5ch;
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.action[data-kind="contact"] {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* Une adresse est une donnée, pas un libellé : elle garde sa casse. */
+.action[href^="mailto:"] {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.action:hover {
+  border-color: var(--fg-strong);
+  background: var(--fg-strong);
+  color: var(--bg);
+}
+
+/* Tant que les trois touches ne tiennent pas sur une ligne : le contact sur toute la largeur,
+   les deux autres se partagent la ligne suivante. */
+@media screen and (max-width: 519.98px) {
+  .identity__links li {
+    flex: 1 1 auto;
+  }
+
+  .identity__links li:first-child {
+    flex-basis: 100%;
+  }
+
+  .action {
+    width: 100%;
+  }
+}
+
+/* ---------- Sections ---------- */
+
+.section + .section,
+.subsection {
+  margin-top: var(--sp-6);
+}
+
+/* Titre en sortie de commande : « # TITRE » au phosphore, puis un filet jusqu'au bord. */
+.section__title,
+.subsection__title {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  margin-bottom: var(--sp-3);
+  color: var(--accent);
+  font-size: var(--fs-section);
+  font-weight: 700;
+  line-height: var(--lh-tight);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  &::before {
+    content: "#" / "";
+    color: var(--dim);
+    font-weight: 400;
+  }
+
+  &::after {
+    content: "";
+    flex: 1;
+    border-top: 3px double var(--rule-strong);
+  }
+}
+
+.subsection__title {
+  font-size: var(--fs-title);
+
+  &::before {
+    content: "##" / "";
+  }
+
+  &::after {
+    border-top: 1px solid var(--rule-strong);
+  }
+}
+
+/* Puces des listes de faits marquants : un tiret en marge, le texte en retrait. */
+.profile__highlights,
+.entry__highlights,
+.project__highlights {
+  margin-top: var(--sp-1);
+  padding-left: 2ch;
+  list-style: "- ";
+
+  & ::marker {
+    color: var(--dim);
+  }
+}
+
+.profile__summary {
+  color: var(--fg-strong);
+}
+
+/* Aucun texte courant ne dépasse la longueur de ligne confortable. */
+:is(.profile__summary, .profile__highlights, .entry__summary, .entry__highlights, .entry__about, .project__desc, .project__highlights) {
+  max-width: var(--measure);
+}
+
+/* Suites au fil de la ligne, séparées par un point médian : métadonnées d'un poste,
+   compétences au second plan. Chaque séparateur est logé dans l'intervalle qui précède
+   son élément : en début de ligne, il sort du cadre et n'est pas dessiné. */
+.entry__meta,
+.skill-group[data-display="compact"] .skills {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 3ch;
+  overflow-x: clip;
+}
+
+.entry__meta li + li::before,
+.skill-group[data-display="compact"] .skill + .skill .skill__name::before {
+  content: "·" / "";
+  display: inline-block;
+  width: 3ch;
+  margin-left: -3ch;
+  color: var(--dim);
+  text-align: center;
+}
+
+/* ---------- Compétences ---------- */
+
+/* Deux colonnes dès que deux lignes de compétence tiennent côte à côte, une seule sinon
+   (téléphone, volet du bureau) : le navigateur compte, aucun seuil de largeur à entretenir. */
+[data-section="competences"] .section__body {
+  columns: 2 var(--skill-row);
+  column-gap: 4ch;
+}
+
+.skill-group {
+  break-inside: avoid;
+}
+
+/* L'écart entre groupes est porté par le groupe du dessus : en tête de colonne, rien à
+   tronquer, les colonnes partent du même niveau dans tous les navigateurs. */
+.skill-group:not(:last-child) {
+  padding-bottom: var(--sp-4);
+}
+
+/* Titre de groupe façon section de fichier de configuration. */
+.skill-group__title {
+  color: var(--meta);
+  font-size: var(--fs-small);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  &::before {
+    content: "[" / "";
+  }
+
+  &::after {
+    content: "]" / "";
+  }
+}
+
+/* Une ligne par compétence : nom, points de conduite, niveau écrit, jauge. Les points
+   cèdent leur place avant que le nom ne se replie ; il peut le faire, même sans espace :
+   niveau et jauge restent dans la page. */
+.skill {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto auto;
+  align-items: last baseline;
+  column-gap: 1ch;
+}
+
+.skill::before {
+  content: "";
+  grid-area: 1 / 2;
+  margin-bottom: 0.2em;
+  border-bottom: 1px dotted var(--rule-strong);
+}
+
+.skill__name {
+  grid-area: 1 / 1;
+  color: var(--fg-strong);
+}
+
+.skill__level {
+  grid-area: 1 / 3;
+  color: var(--dim);
+  font-size: var(--fs-small);
+}
+
+.skill__meter {
+  grid-area: 1 / 4;
+  color: var(--accent);
+  white-space: nowrap;
+
+  &::after {
+    color: var(--dim);
+  }
+}
+
+.skill[data-level="1"] .skill__meter {
+  &::before {
+    content: "█";
+  }
+
+  &::after {
+    content: "░░░░";
+  }
+}
+
+.skill[data-level="2"] .skill__meter {
+  &::before {
+    content: "██";
+  }
+
+  &::after {
+    content: "░░░";
+  }
+}
+
+.skill[data-level="3"] .skill__meter {
+  &::before {
+    content: "███";
+  }
+
+  &::after {
+    content: "░░";
+  }
+}
+
+.skill[data-level="4"] .skill__meter {
+  &::before {
+    content: "████";
+  }
+
+  &::after {
+    content: "░";
+  }
+}
+
+.skill[data-level="5"] .skill__meter::before {
+  content: "█████";
+}
+
+/* Les deux premiers groupes, les plus en vue, passent en gras. */
+.skill-group:nth-child(-n + 2):not([data-display="compact"]) .skill__name {
+  font-weight: 700;
+}
+
+/* Groupes au second plan : une sortie brève sous les colonnes, sur toute la largeur.
+   Les compétences s'y suivent, « nom niveau », sans points de conduite ni jauge ;
+   un nom plus long que la ligne se replie, même sans espace. */
+.skill-group[data-display="compact"] {
+  column-span: all;
+
+  & .skill {
+    display: block;
+    min-width: 0;
+  }
+
+  & .skill::before {
+    content: none;
+  }
+
+  & .skill__name {
+    color: var(--fg);
+  }
+
+  & .skill__meter::before,
+  & .skill__meter::after {
+    content: none;
+  }
+}
+
+/* ---------- Langues ---------- */
+
+/* Noms alignés sur 9 caractères ; un nom plus long élargit sa colonne au lieu d'être coupé. */
+.language {
+  display: grid;
+  grid-template-columns: minmax(9ch, max-content) minmax(0, 1fr);
+  column-gap: 1ch;
+}
+
+.language + .language {
+  margin-top: var(--sp-2);
+}
+
+.language__name {
+  color: var(--fg-strong);
+  font-weight: 700;
+}
+
+.language__fluency,
+.language__certs {
+  grid-column: 2;
+}
+
+.language__certs {
+  color: var(--dim);
+  font-size: var(--fs-small);
+}
+
+/* ---------- Parcours : un journal de commits ---------- */
+
+/* Colonne à minimum nul : un mot sans espace se coupe au lieu d'élargir la page. */
+.timeline,
+.projects {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-5);
+}
+
+.entry,
+.project {
+  position: relative;
+  break-inside: avoid;
+}
+
+/* Graphe : un astérisque par ligne du journal, dans sa colonne, relié au suivant. */
+.entry {
+  display: grid;
+  grid-template-columns: var(--rail) minmax(0, 1fr);
+  align-items: baseline;
+}
+
+.entry::before {
+  content: "*" / "";
+  color: var(--meta);
+  font-weight: 700;
+}
+
+.entry[data-current]::before {
+  color: var(--accent);
+}
+
+/* La fiche garde sa colonne même si l'astérisque n'est pas rendu. */
+.entry__card {
+  grid-column: 2;
+}
+
+.entry::after,
+.project:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 1.5em;
+  bottom: calc(var(--sp-5) * -1);
+  left: calc(0.5ch - 0.5px);
+  border-left: 1px solid var(--rule-strong);
+}
+
+.entry:last-child::after {
+  bottom: 0;
+}
+
+.entry__title,
+.project__name {
+  color: var(--fg-strong);
+  font-size: var(--fs-title);
+  font-weight: 700;
+  line-height: var(--lh-tight);
+}
+
+/* Le poste en cours porte la référence HEAD, nommée d'après le fait « Poste actuel » :
+   sur sa propre ligne tant que la colonne est étroite. */
+.entry[data-current] .entry__title::after {
+  content: "(HEAD -> poste-actuel)" / "";
+  display: block;
+  color: var(--meta);
+  font-size: var(--fs-small);
+  font-weight: 400;
+}
+
+/* Un nom d'employeur qui se replie reprend en retrait, sous son début et non sous l'arobase. */
+.entry__org {
+  padding-left: 2ch;
+  color: var(--accent);
+  text-indent: -2ch;
+
+  &::before {
+    content: "@ " / "";
+    color: var(--dim);
+  }
+}
+
+/* Période, contrat, lieu : une suite à points médians. */
+.entry__meta {
+  color: var(--dim);
+  font-size: var(--fs-small);
+}
+
+.entry__period,
+.project__period {
+  color: var(--meta);
+  font-size: var(--fs-small);
+
+  & time {
+    white-space: nowrap;
+  }
+}
+
+.entry__summary,
+.project__desc {
+  margin-top: var(--sp-2);
+}
+
+/* Présentation de l'employeur, en commentaire. */
+.entry__about {
+  margin-top: var(--sp-1);
+  color: var(--dim);
+
+  &::before {
+    content: "// " / "";
+  }
+}
+
+/* Technologies : des jetons entre crochets. */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1ch;
+  margin-top: var(--sp-2);
+  color: var(--accent);
+  font-size: var(--fs-small);
+}
+
+.tag {
+  min-width: 0;
+
+  &::before {
+    content: "[" / "";
+    color: var(--dim);
+  }
+
+  &::after {
+    content: "]" / "";
+    color: var(--dim);
+  }
+}
+
+/* ---------- Stages et formations : un journal abrégé ----------
+   Des fiches compactes, deux par rangée dès que chacune garde sa largeur utile, avec un
+   trait par fiche au lieu du fil continu. Intitulé et organisme tiennent sur une ligne
+   s'ils y entrent ; sinon l'organisme passe entier à la suivante. */
+
+:is(.timeline--stages, .timeline--formations) {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, max(var(--card), 50% - 1.5ch)), 1fr));
+  gap: var(--sp-4) 3ch;
+
+  & .entry::after {
+    bottom: 0;
+  }
+
+  /* Nombre impair de fiches : la première, la plus récente, prend toute la rangée et
+     aucune case ne reste vide. */
+  & .entry:first-child:nth-last-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  & :is(.entry__title, .entry__org) {
+    display: inline-block;
+  }
+
+  & .entry__title {
+    font-size: 1rem;
+  }
+}
+
+/* ---------- Projets : une arborescence ---------- */
+
+.project {
+  padding-left: var(--rail);
+}
+
+.project::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(0.5ch - 0.5px);
+  width: calc(var(--rail) - 1ch);
+  height: 0.7em;
+  border: solid var(--rule-strong);
+  border-width: 0 0 1px 1px;
+}
+
+.project:not(:last-child)::after {
+  top: 0;
+}
+
+.project__name::after {
+  content: "/" / "";
+  color: var(--dim);
+  font-weight: 400;
+}
+
+.project__link {
+  margin-top: var(--sp-2);
+
+  &::before {
+    content: "-> " / "";
+    color: var(--dim);
+  }
+}
+
+/* ---------- Pied de page : dernière commande, puis l'invite et son curseur ---------- */
+
+.colophon {
+  border-radius: 0 0 var(--radius) var(--radius);
+  color: var(--dim);
+}
+
+.colophon__formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 3ch;
+}
+
+/* Le curseur : un pavé plein posé sur sa rémanence, seule visible quand il s'éteint. */
+.colophon::after {
+  content: "$" / "";
+  display: block;
+  width: 3ch;
+  margin-top: var(--sp-3);
+  background:
+    linear-gradient(var(--accent), var(--accent)) no-repeat 2ch 50% / 1ch 1.2em,
+    linear-gradient(var(--afterglow), var(--afterglow)) no-repeat 2ch 50% / 1ch 1.2em;
+  color: var(--meta);
+}
+
+/* ---------- Mouvement : le phosphore du nom chauffe à l'ouverture, le curseur clignote ---------- */
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .identity__name {
+    animation: allumage 0.9s ease-out;
+  }
+
+  .colophon::after {
+    animation: curseur 1.1s steps(1, end) infinite;
+  }
+}
+
+@keyframes allumage {
+  from {
+    text-shadow: 0 0 2.6rem var(--accent);
+  }
+}
+
+@keyframes curseur {
+  50% {
+    background-size: 0 0, 1ch 1.2em;
+  }
+}
+
+/* ---------- Écrans moyens et impression : la période passe dans une marge à gauche ----------
+   Postes et projets seulement ; stages et formations gardent leurs fiches. */
+
+@media print, (min-width: 720px) {
+  .timeline--postes .entry__card,
+  .project__card {
+    display: grid;
+    grid-template-columns: var(--gutter) minmax(0, 1fr);
+    column-gap: 2ch;
+  }
+
+  .timeline--postes .entry__head {
+    display: contents;
+  }
+
+  .timeline--postes :is(.entry__card, .entry__head) > *,
+  .project__card > * {
+    grid-column: 2;
+  }
+
+  .timeline--postes .entry__meta,
+  .project__period {
+    display: block;
+    grid-area: 1 / 1 / span 6;
+    padding-top: 0.1em;
+    overflow-x: visible;
+  }
+
+  .timeline--postes .entry__meta li + li::before {
+    content: none;
+  }
+
+  .entry[data-current] .entry__title::after {
+    display: inline;
+    margin-left: 1ch;
+    white-space: nowrap;
+  }
+}
+
+/* ---------- Écrans larges : identité sur deux colonnes ---------- */
+
+@media print, (min-width: 900px) {
+  .identity {
+    grid-template-columns: minmax(0, 1fr) fit-content(54ch);
+    grid-template-areas:
+      "heading facts"
+      "status  links";
+    align-items: center;
+  }
+
+  .facts {
+    align-self: end;
+  }
+}
+
+/* ---------- Identité avec photo ----------
+   Dès que la fenêtre a ses marges, la photo longe le nom et la situation ; les deux colonnes
+   attendent que le nom garde sa largeur à côté d'elle. Sa taille suit : son pied s'aligne
+   sur celui de la situation, puis sur celui des touches. */
+
+@media screen and (min-width: 720px) {
+  :root {
+    --photo: 6.5rem;
+    --photo-gap: var(--sp-5);
+  }
+
+  .identity:has(.identity__photo) {
+    grid-template-areas:
+      "photo heading"
+      "photo status"
+      "facts facts"
+      "links links";
+  }
+}
+
+@media screen and (min-width: 980px) {
+  :root {
+    --photo: 7.5rem;
+  }
+
+  .identity:has(.identity__photo) {
+    grid-template-columns: auto minmax(0, 1fr) fit-content(54ch);
+    grid-template-areas:
+      "photo heading facts"
+      "photo status  links";
+  }
+}
+
+/* ---------- Bureau : deux volets côte à côte ---------- */
+
+@media screen and (min-width: 1180px) {
+  .sheet {
+    display: grid;
+    grid-template-columns: var(--side) minmax(0, 1fr);
+  }
+
+  .sheet::before,
+  .identity,
+  .sheet > .section {
+    grid-column: 1 / -1;
+  }
+
+  .sheet__side {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 0;
+  }
+
+  .sheet__main {
+    border-left: 1px solid var(--rule);
+  }
+}
+
+/* Profil : le résumé à gauche, les points clés à droite. */
+@media print, (min-width: 1180px) {
+  [data-section="profil"] .section__body {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: var(--sp-6);
+  }
+
+  .profile__highlights {
+    margin-top: 0;
+  }
+}
+
+/* Le volet des compétences reste en vue pendant le défilement. Fenêtre assez haute : il se
+   cale en haut. Sinon il défile d'abord, puis s'arrête quand son pied atteint le bas de
+   l'écran. --side-height est sa hauteur réelle, mesurée par app.js : rien à régler quand
+   son contenu change. Sans JavaScript, la valeur de repli le laisse défiler avec la page. */
+@media screen and (min-width: 1180px) {
+  .sheet__side {
+    position: sticky;
+    top: min(0px, 100vh - var(--side-height, 6250rem));
+    align-self: start;
+  }
+}
+
+/* ---------- Impression : un listing sur papier ---------- */
+
+@media print {
+  @page {
+    size: A4;
+    margin: 9mm 10mm 10mm;
+  }
+
+  :root {
+    color-scheme: light;
+    --void: #fff;
+    --bg: #fff;
+    --rule: #c4c4c4;
+    --rule-strong: #8a8a8a;
+    --fg: #1c1c1c;
+    --fg-strong: #000;
+    --dim: #555;
+    --accent: #000;
+    --meta: #444;
+    --glow: transparent;
+    --scanlines: none;
+    --photo-tone: grayscale(1);
+    --photo: 7.1rem;
+    --photo-col: 0px;
+    --photo-top: 0px;
+    --fs-root: 8.5pt;
+    --fs-name: 19pt;
+    --lh: 1.35;
+    --sp-3: 0.5rem;
+    --sp-5: 0.8rem;
+    --sp-6: 1.1rem;
+    --pad: 0px;
+  }
+
+  .sheet,
+  .colophon {
+    border: 0;
+  }
+
+  .sheet::before,
+  .colophon::after {
+    content: none;
+  }
+
+  .identity,
+  .sheet > .section,
+  .sheet__side,
+  .sheet__main {
+    margin-bottom: var(--sp-6);
+    border: 0;
+  }
+
+  /* Le texte du PDF suit l'ordre de peinture. Chaque bloc de premier niveau est donc
+     positionné (peint à son rang), et rien de ce qui précède un texte ne l'est. */
+  .identity,
+  .colophon {
+    position: relative;
+  }
+
+  .identity__heading {
+    position: static;
+    align-self: start;
+
+    &::before {
+      content: "$ " var(--cmd) / "";
+      padding-left: 0;
+    }
+
+    &::after {
+      content: none;
+    }
+  }
+
+  .colophon__updated {
+    position: static;
+  }
+
+  /* La commande passe au bout de la ligne de titre, soulignée d'un filet :
+     une ligne de gagnée par section. */
+  :is(.section, .subsection, .colophon__updated) {
+    &::before,
+    &::after {
+      content: none;
+    }
+  }
+
+  .section__title,
+  .subsection__title {
+    align-items: baseline;
+    border-bottom: 1px solid var(--rule-strong);
+
+    &::after {
+      content: "$ " var(--cmd) / "";
+      flex: none;
+      margin-left: auto;
+      border: 0;
+      color: var(--dim);
+      font-size: var(--fs-small);
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+  }
+
+  /* Identité : le nom à gauche, les faits puis la situation à droite, les liens dessous. */
+  .identity {
+    grid-template-areas:
+      "heading facts"
+      "heading status"
+      "links   links";
+    row-gap: var(--sp-1);
+  }
+
+  /* Avec la photo, petite, sur toute la hauteur de l'en-tête : la commande passe à sa
+     droite, les liens sous la situation, dans une colonne assez large pour leur ligne. */
+  .identity:has(.identity__photo) {
+    grid-template-columns: auto minmax(0, 1fr) fit-content(58ch);
+    grid-template-areas:
+      "photo heading facts"
+      "photo heading status"
+      "photo heading links";
+  }
+
+  /* Sur papier, un lien n'est plus une touche et son adresse s'écrit en toutes lettres. */
+  .identity__links {
+    gap: 0 3ch;
+  }
+
+  .identity__links .action {
+    display: inline;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--fg);
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* Le bouton de contact affiche déjà son adresse : seules les adresses web se déplient. */
+  .action[href^="http"]::after,
+  .project__link a::after {
+    content: " <" attr(href) ">";
+  }
+
+  /* Profil : les points clés prennent les deux tiers de la ligne. */
+  [data-section="profil"] .section__body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+
+  /* Compétences : les groupes se resserrent. */
+  .skill-group:not(:last-child) {
+    padding-bottom: var(--sp-2);
+  }
+
+  .languages {
+    display: flex;
+    gap: 6ch;
+  }
+
+  .language + .language {
+    margin-top: 0;
+  }
+
+  /* Postes : intitulé et employeur sur une même ligne. Un intitulé long se replie
+     avant d'écraser la colonne de l'employeur. */
+  .timeline--postes .entry__card {
+    grid-template-columns: var(--gutter) fit-content(60%) minmax(0, 1fr);
+    align-items: baseline;
+  }
+
+  .timeline--postes .entry__card > * {
+    grid-column: 2 / -1;
+  }
+
+  .timeline--postes .entry__title {
+    grid-area: 1 / 2;
+  }
+
+  .timeline--postes .entry__org {
+    grid-area: 1 / 3;
+  }
+
+  :is(.timeline--stages, .timeline--formations) {
+    row-gap: var(--sp-3);
+  }
+
+  .entry__summary,
+  .project__desc,
+  .tags,
+  .project__link {
+    margin-top: var(--sp-1);
+  }
+
+  /* Pas de trait à cheval sur un saut de page : chaque fil s'arrête avec son bloc. */
+  .entry::after,
+  .project:not(:last-child)::after {
+    bottom: 0;
+  }
+
+  /* Pied de page : la date et les formats sur une ligne. */
+  .colophon {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 3ch;
+    font-size: var(--fs-small);
+    break-before: avoid;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+
+  p,
+  li {
+    orphans: 2;
+    widows: 2;
+  }
+}

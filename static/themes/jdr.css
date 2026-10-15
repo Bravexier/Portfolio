@@ -1,0 +1,1690 @@
+/* Thème JDR : la fiche de personnage d'un manuel de jeu de rôle, posée sur du parchemin.
+   Tout est dessiné ici (dégradés, SVG en ligne) : aucune image ni police externe.
+   Les chiffres des caractéristiques viennent uniquement de data-level, et le niveau
+   écrit en toutes lettres reste toujours affiché à côté. */
+
+/* ---------- Palette, typographie, espacements, motifs ---------- */
+
+:root {
+  color-scheme: light;
+
+  --parchment: #e6d2a0;
+  --parchment-light: #f7edd2;
+  --vellum: #fdf8e8;
+  --panel: rgb(255 252 238 / 0.62);
+  --ink: #2b1b11;
+  --ink-soft: #4e3b28;
+  --crimson-bright: #8f271b;
+  --crimson: #7d1f14;
+  --crimson-deep: #58180d;
+  --crimson-dark: #33100a;
+  --gold: #b8963f;
+  --gold-pale: #d9c48a;
+  --ochre: #5a3f06;
+  --ivory: #fdf2d6;
+  --paper: #fff;
+  --umber: 70 40 5;
+  --glow: rgb(255 246 218 / 0.55);
+  --shade: rgb(150 105 45 / 0.2);
+  --emboss: rgb(0 0 0 / 0.4);
+  --shadow: 0 0.3rem 0.8rem -0.4rem rgb(var(--umber) / 0.5);
+
+  --font: 'Palatino Linotype', 'Book Antiqua', Palatino, 'Iowan Old Style', Georgia, serif;
+  --fs-name: clamp(2rem, 1.5rem + 2.2vw, 2.625rem);
+  --fs-score: 2.375rem;
+  --fs-h2: 1.625rem;
+  --fs-title: 1.3125rem;
+  --fs-h3: 1.25rem;
+  --fs-h4: 1.1875rem;
+  --fs-lead: 1.0625rem;
+  --fs-body: 1rem;
+  --fs-small: 0.9375rem;
+  --fs-mini: 0.875rem;
+  --fs-note: 0.8125rem;
+  --fs-label: 0.75rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2.25rem;
+  --sheet-w: 74rem;
+  --side-w: 23rem;
+  --pip: 0.8125rem;
+  --mark: 1.375rem;
+  --portrait: 7.5rem;
+  --portrait-edge: 12px;
+
+  /* Grain et marbrures du papier, cadre de page, cadre du portrait, case à coins échancrés,
+     sceau et marqueurs du journal, puce, filet orné, pastilles, pictogrammes.
+     Les couleurs y sont écrites en dur : un SVG en data: ne lit pas les variables. */
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .3 0 0 0 0 .1 .34 0 0 0 -.07'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  --mottle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='m' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.011' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .36 0 0 0 0 .12 .6 0 0 0 -.24'/%3E%3C/filter%3E%3Crect width='600' height='600' filter='url(%23m)'/%3E%3C/svg%3E");
+  --frame-page: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cpath d='M7 7h82v82H7z' fill='none' stroke='%2358180d' stroke-width='2'/%3E%3Cpath d='M12.5 12.5h71v71h-71z' fill='none' stroke='%23b8963f'/%3E%3Cg id='c'%3E%3Cpath d='M2 2h20v20H2z' fill='%23f7edd2' stroke='%2358180d' stroke-width='2'/%3E%3Cpath d='M12 5.5 18.5 12 12 18.5 5.5 12z' fill='%237d1f14'/%3E%3Ccircle cx='12' cy='12' r='1.7' fill='%23d9c48a'/%3E%3Cpath d='M25 25h6l-6 6z' fill='%23b8963f'/%3E%3C/g%3E%3Cuse href='%23c' transform='matrix(-1 0 0 1 96 0)'/%3E%3Cuse href='%23c' transform='matrix(1 0 0 -1 0 96)'/%3E%3Cuse href='%23c' transform='matrix(-1 0 0 -1 96 96)'/%3E%3C/svg%3E");
+  --frame-portrait: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M3 3h34v34H3z' fill='none' stroke='%2358180d' stroke-width='2'/%3E%3Cpath d='M7 7h26v26H7z' fill='none' stroke='%23b8963f' stroke-width='6'/%3E%3Cpath d='M5.5 5.5h29v29h-29z' fill='none' stroke='%23d9c48a'/%3E%3Cpath d='M11 11h18v18H11z' fill='none' stroke='%2358180d' stroke-width='2'/%3E%3Cg id='c'%3E%3Cpath d='M.5.5h11v11H.5z' fill='%237d1f14' stroke='%2358180d'/%3E%3Cpath d='M6 2.2 9.8 6 6 9.8 2.2 6z' fill='%23d9c48a'/%3E%3Ccircle cx='6' cy='6' r='1.1' fill='%2358180d'/%3E%3C/g%3E%3Cuse href='%23c' transform='matrix(-1 0 0 1 40 0)'/%3E%3Cuse href='%23c' transform='matrix(1 0 0 -1 0 40)'/%3E%3Cuse href='%23c' transform='matrix(-1 0 0 -1 40 40)'/%3E%3C/svg%3E");
+  --frame-box: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='42' height='42'%3E%3Cpath d='M9 1h24a8 8 0 0 0 8 8v24a8 8 0 0 0-8 8H9a8 8 0 0 0-8-8V9a8 8 0 0 0 8-8z' fill='%23fffdf5' fill-opacity='.6' stroke='%234e3b28' stroke-width='1.4'/%3E%3C/svg%3E");
+  --seal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12.7' r='10.6' fill='%2333100a' fill-opacity='.4'/%3E%3Ccircle cx='12' cy='11.6' r='10.6' fill='%2358180d'/%3E%3Ccircle cx='12' cy='11.6' r='8.3' fill='%238f271b' stroke='%23ad4a3d' stroke-width='.8'/%3E%3Cpath d='M12 5.3l1.6 4.7 4.7 1.6-4.7 1.6-1.6 4.7-1.6-4.7-4.7-1.6 4.7-1.6z' fill='%23f1dca8'/%3E%3C/svg%3E");
+  --mark-poste: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M11 .8 21.2 11 11 21.2 .8 11z' fill='none' stroke='%23b8963f'/%3E%3Cpath d='M11 3.9 18.1 11 11 18.1 3.9 11z' fill='%237d1f14'/%3E%3C/svg%3E");
+  --mark-stage: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M11 2.9 19.1 11 11 19.1 2.9 11z' fill='none' stroke='%237d1f14' stroke-width='1.5'/%3E%3C/svg%3E");
+  --mark-formation: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M11 .8 21.2 11 11 21.2 .8 11z' fill='none' stroke='%237d1f14'/%3E%3Cpath d='M11 3.9 18.1 11 11 18.1 3.9 11z' fill='%23b8963f'/%3E%3C/svg%3E");
+  --bullet: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M4 0l4 4-4 4-4-4z' fill='%237d1f14'/%3E%3C/svg%3E");
+  --fleuron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='12'%3E%3Cpath d='M0 6h64M96 6h64' stroke='%23b8963f'/%3E%3Cpath d='M80 1l5 5-5 5-5-5z' fill='%237d1f14'/%3E%3Cpath d='M68 6l2.5-2.5L73 6l-2.5 2.5zM87 6l2.5-2.5L92 6l-2.5 2.5z' fill='%23b8963f'/%3E%3C/svg%3E");
+  --pips-off: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 65 13' fill='none' stroke='%234e3b28' stroke-width='1.2'%3E%3Ccircle cx='6.5' cy='6.5' r='3.6'/%3E%3Ccircle cx='19.5' cy='6.5' r='3.6'/%3E%3Ccircle cx='32.5' cy='6.5' r='3.6'/%3E%3Ccircle cx='45.5' cy='6.5' r='3.6'/%3E%3Ccircle cx='58.5' cy='6.5' r='3.6'/%3E%3C/svg%3E");
+  --pips-on: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 65 13' fill='%237d1f14'%3E%3Ccircle cx='6.5' cy='6.5' r='4.3'/%3E%3Ccircle cx='19.5' cy='6.5' r='4.3'/%3E%3Ccircle cx='32.5' cy='6.5' r='4.3'/%3E%3Ccircle cx='45.5' cy='6.5' r='4.3'/%3E%3Ccircle cx='58.5' cy='6.5' r='4.3'/%3E%3C/svg%3E");
+  --icon-contact: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 3.5h13v9h-13zM1.5 3.5 8 8.5l6.5-5' fill='none' stroke='%23000' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --icon-code: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5.5 4 1.5 8l4 4M10.5 4l4 4-4 4' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --icon-print: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 6V2h7v4M4.5 11.5h-3V6h13v5.5h-3M4.5 9.5h7V14h-7z' fill='none' stroke='%23000' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+  --switcher-bg: var(--vellum);
+  --switcher-fg: var(--crimson-deep);
+  --switcher-border: var(--gold);
+  --switcher-active-bg: var(--crimson);
+  --switcher-active-fg: var(--ivory);
+  --switcher-font: var(--font);
+  --switcher-radius: 4px;
+  --switcher-shadow: 0 2px 8px rgb(var(--umber) / 0.3);
+}
+
+/* ---------- Socle : page, texte, liens ---------- */
+
+body {
+  padding: clamp(0.375rem, 2.2vw, 2rem);
+  padding-bottom: var(--space-6);
+  font: 400 var(--fs-body) / 1.55 var(--font);
+  color: var(--ink);
+  background:
+    var(--noise),
+    radial-gradient(ellipse 70rem 40rem at 50% 0, var(--glow), transparent),
+    var(--parchment);
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: var(--crimson);
+  text-decoration-line: underline;
+  text-decoration-color: var(--gold);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+
+  &:hover {
+    color: var(--crimson-deep);
+    text-decoration-color: currentColor;
+  }
+}
+
+:focus-visible {
+  outline: 3px solid var(--crimson);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--crimson);
+  color: var(--ivory);
+}
+
+/* ---------- La fiche : parchemin marbré, cadre orné, une colonne par défaut ---------- */
+
+.sheet {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  max-width: var(--sheet-w);
+  margin-inline: auto;
+  padding: clamp(0.625rem, 2.4vw, 1.75rem);
+  border: clamp(0.875rem, 2.2vw, 1.25rem) solid transparent;
+  border-image: var(--frame-page) 32 / clamp(1.375rem, 3.4vw, 2rem);
+  background:
+    linear-gradient(to right, var(--shade), transparent 3.5rem),
+    linear-gradient(to left, var(--shade), transparent 3.5rem),
+    linear-gradient(to bottom, var(--shade), transparent 3.5rem),
+    linear-gradient(to top, var(--shade), transparent 3.5rem),
+    var(--mottle),
+    var(--noise),
+    var(--parchment-light);
+  background-origin: border-box;
+  box-shadow:
+    0 0 0 1px rgb(var(--umber) / 0.3),
+    0 1.25rem 2.5rem -1.25rem rgb(var(--umber) / 0.6);
+}
+
+.sheet__side,
+.sheet__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--space-6);
+}
+
+.sheet__side {
+  container: side / inline-size;
+
+  /* Un filet orné referme la colonne des compétences. */
+  &::after {
+    content: '';
+    height: 0.75rem;
+    background: var(--fleuron) center / auto 100% no-repeat;
+  }
+}
+
+/* Sur grand écran et à l'impression, la fiche est un flux de blocs plutôt qu'une grille. */
+@media screen and (min-width: 64rem), print {
+  .sheet {
+    display: flow-root;
+  }
+
+  .sheet > * + *,
+  .sheet__main > * + * {
+    margin-top: var(--space-6);
+  }
+
+  /* align-content ferait du journal un contexte de mise en forme à part, calé à côté du flottant. */
+  .sheet__main {
+    display: block;
+    align-content: normal;
+  }
+}
+
+/* Sur grand écran, les compétences forment un encadré flottant, comme dans un manuel :
+   les postes coulent à côté, puis le journal reprend toute la largeur à partir des stages.
+   L'ordre de lecture reste celui du document. */
+@media screen and (min-width: 64rem) {
+  .sheet__side {
+    float: left;
+    width: var(--side-w);
+    margin-right: var(--space-5);
+    margin-bottom: var(--space-6);
+    padding-right: var(--space-5);
+    border-right: 1px solid var(--gold-pale);
+  }
+
+  #stages {
+    clear: left;
+  }
+}
+
+/* ---------- En-tête : portrait, bannière du nom, états, cases de la fiche, actions ----------
+   Chaque bloc a sa zone nommée ; seule la carte des zones change d'une largeur à l'autre. */
+
+.identity {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'heading'
+    'status'
+    'facts'
+    'links';
+  justify-items: center;
+  gap: var(--space-4) var(--space-6);
+  text-align: center;
+}
+
+/* Le portrait du personnage, quand la fiche en a un : il l'ouvre, centré au-dessus de la bannière. */
+.identity:has(.identity__photo) {
+  grid-template-areas:
+    'photo'
+    'heading'
+    'status'
+    'facts'
+    'links';
+}
+
+/* Une image ne porte pas de pseudo-élément : le cadre (cramoisi, or, coins ornés) est sa bordure,
+   et le voile est un pseudo-élément de l'en-tête, posé dans la même zone à la même taille. */
+.identity__photo,
+.identity:has(.identity__photo)::after {
+  grid-area: photo;
+  place-self: center;
+  width: var(--portrait);
+  aspect-ratio: 7 / 8;
+}
+
+/* La largeur est celle de la photo, cadre en sus : elle garde ses proportions d'origine.
+   L'ombre épouse le cadre, coins saillants compris. */
+.identity__photo {
+  box-sizing: content-box;
+  border: var(--portrait-edge) solid var(--crimson-deep);
+  border-image: var(--frame-portrait) 12 / var(--portrait-edge);
+  background: var(--vellum) padding-box;
+  filter: drop-shadow(0 0.15rem 0.3rem rgb(var(--umber) / 0.45));
+  object-fit: cover;
+}
+
+/* Le voile : une ombre portée par le cadre et un rien de sépia, pour asseoir la photo sur le parchemin.
+   Il garde sa teinte en contrastes forcés : ramené à la couleur du fond, il noircirait le portrait. */
+.identity:has(.identity__photo)::after {
+  content: '';
+  z-index: 1;
+  margin: var(--portrait-edge);
+  background: var(--ivory);
+  box-shadow: inset 0 0 0.75rem rgb(var(--umber) / 0.45);
+  mix-blend-mode: multiply;
+  forced-color-adjust: none;
+  pointer-events: none;
+}
+
+.identity__heading {
+  grid-area: heading;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+  isolation: isolate;
+
+  /* Un mot plus large que la ligne se coupe au lieu d'élargir la fiche. */
+  & > * {
+    min-width: 0;
+  }
+}
+
+/* Sur un écran étroit, la bannière occupe toute la largeur : elle descend sous le
+   bouton du sélecteur de thème, qui garde le coin pour lui. Le portrait, quand il la
+   précède, y gagne un peu d'air sous le cadre de la page. */
+@media screen and (width < 36rem) {
+  .identity {
+    padding-top: var(--space-5);
+  }
+}
+
+/* Le ruban : le corps porte le nom, les deux pans repliés sont des pseudo-éléments.
+   Ses marges comblent la ligne : l'intitulé passe toujours dessous. */
+.identity__name {
+  --tail: 0.85em;
+  --lap: 0.3em;
+  --drop: 0.26em;
+  --ribbon: min(100% - 2 * (var(--tail) - var(--lap)), 22rem);
+
+  position: relative;
+  flex: 0 0 var(--ribbon);
+  margin: 0 calc((100% - var(--ribbon)) / 2) var(--drop);
+  padding: 0.26em 0.4em 0.32em;
+  font-size: var(--fs-name);
+  line-height: 1.1;
+  font-variant-caps: small-caps;
+  letter-spacing: 0.05em;
+  color: var(--ivory);
+  text-shadow: 0 1px 0 var(--emboss);
+  background:
+    linear-gradient(var(--gold-pale) 0 0) 0 0.13em / 100% 1px no-repeat,
+    linear-gradient(var(--gold-pale) 0 0) 0 calc(100% - 0.13em) / 100% 1px no-repeat,
+    linear-gradient(var(--crimson-bright), var(--crimson) 45%, var(--crimson-deep)) var(--crimson);
+  box-shadow: 0 0.12em 0.3em -0.1em rgb(var(--umber) / 0.7);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: var(--drop);
+    bottom: calc(-1 * var(--drop));
+    width: var(--tail);
+    background-color: color-mix(in srgb, var(--crimson), var(--crimson-deep));
+    background-repeat: no-repeat;
+    background-size: var(--lap) var(--drop);
+  }
+
+  &::before {
+    right: calc(100% - var(--lap));
+    background-image: linear-gradient(to top right, transparent calc(50% - 0.5px), var(--crimson-dark) calc(50% + 0.5px));
+    background-position: right bottom;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 32% 50%);
+  }
+
+  &::after {
+    left: calc(100% - var(--lap));
+    background-image: linear-gradient(to top left, transparent calc(50% - 0.5px), var(--crimson-dark) calc(50% + 0.5px));
+    background-position: left bottom;
+    clip-path: polygon(0 0, 100% 0, 68% 50%, 100% 100%, 0 100%);
+  }
+}
+
+.identity__title {
+  font-size: var(--fs-title);
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1.25;
+}
+
+.identity__tagline {
+  font-size: var(--fs-lead);
+  font-style: italic;
+  line-height: 1.25;
+  color: var(--ink-soft);
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 0.4em;
+    height: 0.4em;
+    margin-right: 0.65em;
+    vertical-align: 0.15em;
+    rotate: 45deg;
+    background: var(--gold);
+  }
+}
+
+.identity__status {
+  grid-area: status;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+
+  & li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    padding: 0.2rem 0.7rem 0.2rem 0.55rem;
+    border: 1px solid var(--crimson);
+    border-radius: 999px;
+    background: var(--panel);
+    font-size: var(--fs-label);
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--crimson-deep);
+
+    &::before {
+      content: '';
+      flex: none;
+      width: 0.5em;
+      height: 0.5em;
+      rotate: 45deg;
+      background: var(--crimson);
+    }
+  }
+}
+
+/* Comme en haut d'une fiche : la valeur sur une ligne, son intitulé dessous. */
+.facts {
+  grid-area: facts;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3) var(--space-5);
+  width: 100%;
+  padding: var(--space-1) var(--space-2);
+  border: 14px solid transparent;
+  border-image: var(--frame-box) 14 fill / 14px;
+  text-align: left;
+}
+
+/* Quand la boîte est trop étroite pour trois cases de front (petite tablette, ou grand écran
+   tant que la colonne du nom reste large), le poste actuel prend une ligne entière. */
+@media screen and (30rem <= width < 48rem), screen and (64rem <= width < 75rem) {
+  .facts {
+    grid-template-columns: repeat(2, auto);
+  }
+
+  .fact[data-key='poste'] {
+    grid-column: 1 / -1;
+  }
+}
+
+@media screen and (48rem <= width < 64rem), screen and (min-width: 75rem), print {
+  .facts {
+    grid-template-columns: repeat(3, auto);
+  }
+}
+
+/* Sur grand écran, le portrait prend sa part de la largeur : les cases se rangent un cran plus serré. */
+@media screen and (64rem <= width < 75rem) {
+  .identity:has(.identity__photo) .facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media screen and (min-width: 75rem) {
+  .identity:has(.identity__photo) {
+    & .facts {
+      grid-template-columns: repeat(2, auto);
+    }
+
+    & .fact[data-key='poste'] {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.fact {
+  display: flex;
+  flex-direction: column-reverse;
+
+  & dd {
+    padding-bottom: 0.1rem;
+    border-bottom: 1px solid var(--ink-soft);
+    font-size: var(--fs-lead);
+    font-style: italic;
+    line-height: 1.35;
+  }
+
+  & dt {
+    margin-top: 0.2rem;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+}
+
+.identity__links {
+  grid-area: links;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-3);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: 2.5rem;
+  padding: 0.3rem 1rem;
+  border: 1px solid var(--crimson-deep);
+  border-radius: 3px;
+  background: var(--vellum);
+  box-shadow:
+    inset 0 0 0 2px var(--vellum),
+    inset 0 0 0 3px var(--gold-pale),
+    0 1px 2px rgb(var(--umber) / 0.3);
+  font: 700 var(--fs-lead) / 1.2 var(--font);
+  font-variant-caps: small-caps;
+  letter-spacing: 0.04em;
+  /* Le libellé peut être une adresse de courriel, insécable : elle se coupe plutôt que de déborder. */
+  overflow-wrap: anywhere;
+  color: var(--crimson-deep);
+  text-decoration: none;
+  cursor: pointer;
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 1.05em;
+    height: 1.05em;
+    background: currentColor;
+    mask: var(--icon, var(--icon-code)) center / contain no-repeat;
+  }
+
+  &[data-kind='contact'] {
+    --icon: var(--icon-contact);
+
+    background: var(--crimson);
+    box-shadow:
+      inset 0 0 0 2px var(--crimson),
+      inset 0 0 0 3px var(--gold),
+      0 1px 2px rgb(var(--umber) / 0.3);
+    color: var(--ivory);
+  }
+
+  &[data-kind='print'] {
+    --icon: var(--icon-print);
+  }
+
+  /* La transition n'existe qu'au survol : rien ne s'anime au chargement ni au changement de thème. */
+  &:hover {
+    background: var(--crimson-deep);
+    box-shadow:
+      inset 0 0 0 2px var(--crimson-deep),
+      inset 0 0 0 3px var(--gold),
+      0 2px 5px rgb(var(--umber) / 0.4);
+    color: var(--ivory);
+    translate: 0 -1px;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      translate 0.15s ease;
+  }
+
+  &:active {
+    translate: 0 1px;
+  }
+}
+
+/* Sur téléphone, les actions se partagent la largeur de la fiche : des cibles larges,
+   calées sur les bords de la boîte au-dessus. Le contact garde sa rangée, les deux autres
+   se partagent la suivante. Marges réduites et corps réglé sur l'écran : l'adresse tient
+   d'un seul tenant, même dans une police de repli plus large. */
+@media screen and (width < 30rem) {
+  .identity__links {
+    width: 100%;
+
+    & li {
+      display: grid;
+      flex: 1 1 auto;
+    }
+
+    & li:has([data-kind='contact']) {
+      flex-basis: 100%;
+    }
+  }
+
+  .action {
+    justify-content: center;
+    padding-inline: var(--space-2);
+    font-size: clamp(var(--fs-small), 4.4vw, var(--fs-lead));
+  }
+}
+
+/* Tablette, avec un portrait : il se range à gauche de la bannière et des états ; les cases
+   et les actions gardent toute la largeur. */
+@media screen and (36rem <= width < 64rem) {
+  .identity:has(.identity__photo) {
+    --portrait: 9rem;
+
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'photo heading'
+      'photo status'
+      'facts facts'
+      'links links';
+    column-gap: var(--space-5);
+
+    /* Bannière et états se serrent au milieu de la hauteur du portrait. */
+    & .identity__heading {
+      align-self: end;
+    }
+
+    & .identity__status {
+      align-self: start;
+    }
+  }
+}
+
+/* Poussée à droite par le portrait, la bannière touche encore le bord sur une petite tablette :
+   elle descend, elle aussi, sous le bouton du sélecteur de thème. */
+@media screen and (36rem <= width < 48rem) {
+  .identity:has(.identity__photo) {
+    padding-top: var(--space-4);
+  }
+}
+
+@media screen and (min-width: 64rem) {
+  .identity {
+    --name-w: var(--side-w);
+
+    grid-template-columns: var(--name-w) minmax(0, 1fr);
+    grid-template-areas:
+      'heading facts'
+      'status links';
+    align-items: center;
+    column-gap: var(--space-5);
+  }
+
+  /* Avec un portrait : il tient toute la hauteur à gauche, les cases font face à la bannière
+     et aux états, les actions courent dessous. */
+  .identity:has(.identity__photo) {
+    --portrait: 10rem;
+
+    grid-template-columns: auto var(--name-w) minmax(0, 1fr);
+    grid-template-areas:
+      'photo heading facts'
+      'photo status facts'
+      'photo links links';
+  }
+
+  .identity__links {
+    justify-self: start;
+    justify-content: flex-start;
+  }
+}
+
+/* Entre deux : la colonne du nom rétrécit pour laisser de la place aux cases, et les actions,
+   trop longues pour tenir sous elles (l'une porte une adresse de courriel), courent sur toute la largeur. */
+@media screen and (64rem <= width < 75rem) {
+  .identity {
+    --name-w: 21.5rem;
+
+    grid-template-areas:
+      'heading facts'
+      'status facts'
+      'links links';
+    column-gap: var(--space-4);
+  }
+}
+
+/* ---------- Titres : petites capitales cramoisies, filet doré, sous-titre d'ambiance ---------- */
+
+.section__title,
+.subsection__title,
+.skill-group__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-3);
+  font-variant-caps: small-caps;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+  color: var(--crimson-deep);
+
+  /* Le sous-titre est décoratif : il ne remplace aucun intitulé et n'est pas lu à voix haute. */
+  &::after {
+    content: var(--flavour, '') / '';
+    margin-left: auto;
+    font-size: var(--fs-small);
+    font-weight: 400;
+    font-style: italic;
+    font-variant-caps: normal;
+    letter-spacing: 0;
+    color: var(--ochre);
+  }
+}
+
+.section__title {
+  margin-bottom: var(--space-4);
+  padding-bottom: 0.15rem;
+  border-bottom: 2px solid var(--gold);
+  font-size: var(--fs-h2);
+}
+
+.subsection__title {
+  margin: var(--space-6) 0 var(--space-4);
+  padding-bottom: 0.1rem;
+  border-bottom: 1px solid var(--gold);
+  font-size: var(--fs-title);
+}
+
+.skill-group__title {
+  margin-bottom: var(--space-3);
+  font-size: var(--fs-h3);
+}
+
+#profil > .section__title {
+  --flavour: 'historique';
+}
+
+[data-section='experiences'] > .section__title {
+  --flavour: 'journal de quêtes';
+}
+
+#stages > .subsection__title {
+  --flavour: 'années d’apprentissage';
+}
+
+[data-section='formations'] > .section__title {
+  --flavour: 'académies fréquentées';
+}
+
+[data-section='projets'] > .section__title {
+  --flavour: 'quêtes annexes';
+}
+
+/* Compétences : le sous-titre suit le rang de la catégorie, jamais son nom ni son contenu.
+   Il ne paraît qu'une fois par rang : sur les cases, puis sur la première liste de chaque
+   sorte. Des « autres » maîtrises ne peuvent pas ouvrir la section. */
+.skill-group:first-child:not([data-display]) > .skill-group__title {
+  --flavour: 'caractéristiques';
+}
+
+.skill-group:nth-child(1 of :not(:first-child, [data-display])) > .skill-group__title {
+  --flavour: 'maîtrises';
+}
+
+.skill-group:nth-child(1 of [data-display='compact']):not(:first-child) > .skill-group__title {
+  --flavour: 'autres maîtrises';
+}
+
+/* ---------- Motifs partagés : filet effilé et puces en losange ----------
+   Puces et marqueurs sont des images de fond plutôt que des pseudo-éléments positionnés :
+   un élément positionné se peint après le reste, et le texte du PDF sortirait dans le désordre.
+   La colonne des listes est bornée : un mot insécable (adresse, nom de paquet) se coupe
+   au lieu d'élargir la page. */
+
+#profil .section__body::before,
+.profile__summary::after,
+.project__desc::before {
+  content: '';
+  display: block;
+  height: 0.3125rem;
+  background: var(--crimson);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.profile__highlights,
+.entry__highlights,
+.project__highlights {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+
+  & li {
+    padding-left: 1.15rem;
+    background: var(--bullet) 0.0625rem 0.5em / 0.5625rem no-repeat;
+  }
+}
+
+/* ---------- Profil : un bloc de statistiques, barres dorées et filets effilés ---------- */
+
+#profil {
+  position: relative;
+  padding: var(--space-4) clamp(var(--space-3), 2.5vw, var(--space-5));
+  background: var(--panel);
+  box-shadow: var(--shadow);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline: -0.25rem;
+    height: 0.4375rem;
+    border: 1px solid var(--ink-soft);
+    background: linear-gradient(var(--gold-pale), var(--gold));
+  }
+
+  &::before {
+    top: -0.25rem;
+  }
+
+  &::after {
+    bottom: -0.25rem;
+  }
+
+  & > .section__title {
+    margin-bottom: var(--space-2);
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  & .section__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3) var(--space-5);
+  }
+}
+
+.profile__summary {
+  font-size: var(--fs-lead);
+  font-style: italic;
+
+  &::first-letter {
+    float: left;
+    margin: 0.08em 0.1em 0 0;
+    font-size: 3.05em;
+    font-weight: 700;
+    font-style: normal;
+    line-height: 0.8;
+    color: var(--crimson-deep);
+  }
+
+  &::after {
+    clear: both;
+    margin-top: var(--space-3);
+  }
+}
+
+@media screen and (min-width: 56rem), print {
+  #profil .section__body {
+    grid-template-columns: minmax(0, 0.6fr) minmax(0, 1.4fr);
+  }
+
+  #profil .section__body::before {
+    grid-column: 1 / -1;
+  }
+
+  .profile__summary::after {
+    content: none;
+  }
+
+  .profile__highlights {
+    align-content: start;
+    padding-left: var(--space-5);
+    border-left: 1px solid var(--gold);
+  }
+}
+
+/* ---------- Compétences : cases de caractéristiques, maîtrises, autres maîtrises ----------
+   Trois rangs, décidés par la place et le mode d'affichage, jamais par le nom de la catégorie :
+   la première en cases, les suivantes en lignes à pastilles, celles de second plan
+   (data-display="compact") en liste courante. */
+
+.skill-group + .skill-group {
+  margin-top: var(--space-5);
+}
+
+/* Le niveau écrit accompagne chaque compétence, dans les trois rangs. */
+.skill__level {
+  font-size: var(--fs-note);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+/* Cases : nom, grande valeur, niveau écrit, et l'ovale du modificateur à cheval sur le bord.
+   Deux de front, quel que soit leur nombre, sans s'étirer sur une section large : un long
+   intitulé y tient sans se couper. */
+.skill-group:first-child:not([data-display]) {
+  & .skills {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem var(--space-2);
+    max-width: 24rem;
+    padding-bottom: 0.9rem;
+  }
+
+  & .skill {
+    --edge: 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: var(--edge) solid transparent;
+    border-image: var(--frame-box) 14 fill / 14px;
+    /* Chiffres alignés même avec une police de repli à chiffres elzéviriens (Georgia). */
+    font-variant-numeric: lining-nums;
+    text-align: center;
+
+    &::before {
+      content: attr(data-level) / '';
+      order: 3;
+      font-size: var(--fs-score);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--crimson-deep);
+    }
+
+    &::after {
+      content: '+' attr(data-level) / '';
+      order: 5;
+      min-width: 2.75rem;
+      margin: 0.3rem 0 calc(-1 * var(--edge) - 0.85rem);
+      padding: 0.1rem 0.5rem;
+      border: 1.5px solid var(--ink-soft);
+      border-radius: 50%;
+      background: var(--vellum);
+      font-size: var(--fs-body);
+      font-weight: 700;
+      line-height: 1.3;
+    }
+  }
+
+  /* Un nombre impair laisse la dernière case seule sur sa rangée : elle s'y centre. */
+  & .skill:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - var(--space-2) / 2);
+  }
+
+  & .skill__name {
+    display: grid;
+    flex: 1 0 auto;
+    place-items: center;
+    order: 1;
+    font-size: var(--fs-mini);
+    font-weight: 700;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+
+  & .skill__meter {
+    order: 2;
+    width: 70%;
+    height: 1px;
+    margin: 0.3rem 0 0.15rem;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+
+  & .skill__level {
+    order: 4;
+    line-height: 1.2;
+  }
+}
+
+/* Maîtrises : une ligne par compétence, pastilles pleines jusqu'au niveau atteint. */
+.skill-group:not(:first-child, [data-display]) {
+  & .skill {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: baseline;
+    column-gap: var(--space-2);
+    padding-block: 0.3rem;
+    border-bottom: 1px dotted var(--gold);
+  }
+
+  /* Un nom trop long se partage en lignes de longueurs voisines, sans mot orphelin. */
+  & .skill__name {
+    font-weight: 700;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+
+  /* La rangée repose sur la ligne de base du nom, puis descend d'un rien pour se centrer sur
+     les capitales : elle reste face au niveau écrit quand le nom passe sur deux lignes. */
+  & .skill__meter {
+    width: calc(5 * var(--pip));
+    height: var(--pip);
+    translate: 0 0.125rem;
+    background: var(--pips-off) 0 0 / calc(5 * var(--pip)) var(--pip) no-repeat;
+
+    &::before {
+      content: '';
+      display: block;
+      width: calc(var(--level) * var(--pip));
+      height: 100%;
+      background: var(--pips-on) 0 0 / calc(5 * var(--pip)) var(--pip) no-repeat;
+    }
+  }
+}
+
+/* Autres maîtrises : les catégories de second plan, en liste courante. Chaque compétence garde
+   son nom et son niveau écrit, derrière une puce ; la jauge, vide, n'a plus rien à y montrer. */
+.skill-group[data-display='compact'] {
+  & .skill-group__title {
+    margin-bottom: var(--space-1);
+    font-size: var(--fs-lead);
+  }
+
+  & .skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-4);
+  }
+
+  /* Un nom plus long que la ligne se replie au lieu de l'élargir. */
+  & .skill {
+    min-width: 0;
+    padding-left: 0.95rem;
+    background: var(--bullet) 0.0625rem 0.55em / 0.5rem no-repeat;
+    font-size: var(--fs-small);
+  }
+
+  & .skill__meter {
+    display: none;
+  }
+}
+
+/* Deux listes courantes qui se suivent forment un seul bloc. */
+[data-display='compact'] + [data-display='compact'] {
+  margin-top: var(--space-3);
+}
+
+/* Quand la section est large (tablette), les catégories se répartissent en deux colonnes
+   de hauteurs voisines, quel que soit leur nombre. */
+@media screen {
+  @container side (min-width: 36rem) {
+    #competences .section__body {
+      columns: 2;
+      column-gap: var(--space-6);
+    }
+
+    .skill-group {
+      break-inside: avoid;
+    }
+  }
+}
+
+/* ---------- Langues : l'une sous l'autre, ou côte à côte quand la section est large ---------- */
+
+#langues {
+  container: langues / inline-size;
+}
+
+.languages {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3) var(--space-6);
+}
+
+@container langues (min-width: 36rem) {
+  .languages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.language {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--space-3);
+}
+
+.language__name {
+  font-size: var(--fs-lead);
+  font-weight: 700;
+  font-variant-caps: small-caps;
+  letter-spacing: 0.03em;
+  color: var(--crimson-deep);
+}
+
+.language__fluency {
+  font-style: italic;
+  text-align: right;
+}
+
+.language__certs {
+  grid-column: 1 / -1;
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+/* ---------- Journal de quêtes : expériences, stages, formations ---------- */
+
+.timeline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+}
+
+/* Marqueur : un losange, plein pour un poste, évidé pour un stage, doré pour une formation ;
+   le poste en cours porte un sceau de cire. */
+.entry {
+  --marker: var(--mark-poste);
+
+  padding-left: 1.75rem;
+  background: var(--marker) 0 0.0625rem / var(--mark) no-repeat;
+
+  &[data-kind='stage'] {
+    --marker: var(--mark-stage);
+  }
+
+  &[data-kind='formation'] {
+    --marker: var(--mark-formation);
+  }
+
+  &[data-current] {
+    --marker: var(--seal);
+  }
+}
+
+/* À l'écran, un fil relie les quêtes d'une même liste tant qu'elle tient en une colonne. */
+@media screen {
+  .timeline--postes .entry:not(:last-child),
+  .timeline--stages .entry:not(:last-child) {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 1.7rem;
+      bottom: calc(0.35rem - var(--space-5));
+      left: calc(var(--mark) / 2 - 0.5px);
+      border-left: 1px solid var(--gold-pale);
+    }
+  }
+}
+
+@media screen and (min-width: 64rem) {
+  .timeline--stages .entry:not(:last-child)::after {
+    content: none;
+  }
+}
+
+.entry__card {
+  container: entry / inline-size;
+}
+
+.entry__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--space-4);
+}
+
+/* Les intitulés venus du contenu restent en casse normale : les petites capitales
+   rapetissent les chiffres (« Unity3D »). */
+.entry__title {
+  font-size: var(--fs-h4);
+  line-height: 1.25;
+  color: var(--crimson-deep);
+}
+
+/* Le poste en cours porte aussi un fanion. S'il ne tient pas à côté de l'intitulé, il passe
+   dessous, calé à gauche. */
+.entry[data-current] .entry__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.125rem 0.5rem;
+
+  &::after {
+    content: 'quête en cours' / '';
+    padding: 0.1em 0.6em;
+    border-radius: 2px;
+    background: var(--crimson);
+    font-size: var(--fs-label);
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--ivory);
+  }
+}
+
+.timeline--stages .entry__title {
+  font-size: var(--fs-lead);
+}
+
+/* Un nom d'employeur trop long pour la ligne se partage en deux, sans mot laissé seul. */
+.entry__org {
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+/* Employeurs et organisations citées : une seule famille de liens, discrète. Le texte reste
+   à l'encre sur un filet fin ; le cramoisi ne vient qu'au survol. L'anneau de focus serre
+   le mot de près pour ne mordre ni sur la ligne du dessus ni sur la ponctuation qui suit. */
+.entry__org a,
+.mention {
+  border-radius: 2px;
+  color: inherit;
+  text-decoration-color: var(--crimson);
+
+  &:hover {
+    color: var(--crimson);
+    text-decoration-thickness: 2px;
+  }
+
+  &:focus-visible {
+    outline-width: 2px;
+    outline-offset: 2px;
+  }
+}
+
+.entry__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+.entry__period {
+  color: var(--ink);
+}
+
+.entry__contract {
+  padding: 0 0.45em;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--crimson-deep);
+}
+
+.entry__place {
+  font-style: italic;
+}
+
+@container entry (min-width: 30rem) {
+  .entry__head {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .entry__title,
+  .entry__org {
+    grid-column: 1;
+  }
+
+  /* Dates sur la première ligne, contrat et lieu dessous, le tout calé à droite. */
+  .entry__meta {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    column-gap: 0;
+  }
+
+  .entry__period {
+    grid-column: 1 / -1;
+    text-align: right;
+  }
+
+  .entry__contract {
+    grid-column: 1;
+    justify-self: end;
+  }
+
+  .entry__place {
+    grid-column: 2;
+  }
+
+  .entry__contract + .entry__place {
+    margin-left: var(--space-2);
+  }
+}
+
+.entry__summary,
+.entry__highlights,
+.entry__about {
+  margin-top: var(--space-2);
+}
+
+.entry__about {
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--gold-pale);
+  font-size: var(--fs-small);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.375rem;
+  margin-top: var(--space-3);
+}
+
+.tag {
+  min-width: 0;
+  padding: 0 0.5rem;
+  border: 1px solid var(--gold);
+  border-radius: 2px;
+  background: var(--panel);
+  font-size: var(--fs-note);
+  line-height: 1.55;
+}
+
+/* Formations : deux de front dès que la place le permet. En nombre impair, la première prend
+   la rangée entière et aucune ne reste seule devant une case vide. */
+@media screen and (40rem <= width < 72rem), print {
+  .timeline--formations {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .timeline--formations .entry:first-child:nth-last-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media screen and (min-width: 64rem), print {
+  .timeline--stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-6);
+  }
+}
+
+/* Sur grand écran, une colonne par formation, quel que soit leur nombre. */
+@media screen and (min-width: 72rem) {
+  .timeline--formations {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Projets : des cartes, comme les objets d'un manuel ---------- */
+
+.projects {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+}
+
+@media screen and (min-width: 44rem), print {
+  .projects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.project {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Nombre impair de cartes : la première prend la rangée entière, les suivantes vont par deux
+   et aucune ne reste seule devant une case vide. */
+.project:first-child:nth-last-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.project__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-block: 0.3125rem solid var(--gold);
+  background: var(--panel);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ink-soft) 45%, transparent),
+    var(--shadow);
+}
+
+.project__name {
+  font-size: var(--fs-h3);
+  line-height: 1.2;
+  color: var(--crimson-deep);
+}
+
+.project__period {
+  margin-top: calc(-1 * var(--space-2));
+  font-size: var(--fs-small);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.project__desc::before {
+  margin-bottom: var(--space-2);
+}
+
+.project .tags {
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+.project__link a {
+  font-weight: 700;
+  font-variant-caps: small-caps;
+  letter-spacing: 0.03em;
+}
+
+/* ---------- Pied de page ---------- */
+
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-5);
+  max-width: var(--sheet-w);
+  margin: var(--space-5) auto 0;
+  font-size: var(--fs-small);
+  font-style: italic;
+  text-align: center;
+
+  &::before {
+    content: '';
+    flex: 0 0 100%;
+    height: 0.75rem;
+    margin-bottom: var(--space-2);
+    background: var(--fleuron) center / auto 100% no-repeat;
+  }
+}
+
+.colophon__formats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-4);
+}
+
+/* ---------- Mouvement réduit ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .action:hover,
+  .action:active {
+    translate: none;
+    transition: none;
+  }
+}
+
+/* ---------- Impression : A4, papier blanc, mêmes filets et mêmes cases, à l'encre ----------
+   La taille de base descend à 9,5 pt et toutes les mesures en rem suivent. La fiche est un
+   flux de blocs : une grille imbriquée dans une autre se découpe mal entre deux pages.
+   Plus rien n'est positionné autour du texte : il se peint, donc se copie depuis le PDF,
+   dans l'ordre du document. */
+
+@page {
+  size: A4;
+  margin: 10mm 12mm;
+}
+
+@media print {
+  :root {
+    font-size: 9.5pt;
+
+    --parchment-light: var(--paper);
+    --vellum: var(--paper);
+    --panel: transparent;
+    --shadow: none;
+    --space-4: 0.875rem;
+    --space-5: 1.125rem;
+    --space-6: 1.25rem;
+  }
+
+  body {
+    padding: 0;
+    line-height: 1.35;
+    background: var(--paper);
+    print-color-adjust: exact;
+  }
+
+  .sheet {
+    max-width: none;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+
+  /* Les formations, courtes, restent ensemble ; les stages se coupent entre deux rangées. */
+  .identity,
+  #profil,
+  .sheet__side,
+  .entry,
+  .timeline--formations,
+  .project,
+  .colophon {
+    break-inside: avoid;
+  }
+
+  /* En-tête : le nom puis l'intitulé à gauche, les états à droite, les cases et les liens dessous.
+     La colonne des états ne dépasse pas la moitié de la page : une liste plus longue passe
+     à la ligne au lieu d'écraser le nom. */
+  .identity {
+    grid-template-columns: minmax(0, 1fr) fit-content(50%);
+    grid-template-areas:
+      'heading status'
+      'facts facts'
+      'links links';
+    justify-items: start;
+    align-items: center;
+    gap: var(--space-2) var(--space-5);
+    text-align: left;
+  }
+
+  /* Le portrait garde son cadre et longe tout l'en-tête, à gauche, sans y ajouter de rangée.
+     Sur papier blanc, ni voile ni ombre. */
+  .identity:has(.identity__photo) {
+    --portrait: 8.5rem;
+
+    grid-template-columns: auto minmax(0, 1fr) fit-content(50%);
+    grid-template-areas:
+      'photo heading status'
+      'photo facts facts'
+      'photo links links';
+
+    &::after {
+      content: none;
+    }
+  }
+
+  .identity__photo {
+    filter: none;
+  }
+
+  .identity__heading {
+    justify-content: flex-start;
+    gap: 0 var(--space-4);
+    isolation: auto;
+  }
+
+  .identity__name {
+    position: static;
+    flex-basis: 100%;
+    margin: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--crimson-deep);
+    text-shadow: none;
+
+    &::before,
+    &::after {
+      content: none;
+    }
+  }
+
+  .identity__status {
+    justify-content: flex-end;
+  }
+
+  /* Le cadre de la boîte empiète un peu sur sa marge intérieure : quelques millimètres gagnés. */
+  .facts {
+    border-width: 10px;
+  }
+
+  /* Sur papier, un lien ne se clique pas : son adresse est écrite à côté. */
+  .identity__links {
+    gap: var(--space-1) var(--space-6);
+  }
+
+  .action,
+  .action[data-kind='contact'] {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    font-size: var(--fs-body);
+    color: var(--crimson-deep);
+  }
+
+  .action[href^='http']::after,
+  .project__link a::after {
+    content: attr(href);
+    font-size: var(--fs-small);
+    font-weight: 400;
+    font-variant-caps: normal;
+    letter-spacing: 0;
+    color: var(--ink);
+  }
+
+  .project__link a::after {
+    display: block;
+  }
+
+  .section__title {
+    margin-bottom: var(--space-3);
+  }
+
+  /* Les barres dorées deviennent de simples bordures. */
+  #profil {
+    position: static;
+    padding: var(--space-2) var(--space-4);
+    border: solid var(--gold-pale);
+    border-width: 0.25rem 1px;
+    border-block-color: var(--gold);
+
+    &::before,
+    &::after {
+      content: none;
+    }
+  }
+
+  /* Compétences et langues en bandeau : les catégories puis les langues se rangent trois par
+     trois, quel que soit leur nombre. Rien ne reste dans une colonne vide sur les pages suivantes. */
+  .sheet__side {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-2) var(--space-6);
+
+    &::after {
+      content: none;
+    }
+  }
+
+  #competences,
+  #competences .section__body {
+    display: contents;
+  }
+
+  #competences .section__title {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
+
+  /* Dans le bandeau, « Langues » se range au niveau des catégories voisines, qui portent
+     toutes un titre de même taille. */
+  #langues .section__title,
+  .skill-group[data-display='compact'] .skill-group__title {
+    font-size: var(--fs-h3);
+  }
+
+  #langues .section__title {
+    margin-bottom: var(--space-2);
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  /* Colonnes étroites : un titre passe vite sur deux lignes. Son sous-titre se cale alors au
+     bout de la dernière au lieu d'en ouvrir une troisième, sans changer l'ordre du texte. */
+  .skill-group__title {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: last baseline;
+    margin-bottom: var(--space-2);
+  }
+
+  /* La grille du bandeau espace déjà les catégories. */
+  .skill-group + .skill-group {
+    margin-top: 0;
+  }
+
+  .skill-group:not(:first-child, [data-display]) .skill {
+    border-bottom: 1px solid var(--gold-pale);
+  }
+
+  /* Journal : espacements resserrés. */
+  .timeline,
+  .projects {
+    gap: var(--space-4) var(--space-6);
+  }
+
+  .entry[data-current] .entry__title::after {
+    border: 1px solid var(--crimson);
+    background: none;
+    color: var(--crimson-deep);
+  }
+
+  .tags {
+    margin-top: var(--space-2);
+  }
+
+  /* Un vrai filet sur les côtés : une ombre déborderait de la page et s'y ferait rogner. */
+  .project__card {
+    border-block-width: 0.1875rem;
+    border-inline: 1px solid var(--gold-pale);
+    box-shadow: none;
+  }
+
+  .colophon {
+    margin-top: var(--space-5);
+    font-size: var(--fs-note);
+  }
+}

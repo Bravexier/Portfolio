@@ -1,0 +1,6 @@
+dist/
+shots/
+node_modules/
+.env
+.env.*
+.claude/settings.local.json

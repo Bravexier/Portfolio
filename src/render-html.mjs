@@ -279,9 +279,11 @@ ${list(
 // Choisit le thème (adresse, sinon dernier choix, sinon thème par défaut) et écrit sa feuille
 // de style pendant l'analyse de la page : le navigateur l'attend avant le premier affichage,
 // donc pas d'instant sans style, et une seule feuille de thème téléchargée.
+// Sauf si le visiteur a demandé moins d'animations, il pose aussi data-build="pending" : la fiche
+// attend, invisible, que build.js la construise (voir static/base.css).
 function themeBootScript() {
   const ids = JSON.stringify(THEMES.map((theme) => theme.id));
-  return `(function(){var a=${ids},t=a[0];try{var q=new URLSearchParams(location.search).get("theme");if(a.indexOf(q)<0)q=localStorage.getItem("${STORAGE_KEY}");if(a.indexOf(q)>0)t=q}catch(e){}document.documentElement.setAttribute("data-theme",t);document.write('<link rel="stylesheet" href="assets/themes/'+t+'.css" id="theme-css">')})();`;
+  return `(function(){var a=${ids},t=a[0];try{var q=new URLSearchParams(location.search).get("theme");if(a.indexOf(q)<0)q=localStorage.getItem("${STORAGE_KEY}");if(a.indexOf(q)>0)t=q}catch(e){}document.documentElement.setAttribute("data-theme",t);try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.setAttribute("data-build","pending")}catch(e){}document.write('<link rel="stylesheet" href="assets/themes/'+t+'.css" id="theme-css">')})();`;
 }
 
 function favicon(name) {
@@ -323,6 +325,7 @@ export function renderHtml(resume) {
 ${jsonForScript(toJsonLd(resume))}
   </script>
   <script src="assets/app.js" defer></script>
+  <script src="assets/build.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>

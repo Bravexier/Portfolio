@@ -21,8 +21,9 @@ npm run links    # vérifie que chaque adresse du CV répond encore (réseau req
 `shots` et `audit` pilotent Chrome ou Edge sans fenêtre, avec un profil jetable (chemin forcé par la variable `CHROME_PATH` si besoin).
 L'audit échoue si un thème masque, rogne, recouvre ou réduit à l'illisible un texte du CV, si un contraste est insuffisant sur fond uni,
 si la page déborde en largeur entre 360 et 1920 px, si le sélecteur de thème est inatteignable ou change mal de feuille de style,
-ou si la page s'affiche avant la feuille de son thème. Sur une image ou un dégradé, le contraste ne se mesure pas : l'audit affiche
-alors un ⚠ à vérifier à l'œil, sans échouer.
+si la page s'affiche avant la feuille de son thème, ou si l'animation de construction ne démarre pas au chargement ou ne finit pas
+seule. Sur une image ou un dégradé, le contraste ne se mesure pas : l'audit affiche alors un ⚠ à vérifier à l'œil, sans échouer.
+Pour tout le reste, l'audit passe l'animation (bouton « Passer ») et juge la page finie ; `shots` capture la page sans animation.
 
 ## Modifier le CV
 
@@ -59,7 +60,7 @@ Le build refuse un contenu incomplet ou une adresse invalide, et dit quelle lign
 | `dist/cv.md` | Le CV complet en Markdown |
 | `dist/resume.json` | Les données au format JSON Resume |
 | `dist/llms.txt` | Point d'entrée pour un assistant IA ([llmstxt.org](https://llmstxt.org)) |
-| `dist/assets/` | `base.css`, `app.js`, `themes/<id>.css` |
+| `dist/assets/` | `base.css`, `app.js`, `build.js`, `themes/<id>.css` |
 
 `cv.md` et `resume.json` reprennent tout le contenu de la page ; les données structurées schema.org (`Person`) embarquées dans la page
 en sont un résumé. Rien n'est caché aux humains pour être servi aux machines.
@@ -71,7 +72,23 @@ ou de la touche Entrée sur son bouton. Échap, un clic ailleurs ou la sortie du
 Le choix est mémorisé dans le navigateur, et `?theme=tech` ou `?theme=jdr` dans l'adresse force un thème (pratique pour partager un lien).
 
 Un thème est une seule feuille de style, [static/themes/](static/themes/)`<id>.css`, chargée seule : elle n'a pas à préfixer ses sélecteurs
-et ne peut pas casser les autres. [static/base.css](static/base.css) ne contient que le socle (remise à zéro, sélecteur de thème).
+et ne peut pas casser les autres. [static/base.css](static/base.css) ne contient que le socle (remise à zéro, sélecteur de thème,
+animation de construction).
+
+### Animation de construction
+
+Au chargement et à chaque changement de thème, des « agents » (curseurs de couleur) assemblent la fiche calque par calque, sous
+une barre d'état (« 9 agents · 17 / 50 calques », puis « Page construite par 9 agents en 2,6 s » avec **Rejouer**). C'est un effet,
+codé dans [static/build.js](static/build.js) ; un thème n'a rien à faire, la barre d'état reprend les couleurs du sélecteur.
+
+- Seule la partie visible de la page est animée, le reste s'affiche tout de suite. L'ensemble dure moins de 4 s.
+- **Passer**, Échap, l'impression ou un changement de largeur de la fenêtre la terminent aussitôt.
+- Rien pour qui a activé « réduire les animations » dans son système, ni sans JavaScript, ni à l'impression.
+- Si `build.js` n'arrive pas, la fiche s'affiche d'elle-même au bout de 3 s. Si la page cesse de dessiner des images (rendu
+  sans écran, robot), elle s'affiche au bout d'une seconde. Un onglet ouvert en arrière-plan joue l'animation quand on y revient.
+
+Un calque est le plus haut élément de la fiche qui peint du contenu : texte, image, ou petite pièce sans enfant comme une jauge.
+Les cadres et les fonds (sections, cartes) restent affichés et servent d'échafaudage.
 
 ### Ajouter un thème
 
@@ -100,6 +117,7 @@ Le balisage est produit par [src/render-html.mjs](src/render-html.mjs) ; `dist/i
 | `.tags > .tag` | Technologies |
 | `.project` | `.project__name`, `__period`, `__desc`, `__highlights`, `__link` |
 | `.colophon` | Pied de page |
+| `html[data-build]`, `[data-layer]` | Posés par `build.js` pendant l'animation de construction, retirés à la fin |
 
 Un thème recolore le sélecteur avec les variables `--switcher-bg`, `--switcher-fg`, `--switcher-border`, `--switcher-active-bg`,
 `--switcher-active-fg`, `--switcher-font`, `--switcher-radius` et `--switcher-shadow`.
@@ -123,7 +141,7 @@ en local avant de fusionner une modification des thèmes.
 ```
 content/   resume.json, la seule source du contenu
 src/       rendu : HTML, Markdown, llms.txt, données structurées, validation
-static/    base.css, app.js, photo.jpg, themes/
+static/    base.css, app.js, build.js, photo.jpg, themes/
 tools/     serveur local, captures d'écran, audit navigateur, vérification des liens
 test/      tests (node --test)
 build.mjs  construit dist/

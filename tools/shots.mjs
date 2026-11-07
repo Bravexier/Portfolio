@@ -66,6 +66,8 @@ try {
       // Le navigateur sort sans erreur même s'il n'a rien écrit : on part d'une cible absente et on vérifie.
       await rm(file, { force: true });
       await browser.run([
+        // La page au repos : sans l'animation de construction, qui durerait au-delà de la capture.
+        '--force-prefers-reduced-motion',
         '--virtual-time-budget=4000',
         '--run-all-compositor-stages-before-draw',
         `--window-size=${windowWidth},${height}`,

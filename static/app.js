@@ -94,6 +94,8 @@
       link.removeAttribute('media');
       link.id = 'theme-css';
       remember(theme);
+      // build.js rejoue l'animation de construction dans le nouveau thème, avant le prochain affichage.
+      document.dispatchEvent(new CustomEvent('cv:theme', { detail: { theme } }));
     });
     link.addEventListener('error', () => {
       link.remove();

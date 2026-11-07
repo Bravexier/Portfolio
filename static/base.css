@@ -1,4 +1,5 @@
-/* Socle commun aux trois thèmes : rien de visuel ici, à part le sélecteur de thème.
+/* Socle commun aux trois thèmes : rien de visuel ici, à part le sélecteur de thème et
+   l'animation de construction.
    Toute la mise en page et l'habillage vivent dans themes/<id>.css. */
 
 *,
@@ -170,10 +171,281 @@ body {
   }
 }
 
+/* ---------- Animation de construction (build.js) ----------
+   Le script de démarrage pose html[data-build="pending"] avant le premier affichage : la fiche
+   attend, invisible, que build.js prenne la main ; s'il n'arrive jamais, elle s'affiche
+   d'elle-même au bout de 3 s. Ensuite [data-layer="wait"] masque un calque et
+   [data-layer="in"] le fait apparaître. À l'écran seulement : l'impression montre toujours
+   la page entière. Les dessins (.cv-build) ne captent jamais la souris ; la barre d'état
+   (.cv-build-hud) reprend les couleurs du sélecteur de thème. */
+
+@media screen {
+  html[data-build='pending'] :is(main, .colophon) {
+    animation: cv-build-failsafe 0.3s ease-out 3s both;
+  }
+
+  [data-layer='wait'] {
+    opacity: 0 !important;
+  }
+
+  [data-layer='in'] {
+    animation: cv-layer-in 0.32s ease-out both;
+  }
+}
+
+.cv-build {
+  --_sel: var(--switcher-active-bg, #1c1c1c);
+
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cv-build__world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.cv-build__frame {
+  position: absolute;
+  border: 1px dashed color-mix(in srgb, var(--_sel) 60%, transparent);
+  animation: cv-fade-in 0.4s ease-out backwards;
+  transition: opacity 0.45s ease;
+}
+
+.cv-build__frame[data-out] {
+  opacity: 0;
+}
+
+.cv-build__box {
+  position: absolute;
+  border: 1.5px solid var(--_c);
+  background:
+    linear-gradient(var(--_c), var(--_c)) left top / 5px 5px no-repeat,
+    linear-gradient(var(--_c), var(--_c)) right top / 5px 5px no-repeat,
+    linear-gradient(var(--_c), var(--_c)) left bottom / 5px 5px no-repeat,
+    linear-gradient(var(--_c), var(--_c)) right bottom / 5px 5px no-repeat,
+    color-mix(in srgb, var(--_c) 12%, transparent);
+  animation: cv-box var(--_life, 600ms) linear both;
+}
+
+.cv-build__tag {
+  position: absolute;
+  bottom: 100%;
+  left: -1.5px;
+  padding: 2px 5px;
+  border-radius: 2px 2px 0 0;
+  background: var(--_c);
+  color: #111;
+  font: 600 10px/1.2 ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  white-space: nowrap;
+}
+
+.cv-build__agent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+  animation: cv-fade-in 0.25s ease-out;
+  transition: opacity 0.25s ease;
+}
+
+.cv-build__agent[data-out] {
+  opacity: 0;
+}
+
+.cv-build__agent svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: -2px 0 0 -2px;
+  filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.45));
+}
+
+.cv-build__agent path {
+  fill: var(--_c);
+  stroke: #fff;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+
+.cv-build__ripple {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border: 2px solid var(--_c);
+  border-radius: 50%;
+  animation: cv-ripple 0.45s ease-out both;
+}
+
+.cv-build-hud {
+  --_bg: var(--switcher-bg, #fff);
+  --_fg: var(--switcher-fg, #1c1c1c);
+  --_border: var(--switcher-border, rgb(0 0 0 / 0.2));
+  --_active-bg: var(--switcher-active-bg, #1c1c1c);
+  --_active-fg: var(--switcher-active-fg, #fff);
+  --_radius: var(--switcher-radius, 999px);
+
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 24px);
+  padding: 5px 5px 5px 12px;
+  border: 1px solid var(--_border);
+  border-radius: var(--_radius);
+  background: var(--_bg);
+  color: var(--_fg);
+  box-shadow: var(--switcher-shadow, 0 2px 10px rgb(0 0 0 / 0.12));
+  font: 600 12px/1 var(--switcher-font, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: cv-hud-in 0.3s ease-out;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.cv-build-hud[data-out] {
+  opacity: 0;
+  transform: translate(-50%, 8px);
+}
+
+.cv-build-hud__dots {
+  display: flex;
+}
+
+.cv-build-hud__dots i {
+  width: 10px;
+  height: 10px;
+  margin-left: -3px;
+  border: 1.5px solid var(--_bg);
+  border-radius: 50%;
+}
+
+.cv-build-hud__dots i:first-child {
+  margin-left: 0;
+}
+
+.cv-build-hud__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.cv-build-hud__bar {
+  flex: none;
+  width: 64px;
+  height: 4px;
+  border-radius: 2px;
+  background:
+    linear-gradient(var(--_active-bg), var(--_active-bg)) left / calc(var(--p, 0) * 100%) 100% no-repeat,
+    color-mix(in srgb, var(--_fg) 18%, transparent);
+}
+
+.cv-build-hud__button {
+  flex: none;
+  min-height: 26px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: var(--_radius);
+  background: var(--_active-bg);
+  color: var(--_active-fg);
+  font: inherit;
+  cursor: pointer;
+}
+
+.cv-build-hud__button:focus-visible {
+  outline: 2px solid var(--_fg);
+  outline-offset: 2px;
+}
+
+@media (max-width: 420px) {
+  .cv-build-hud__dots,
+  .cv-build-hud__bar {
+    display: none;
+  }
+
+  .cv-build-hud__text {
+    line-height: 1.25;
+    white-space: normal;
+  }
+}
+
+@keyframes cv-build-failsafe {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes cv-layer-in {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+
+@keyframes cv-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes cv-hud-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+
+@keyframes cv-box {
+  0% {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  15% {
+    opacity: 1;
+    transform: none;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes cv-ripple {
+  from {
+    opacity: 1;
+    transform: scale(0.3);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
 @media print {
   .theme-switcher,
   .skip-link,
-  [data-requires-js] {
+  [data-requires-js],
+  .cv-build,
+  .cv-build-hud {
     display: none !important;
   }
 }

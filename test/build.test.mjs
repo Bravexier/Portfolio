@@ -226,6 +226,23 @@ test('la page et app.js utilisent la même clé de stockage', async () => {
   assert.ok(html.includes(`"${STORAGE_KEY}"`));
 });
 
+test('l’animation de construction se prépare au démarrage et se relance à chaque thème', async () => {
+  const app = await readFile(join(ROOT, 'static', 'app.js'), 'utf8');
+  const build = await readFile(join(ROOT, 'static', 'build.js'), 'utf8');
+  const css = await readFile(join(ROOT, 'static', 'base.css'), 'utf8');
+  assert.ok(html.includes('<script src="assets/build.js" defer></script>'));
+  // Pas d'attente pour qui a demandé moins d'animations.
+  assert.ok(
+    html.includes('if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.setAttribute("data-build","pending")'),
+  );
+  // app.js annonce le changement de thème, build.js l'écoute : même nom des deux côtés.
+  assert.ok(app.includes("'cv:theme'") && build.includes("'cv:theme'"));
+  // Sans build.js, la fiche réapparaît seule ; à l'impression, elle n'est jamais masquée.
+  assert.match(css, /@media screen \{\s*html\[data-build='pending'\] :is\(main, \.colophon\) \{\s*animation: cv-build-failsafe [^;]* 3s both;/);
+  // Rien n'est masqué d'avance dans le HTML : seul le script pose ces attributs.
+  assert.doesNotMatch(body, /data-layer|data-build/);
+});
+
 test('aucun texte n’est caché aux humains dans la page', () => {
   // Seuls le libellé du bouton de thème et les éléments en attente de JavaScript sont masqués.
   const hidden = html.match(/<[^>]+(?:\shidden|class="[^"]*visually-hidden[^"]*")[^>]*>/g) ?? [];

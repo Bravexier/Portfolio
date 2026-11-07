@@ -4,7 +4,9 @@
 //   - la page ne déborde pas en largeur ;
 //   - le sélecteur est atteignable, s'ouvre et se ferme comme il l'annonce, change de thème
 //     avec une seule feuille de style à la fois, et s'en souvient ;
-//   - la page ne s'affiche jamais avant la feuille de son thème, même sur réseau lent.
+//   - la page ne s'affiche jamais avant la feuille de son thème, même sur réseau lent ;
+//   - l'animation de construction démarre au chargement, finit seule et rend la page entière.
+//     Partout ailleurs, l'audit la passe (bouton « Passer ») et juge la page finie.
 //   npm run audit
 //   node tools/audit.mjs --theme jdr --width 360
 // Limites : le survol réel de la souris et le contraste sur une image ou un dégradé
@@ -323,6 +325,8 @@ async function runAudit({ jobs, minFontSize, storageKey }) {
   const settle = async () => {
     const win = frame.contentWindow;
     await win.document.fonts.ready;
+    // Animation de construction passée, comme le ferait un visiteur pressé.
+    win.document.querySelector('[data-build-skip]')?.click();
     // État final des animations, y compris celles pilotées par le défilement : on juge la page au repos.
     const still = win.document.createElement('style');
     still.textContent =
@@ -357,14 +361,28 @@ async function runAudit({ jobs, minFontSize, storageKey }) {
     return failures;
   };
 
+  // L'animation de construction doit démarrer au chargement, puis finir seule sans rien laisser
+  // de masqué ni de dessiné par-dessus la page.
+  const buildsAlone = async () => {
+    const doc = frame.contentWindow.document;
+    const state = doc.documentElement.dataset.build;
+    if (state !== 'running') return [`pas lancée au chargement (data-build : ${state ?? 'absent'})`];
+    for (let waited = 0; waited < 8000; waited += 100) {
+      await pause(100);
+      if (!doc.documentElement.hasAttribute('data-build') && !doc.querySelector('[data-layer], .cv-build')) return [];
+    }
+    return ['toujours en cours après 8 s'];
+  };
+
   const results = [];
   for (const job of jobs) {
-    const result = { ...job, problems: [], steps: [], panel: [], firstPaint: [], sticky: [] };
+    const result = { ...job, problems: [], steps: [], panel: [], firstPaint: [], sticky: [], build: [] };
     results.push(result);
     try {
       frame.style.cssText = `width:${job.width}px;height:900px;border:0`;
       if (job.full) result.firstPaint = await firstPaint(job.theme);
       await load(`/index.html?theme=${job.theme}`);
+      if (job.full) result.build = await buildsAlone();
       let win = await settle();
       result.applied = win.document.documentElement.dataset.theme;
       result.sheet = win.document.getElementById('theme-css')?.getAttribute('href');
@@ -440,6 +458,7 @@ function report(result) {
   failures.push(...result.sticky.map((failure) => `colonne en vue : ${failure}`));
   if (result.full) {
     failures.push(...result.firstPaint.map((failure) => `premier affichage : ${failure}`));
+    failures.push(...result.build.map((failure) => `animation de construction : ${failure}`));
     failures.push(...result.panel.map((failure) => `sélecteur, ${failure}`));
     checkSwitcher(result, failures);
   }

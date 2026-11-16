@@ -21,8 +21,8 @@ npm run links    # vérifie que chaque adresse du CV répond encore (réseau req
 `shots` et `audit` pilotent Chrome ou Edge sans fenêtre, avec un profil jetable (chemin forcé par la variable `CHROME_PATH` si besoin).
 L'audit échoue si un thème masque, rogne, recouvre ou réduit à l'illisible un texte du CV, si un contraste est insuffisant sur fond uni,
 si la page déborde en largeur entre 360 et 1920 px, si le sélecteur de thème est inatteignable ou change mal de feuille de style,
-si la page s'affiche avant la feuille de son thème, ou si l'animation de construction ne démarre pas au chargement ou ne finit pas
-seule. Sur une image ou un dégradé, le contraste ne se mesure pas : l'audit affiche alors un ⚠ à vérifier à l'œil, sans échouer.
+si la page s'affiche avant la feuille de son thème, si l'animation de construction ne démarre pas au chargement ou ne finit pas
+seule, ou si le décor animé ne suit pas le thème, passe devant la fiche ou capte la souris. Sur une image ou un dégradé, le contraste ne se mesure pas : l'audit affiche alors un ⚠ à vérifier à l'œil, sans échouer.
 Pour tout le reste, l'audit passe l'animation (bouton « Passer ») et juge la page finie ; `shots` capture la page sans animation.
 
 ## Modifier le CV
@@ -60,7 +60,7 @@ Le build refuse un contenu incomplet ou une adresse invalide, et dit quelle lign
 | `dist/cv.md` | Le CV complet en Markdown |
 | `dist/resume.json` | Les données au format JSON Resume |
 | `dist/llms.txt` | Point d'entrée pour un assistant IA ([llmstxt.org](https://llmstxt.org)) |
-| `dist/assets/` | `base.css`, `app.js`, `build.js`, `themes/<id>.css` |
+| `dist/assets/` | `base.css`, `app.js`, `build.js`, `ambient.js`, `themes/<id>.css`, `ambient/` (dessins du décor) |
 
 `cv.md` et `resume.json` reprennent tout le contenu de la page ; les données structurées schema.org (`Person`) embarquées dans la page
 en sont un résumé. Rien n'est caché aux humains pour être servi aux machines.
@@ -77,11 +77,21 @@ animation de construction).
 
 ### Animation de construction
 
-Au chargement et à chaque changement de thème, des « agents » (curseurs de couleur) assemblent la fiche calque par calque, sous
-une barre d'état (« 9 agents · 17 / 50 calques », puis « Page construite par 9 agents en 2,6 s » avec **Rejouer**). C'est un effet,
-codé dans [static/build.js](static/build.js) ; un thème n'a rien à faire, la barre d'état reprend les couleurs du sélecteur.
+Au chargement et à chaque changement de thème, la fiche s'assemble calque par calque sous une barre d'état (avancement, puis
+bilan avec **Rejouer**). C'est un effet, codé dans [static/build.js](static/build.js), habillé selon le thème :
 
-- Seule la partie visible de la page est animée, le reste s'affiche tout de suite. L'ensemble dure moins de 4 s.
+- **Pro** : une nuée de curseurs (jusqu'à 24 agents) portant chacun un intitulé de poste, flanqués de managers en gris qui
+  ne posent rien mais commentent (« On cale un point ? ») ; bilan : « Page livrée par 24 agents en 3,6 s · 6 réunions · 0 bug ».
+- **Tech** : intrusion façon film. Une pluie de glyphes couvre l'écran et se retire à mesure que des daemons (réticules néon)
+  verrouillent et déchiffrent chaque bloc ; un journal égrène les clichés, puis « ACCÈS AUTORISÉ » s'affiche une seconde.
+- **JDR** : un grand cercle d'invocation se trace au centre ; des feux follets posent un sceau sur chaque calque, le relient
+  au cercle par une ligne d'arcane, et le contenu se matérialise dans un éclat doré.
+
+Un habillage (`SKINS` dans `build.js`) choisit l'équipe et ses dessins ; la feuille du thème les met en forme. Un thème sans
+habillage reçoit les curseurs de base, et la barre d'état reprend toujours les couleurs du sélecteur.
+
+- Seule la partie visible de la page est animée, le reste s'affiche tout de suite. L'ensemble dure au plus 3,6 s : une grande
+  page ou une grande équipe resserre tout le plan.
 - **Passer**, Échap, l'impression ou un changement de largeur de la fenêtre la terminent aussitôt.
 - Rien pour qui a activé « réduire les animations » dans son système, ni sans JavaScript, ni à l'impression.
 - Si `build.js` n'arrive pas, la fiche s'affiche d'elle-même au bout de 3 s. Si la page cesse de dessiner des images (rendu
@@ -89,6 +99,23 @@ codé dans [static/build.js](static/build.js) ; un thème n'a rien à faire, la 
 
 Un calque est le plus haut élément de la fiche qui peint du contenu : texte, image, ou petite pièce sans enfant comme une jauge.
 Les cadres et les fonds (sections, cartes) restent affichés et servent d'échafaudage.
+
+### Décor animé
+
+Derrière la fiche, chaque thème a son décor permanent, codé dans [static/ambient.js](static/ambient.js) :
+
+- **Pro** : halos pastel et vagues « corporate » qui glissent au pied de l'écran ; sur les côtés, le vocabulaire des fiches de
+  poste (« Force de proposition », « Fit culturel 98 % », « Une équipe, une vision, un impact ») monte lentement.
+- **Tech** : pluie de glyphes et grille néon ; des terminaux (déploiement, htop, hexdump, scan réseau…) et des éditeurs
+  (VS Code, vim) qui tapent du code s'ouvrent, défilent et se referment.
+- **JDR** : paysage au crépuscule (deux lunes, montagnes, château sur sa falaise, forêt, brume), un dragon qui traverse le ciel
+  de temps en temps et, dans le coin bas gauche, un archimage plongé dans son grimoire. Les dessins sont des SVG animés,
+  dans [static/ambient/](static/ambient/).
+
+C'est de la décoration : le calque est peint sous la fiche opaque, ne capte jamais la souris, et ses éléments de côté ne
+s'affichent que là où la place existe (150 px libres au moins ; l'archimage en demande 220). Sur un écran où la fiche occupe
+toute la largeur, il ne se voit donc presque pas : c'est le cas du thème Tech sous 1426 px. Rien à l'impression, sans
+JavaScript ni avec « réduire les animations » ; les minuteurs se taisent quand l'onglet est caché.
 
 ### Ajouter un thème
 
@@ -118,6 +145,8 @@ Le balisage est produit par [src/render-html.mjs](src/render-html.mjs) ; `dist/i
 | `.project` | `.project__name`, `__period`, `__desc`, `__highlights`, `__link` |
 | `.colophon` | Pied de page |
 | `html[data-build]`, `[data-layer]` | Posés par `build.js` pendant l'animation de construction, retirés à la fin |
+| `.cv-build`, `.cv-build-flash` | Dessins de l'animation de construction et salut final d'un habillage, à mettre en forme par le thème |
+| `.cv-ambient[data-scene]` | Décor animé du thème ; `--room-left`, `--room-right` (place libre de chaque côté de la fiche), `[data-wide]` |
 
 Un thème recolore le sélecteur avec les variables `--switcher-bg`, `--switcher-fg`, `--switcher-border`, `--switcher-active-bg`,
 `--switcher-active-fg`, `--switcher-font`, `--switcher-radius` et `--switcher-shadow`.
@@ -141,7 +170,7 @@ en local avant de fusionner une modification des thèmes.
 ```
 content/   resume.json, la seule source du contenu
 src/       rendu : HTML, Markdown, llms.txt, données structurées, validation
-static/    base.css, app.js, build.js, photo.jpg, themes/
+static/    base.css, app.js, build.js, ambient.js, photo.jpg, themes/, ambient/ (dessins du décor)
 tools/     serveur local, captures d'écran, audit navigateur, vérification des liens
 test/      tests (node --test)
 build.mjs  construit dist/

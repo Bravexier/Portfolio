@@ -1688,3 +1688,478 @@ a {
     font-size: var(--fs-note);
   }
 }
+
+/* ---------- Animation de construction : le rituel d'invocation (build.js) ----------
+   Un grand cercle se trace au centre de l'écran ; des feux follets posent un sceau sur chaque
+   calque, le relient au cercle par une ligne d'arcane, et le contenu se matérialise dans un
+   éclat doré. Les tracés des cercles ont une longueur de 1 (pathLength) : ils se dessinent. */
+
+.cv-build {
+  background: radial-gradient(circle, transparent 35%, rgb(40 16 60 / 0.22));
+}
+
+.cv-build__frame {
+  border: 1px dotted rgb(184 150 63 / 0.75);
+}
+
+.cv-build__circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(80vmin, 640px);
+  aspect-ratio: 1;
+  color: #c99a3c;
+  opacity: 0.6;
+  filter: drop-shadow(0 0 5px rgb(255 214 130 / 0.9));
+  translate: -50% -50%;
+  transition: opacity 0.5s ease;
+
+  & svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    animation: jdr-spin 28s linear infinite;
+  }
+
+  & :is(circle, path) {
+    stroke-width: 0.45;
+  }
+
+  & .runes {
+    animation: jdr-spin 14s linear infinite reverse;
+  }
+}
+
+.cv-build[data-out] .cv-build__circle {
+  opacity: 0;
+}
+
+/* Cercles d'invocation : traits fins, tracés au fil de l'eau. */
+:is(.cv-build__circle, .cv-build__seal) {
+  & :is(circle, path) {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  & [pathLength] {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: jdr-draw 0.9s ease-out forwards;
+  }
+
+  & .ring circle:nth-child(2),
+  & .star {
+    animation-delay: 0.15s;
+  }
+
+  & .gon,
+  & .inner {
+    animation-delay: 0.3s;
+  }
+
+  & .runes,
+  & .nodes {
+    transform-box: view-box;
+    transform-origin: 0 0;
+    opacity: 0;
+    animation: jdr-runes 0.6s ease-out 0.25s forwards;
+  }
+
+  & .center circle:not([pathLength]) {
+    fill: currentColor;
+  }
+}
+
+.cv-build__wisp {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 22%, var(--_c) 48%, transparent 72%);
+  box-shadow: 0 0 14px 5px color-mix(in srgb, var(--_c) 55%, transparent);
+  animation: jdr-wisp 0.5s ease-in-out infinite alternate;
+}
+
+.cv-build__spark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: var(--_c);
+  box-shadow: 0 0 6px var(--_c);
+  animation: jdr-spark 0.75s ease-out both;
+}
+
+.cv-build__box {
+  border: 0;
+  background: radial-gradient(ellipse at 0 50%, color-mix(in srgb, var(--_c) 22%, transparent), transparent 70%);
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1.5px;
+    background: linear-gradient(90deg, var(--_c), transparent);
+    box-shadow: 0 0 6px var(--_c);
+    transform-origin: left;
+    animation: jdr-trace 0.45s ease-out both;
+  }
+}
+
+.cv-build__seal {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--_size) / -2);
+  width: var(--_size);
+  height: var(--_size);
+  margin-top: calc(var(--_size) / -2);
+  color: var(--_c);
+  filter: drop-shadow(0 0 3px var(--_c));
+
+  & svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    animation: jdr-spin 5s linear infinite;
+  }
+
+  & :is(circle, path) {
+    stroke-width: 2.4;
+  }
+}
+
+.cv-build__tag {
+  left: calc(var(--_size, 34px) / 2);
+  padding: 1px 4px;
+  background: rgb(43 27 17 / 0.82);
+  color: var(--_c);
+  font: italic 600 11px/1.2 var(--font);
+  letter-spacing: 0.04em;
+}
+
+.cv-build__ripple {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--_c) 55%, transparent), transparent 62%);
+  box-shadow:
+    0 0 12px var(--_c),
+    inset 0 0 8px var(--_c);
+  animation-duration: 0.6s;
+}
+
+.cv-build__ley {
+  position: absolute;
+  height: 1.5px;
+  margin-top: -0.75px;
+  background: linear-gradient(90deg, transparent, var(--_c) 35%, var(--_c));
+  box-shadow: 0 0 6px var(--_c);
+  transform-origin: 0 50%;
+  animation: jdr-ley 0.9s ease-out both;
+}
+
+@media screen {
+  [data-layer='in'] {
+    animation: jdr-materialize 0.6s ease-out both;
+  }
+}
+
+@keyframes jdr-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes jdr-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes jdr-runes {
+  from {
+    opacity: 0;
+    scale: 0.8;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes jdr-wisp {
+  to {
+    scale: 1.35;
+  }
+}
+
+@keyframes jdr-spark {
+  to {
+    opacity: 0;
+    translate: 0 12px;
+    scale: 0.3;
+  }
+}
+
+@keyframes jdr-trace {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes jdr-ley {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  35% {
+    clip-path: inset(0);
+    opacity: 1;
+  }
+
+  100% {
+    clip-path: inset(0);
+    opacity: 0;
+  }
+}
+
+@keyframes jdr-materialize {
+  0% {
+    opacity: 0;
+    filter: blur(4px) brightness(1.8) sepia(1);
+  }
+
+  55% {
+    opacity: 1;
+    filter: blur(0) brightness(1.35) sepia(0.5) drop-shadow(0 0 6px rgb(255 205 110 / 0.9));
+  }
+}
+
+/* ---------- Décor animé : le monde derrière la fiche (ambient.js) ----------
+   Un paysage au crépuscule, par plans : ciel, étoiles, deux lunes, nuées ; un dragon qui
+   traverse le ciel ; montagnes, château, forêt et brume ; dans le coin, un archimage plongé
+   dans son grimoire, là où la place le permet. Les dessins sont dans static/ambient/. */
+
+.cv-ambient[data-scene='jdr'] {
+  background: #17163a;
+
+  & > * {
+    position: absolute;
+  }
+}
+
+.cv-ambient__sky {
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    #121233 0%,
+    #26215a 24%,
+    #4f3874 44%,
+    #93506a 60%,
+    #d9805a 72%,
+    #f2b46c 82%,
+    #f7d08a 92%
+  );
+}
+
+.cv-ambient__stars {
+  inset: 0 0 45%;
+  background:
+    radial-gradient(1.2px 1.2px at 20px 30px, #fff, transparent),
+    radial-gradient(1px 1px at 90px 80px, #fff, transparent),
+    radial-gradient(1.4px 1.4px at 160px 20px, #fff8e0, transparent),
+    radial-gradient(1px 1px at 210px 120px, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 60px 150px, #e8e0ff, transparent),
+    radial-gradient(1px 1px at 130px 190px, #fff, transparent),
+    radial-gradient(1.6px 1.6px at 240px 60px, #fff, transparent);
+  background-size: 260px 220px;
+  mask-image: linear-gradient(to bottom, #000 40%, transparent);
+  animation: jdr-twinkle 4s ease-in-out infinite alternate;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(1.3px 1.3px at 50px 60px, #fff, transparent),
+      radial-gradient(1px 1px at 170px 140px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 300px 30px, #fff6d8, transparent);
+    background-size: 340px 260px;
+    animation: jdr-twinkle 2.6s ease-in-out -1.3s infinite alternate-reverse;
+  }
+}
+
+.cv-ambient__moon {
+  top: 9vh;
+  left: max(24px, calc(var(--room-left) / 2 - 36px));
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #fffaf0, #f3e2b5 55%, #d6bd85);
+  box-shadow:
+    0 0 40px 8px rgb(255 240 200 / 0.35),
+    0 0 120px 30px rgb(255 220 170 / 0.15);
+
+  /* La seconde lune, plus petite, de l'autre côté du ciel. */
+  &::after {
+    content: '';
+    position: fixed;
+    top: 16vh;
+    right: max(24px, calc(var(--room-right) / 2 - 18px));
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 60% 40%, #f4e6ff, #c6a8e8 60%, #9b7cc4);
+    box-shadow: 0 0 30px 6px rgb(200 170 255 / 0.3);
+  }
+}
+
+.cv-ambient__clouds {
+  inset: 14vh 0 auto;
+  height: 34vh;
+  background:
+    radial-gradient(ellipse 160px 22px at 120px 60px, rgb(255 205 180 / 0.22), transparent),
+    radial-gradient(ellipse 220px 26px at 420px 130px, rgb(255 190 170 / 0.18), transparent),
+    radial-gradient(ellipse 140px 18px at 700px 40px, rgb(230 200 255 / 0.18), transparent),
+    radial-gradient(ellipse 260px 30px at 820px 190px, rgb(255 200 160 / 0.2), transparent);
+  background-size: 1000px 100%;
+  filter: blur(2px);
+  animation: jdr-clouds 160s linear infinite;
+}
+
+.cv-ambient__dragon {
+  top: var(--alt, 12vh);
+  left: 0;
+  width: calc(240px * var(--size, 1));
+  aspect-ratio: 360 / 200;
+  animation: jdr-flight 48s linear infinite;
+
+  & i {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: url('../ambient/jdr-dragon.svg') center / contain no-repeat;
+    animation: jdr-glide 6s ease-in-out infinite alternate;
+  }
+}
+
+.cv-ambient__mountains {
+  right: 0;
+  bottom: 9vh;
+  left: 0;
+  height: 44vh;
+  background: url('../ambient/jdr-montagnes.svg') 0 100% / auto 100% repeat-x;
+}
+
+.cv-ambient__castle {
+  right: 0;
+  bottom: 7vh;
+  height: 64vh;
+  aspect-ratio: 600 / 700;
+  background: url('../ambient/jdr-chateau.svg') right bottom / contain no-repeat;
+}
+
+.cv-ambient__forest {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 19vh;
+  background: url('../ambient/jdr-foret.svg') 0 100% / auto 100% repeat-x;
+}
+
+.cv-ambient__mist {
+  right: -10%;
+  bottom: 0;
+  left: -10%;
+  height: 30vh;
+  background:
+    radial-gradient(ellipse 30% 40% at 20% 80%, rgb(214 186 230 / 0.28), transparent),
+    radial-gradient(ellipse 34% 36% at 70% 85%, rgb(240 200 210 / 0.22), transparent),
+    linear-gradient(to top, rgb(60 40 90 / 0.55), transparent);
+  animation: jdr-mist 30s ease-in-out infinite alternate;
+}
+
+.cv-ambient__mage {
+  display: none;
+  bottom: 0;
+  left: 12px;
+  width: min(300px, calc(var(--room-left) - 24px));
+  aspect-ratio: 300 / 380;
+  background: url('../ambient/jdr-archimage.svg') left bottom / contain no-repeat;
+}
+
+.cv-ambient[data-wide] .cv-ambient__mage {
+  display: block;
+}
+
+.cv-ambient__mote {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ffe39a;
+  box-shadow: 0 0 8px 2px rgb(255 214 120 / 0.7);
+  animation: jdr-mote var(--d, 7s) ease-in-out both;
+}
+
+@keyframes jdr-twinkle {
+  from {
+    opacity: 0.45;
+  }
+}
+
+@keyframes jdr-clouds {
+  to {
+    background-position-x: 1000px;
+  }
+}
+
+@keyframes jdr-flight {
+  0% {
+    transform: translate(-30vw, 4vh);
+  }
+
+  62% {
+    transform: translate(118vw, -3vh);
+  }
+
+  100% {
+    transform: translate(118vw, -3vh);
+  }
+}
+
+@keyframes jdr-glide {
+  to {
+    translate: 0 4vh;
+    rotate: -4deg;
+  }
+}
+
+@keyframes jdr-mist {
+  to {
+    translate: 6% 0;
+  }
+}
+
+@keyframes jdr-mote {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+
+  20%,
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    translate: var(--dx, 0) -16vh;
+  }
+}

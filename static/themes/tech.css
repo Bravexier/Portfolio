@@ -1387,3 +1387,452 @@ a:hover {
     widows: 2;
   }
 }
+
+/* ---------- Animation de construction : intrusion façon film (build.js) ----------
+   Une pluie de glyphes couvre l'écran et se retire à mesure que les daemons (réticules néon)
+   verrouillent et déchiffrent chaque bloc ; un journal égrène les clichés du genre, puis
+   « ACCÈS AUTORISÉ » s'affiche une seconde. */
+
+.cv-build__rain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.2s linear;
+}
+
+.cv-build__frame {
+  border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.cv-build__reticle {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  background:
+    linear-gradient(var(--_c), var(--_c)) left top / 7px 2px no-repeat,
+    linear-gradient(var(--_c), var(--_c)) left top / 2px 7px no-repeat,
+    linear-gradient(var(--_c), var(--_c)) right top / 7px 2px no-repeat,
+    linear-gradient(var(--_c), var(--_c)) right top / 2px 7px no-repeat,
+    linear-gradient(var(--_c), var(--_c)) left bottom / 7px 2px no-repeat,
+    linear-gradient(var(--_c), var(--_c)) left bottom / 2px 7px no-repeat,
+    linear-gradient(var(--_c), var(--_c)) right bottom / 7px 2px no-repeat,
+    linear-gradient(var(--_c), var(--_c)) right bottom / 2px 7px no-repeat,
+    radial-gradient(circle, var(--_c) 0 2px, transparent 2.5px);
+  filter: drop-shadow(0 0 4px var(--_c));
+  animation: tech-lock 0.9s linear infinite;
+}
+
+.cv-build__name {
+  position: absolute;
+  top: 8px;
+  left: 14px;
+  color: var(--_c);
+  font: 700 10px/1 var(--mono);
+  text-shadow: 0 0 6px var(--_c);
+  white-space: nowrap;
+}
+
+.cv-build__box {
+  border: 1px solid var(--_c);
+  background: color-mix(in srgb, var(--_c) 10%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--_c) 45%, transparent);
+}
+
+.cv-build__noise {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: var(--_c);
+  font: 400 11px/12px ui-monospace, Consolas, 'MS Gothic', monospace;
+  word-break: break-all;
+  opacity: 0.8;
+  text-shadow: 0 0 5px var(--_c);
+}
+
+.cv-build__tag {
+  border-radius: 0;
+  color: var(--void);
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+}
+
+.cv-build__ripple {
+  border-radius: 0;
+  box-shadow: 0 0 10px var(--_c);
+}
+
+.cv-build__console {
+  position: absolute;
+  bottom: 68px;
+  left: 16px;
+  max-width: calc(100vw - 32px);
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--accent);
+  background: rgb(4 6 5 / 0.88);
+  box-shadow: 0 0 18px rgb(75 239 136 / 0.25);
+  color: var(--accent);
+  font: 400 12px/1.6 var(--mono);
+  list-style: none;
+  transition: opacity 0.4s ease;
+
+  & li::before {
+    content: '> ' / '';
+    color: var(--dim);
+  }
+
+  & li[data-ok]::after {
+    content: ' [OK]' / '';
+    color: #22d3ee;
+  }
+}
+
+.cv-build__scan {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), #22d3ee, transparent);
+  box-shadow: 0 0 14px var(--accent);
+  animation: tech-scan 1.2s linear infinite;
+  transition: opacity 0.4s ease;
+}
+
+.cv-build[data-out] :is(.cv-build__console, .cv-build__scan) {
+  opacity: 0;
+}
+
+.cv-build-flash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(closest-side, rgb(4 6 5 / 0.7), transparent);
+  color: var(--accent);
+  font: 700 clamp(26px, 6vw, 80px) / 1 var(--mono);
+  letter-spacing: 0.16em;
+  text-align: center;
+  animation: tech-granted 1.3s steps(1, end) both;
+}
+
+@media screen and (max-width: 599.98px) {
+  .cv-build__console {
+    display: none;
+  }
+}
+
+@media screen {
+  [data-layer='in'] {
+    animation: tech-decrypt 0.42s linear both;
+  }
+}
+
+@keyframes tech-lock {
+  50% {
+    transform: rotate(45deg) scale(0.8);
+  }
+
+  to {
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes tech-scan {
+  to {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes tech-decrypt {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+  }
+
+  20% {
+    opacity: 1;
+    clip-path: inset(12% 0 50% 0);
+    transform: translateX(-4px);
+    text-shadow: -2px 0 #ff2bd6, 2px 0 #22d3ee;
+  }
+
+  40% {
+    clip-path: inset(58% 0 6% 0);
+    transform: translateX(3px);
+  }
+
+  60% {
+    clip-path: inset(28% 0 30% 0);
+    transform: translateX(-2px);
+    text-shadow: -1px 0 #ff2bd6, 1px 0 #22d3ee;
+  }
+
+  80% {
+    clip-path: inset(0);
+    transform: translateX(1px);
+  }
+
+  100% {
+    clip-path: inset(0);
+    transform: none;
+  }
+}
+
+@keyframes tech-granted {
+  0% {
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 1;
+    transform: skewX(-12deg) translateX(-8px);
+    text-shadow: -4px 0 #ff2bd6, 4px 0 #22d3ee, 0 0 30px var(--accent);
+  }
+
+  16% {
+    transform: none;
+    text-shadow: 0 0 24px var(--accent);
+  }
+
+  44% {
+    transform: translateX(5px);
+    text-shadow: 3px 0 #ff2bd6, -3px 0 #22d3ee, 0 0 24px var(--accent);
+  }
+
+  50% {
+    transform: none;
+    text-shadow: 0 0 24px var(--accent);
+  }
+
+  84% {
+    opacity: 1;
+  }
+
+  92% {
+    opacity: 0.3;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Décor animé : la salle des serveurs (ambient.js) ----------
+   Sur les côtés de la fenêtre : la pluie de glyphes, une grille néon au sol, et des fenêtres
+   de terminal et d'éditeur qui s'ouvrent, défilent et se ferment. Atténué : la fiche reste
+   la seule chose à lire. */
+
+.cv-ambient[data-scene='tech'] {
+  background:
+    radial-gradient(ellipse 60% 40% at 0 100%, rgb(255 43 214 / 0.1), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgb(34 211 238 / 0.1), transparent),
+    var(--void);
+}
+
+.cv-ambient__rain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+}
+
+.cv-ambient__grid {
+  position: absolute;
+  right: -50%;
+  bottom: 0;
+  left: -50%;
+  height: 30vh;
+  background:
+    repeating-linear-gradient(90deg, rgb(255 43 214 / 0.55) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, rgb(34 211 238 / 0.45) 0 1px, transparent 1px 42px);
+  transform: perspective(320px) rotateX(62deg);
+  transform-origin: 50% 100%;
+  opacity: 0.35;
+  mask-image: linear-gradient(to top, #000 10%, transparent);
+  animation: tech-grid 2.4s linear infinite;
+}
+
+.cv-ambient__win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--rule-strong);
+  border-radius: 6px;
+  background: rgb(10 15 12 / 0.94);
+  box-shadow:
+    0 0 0 1px rgb(75 239 136 / 0.06),
+    0 0 26px rgb(34 211 238 / 0.1);
+  color: var(--dim);
+  font: 400 11px/14px var(--mono);
+  opacity: 0.6;
+  animation: tech-win-in 0.45s steps(5, end) both;
+
+  &[data-out] {
+    animation: tech-win-out 0.5s steps(5, end) both;
+  }
+
+  &[data-kind='ide'] {
+    border-color: #2b3440;
+    background: rgb(24 26 31 / 0.96);
+  }
+}
+
+.cv-ambient__bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  height: 20px;
+  padding: 0 8px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bar-bg);
+  font-size: 10px;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 30px;
+    height: 8px;
+    background:
+      radial-gradient(circle at 4px 4px, #ff5f57 3.5px, transparent 4px),
+      radial-gradient(circle at 15px 4px, #febc2e 3.5px, transparent 4px),
+      radial-gradient(circle at 26px 4px, #28c840 3.5px, transparent 4px);
+    opacity: 0.8;
+  }
+}
+
+.cv-ambient__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cv-ambient__screen {
+  flex: 1;
+  padding: 5px 8px;
+  overflow: hidden;
+  white-space: pre;
+
+  & .p {
+    color: var(--accent);
+  }
+
+  & .ok {
+    color: #22d3ee;
+  }
+
+  & .warn {
+    color: var(--meta);
+  }
+
+  & .err {
+    color: #ff2bd6;
+  }
+
+  & .k {
+    color: #c792ea;
+  }
+
+  & .s {
+    color: #c3e88d;
+  }
+
+  & .c {
+    color: #64766b;
+    font-style: italic;
+  }
+
+  & .n {
+    color: #f78c6c;
+  }
+
+  & [data-line]::before {
+    content: attr(data-line) / '';
+    display: inline-block;
+    width: 3ch;
+    margin-right: 1.2ch;
+    color: #4d5a63;
+    text-align: right;
+  }
+
+  & [data-active] {
+    background: rgb(255 255 255 / 0.05);
+
+    &::after {
+      content: '';
+      display: inline-block;
+      width: 7px;
+      height: 12px;
+      background: var(--accent);
+      vertical-align: -2px;
+      animation: curseur-bloc 0.9s steps(1, end) infinite;
+    }
+  }
+}
+
+.cv-ambient__status {
+  flex: none;
+  height: 16px;
+  padding: 0 8px;
+  overflow: hidden;
+  background: #3b2a8f;
+  color: #e9e6ff;
+  font-size: 10px;
+  line-height: 16px;
+  white-space: nowrap;
+
+  [data-flavor='vim'] & {
+    background: transparent;
+    color: var(--fg);
+    font-weight: 700;
+  }
+}
+
+@keyframes curseur-bloc {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes tech-grid {
+  to {
+    background-position: 0 0, 0 42px;
+  }
+}
+
+@keyframes tech-win-in {
+  0% {
+    opacity: 0;
+    clip-path: inset(50% 0 50% 0);
+  }
+
+  40% {
+    opacity: 0.6;
+    clip-path: inset(49% 0 49% 0);
+  }
+
+  100% {
+    opacity: 0.6;
+    clip-path: inset(0);
+  }
+}
+
+@keyframes tech-win-out {
+  0% {
+    opacity: 0.6;
+    clip-path: inset(0);
+  }
+
+  60% {
+    opacity: 0.6;
+    clip-path: inset(49% 0 49% 0);
+  }
+
+  100% {
+    opacity: 0;
+    clip-path: inset(50% 0 50% 0);
+  }
+}

@@ -326,6 +326,7 @@ ${jsonForScript(toJsonLd(resume))}
   </script>
   <script src="assets/app.js" defer></script>
   <script src="assets/build.js" defer></script>
+  <script src="assets/ambient.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>

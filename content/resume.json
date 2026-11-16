@@ -35,10 +35,10 @@
       "position": "Ingénieur développement",
       "contract": "CDI",
       "location": "Villeurbanne",
-      "startDate": "2023-01",
+      "startDate": "2023",
       "summary": "Développeur full stack en centre de service pour les Hospices Civils de Lyon (HCL).",
       "highlights": [
-        "Depuis février 2026, équipe VPM : maintenance et évolutions techniques du module de gestion des parcours et protocoles de soins.",
+        "Depuis 2026, équipe VPM : maintenance et évolutions techniques du module de gestion des parcours et protocoles de soins.",
         "Auparavant, équipe ABL : maintenance et évolutions techniques du module de gestion de bloc opératoire."
       ],
       "keywords": ["C#", ".NET Framework 4.7.2", "JavaScript", "jQuery", "Kendo", "Entity Framework"]
@@ -50,8 +50,8 @@
       "position": "Ingénieur d'études et développement",
       "contract": "CDI",
       "location": "Bordeaux",
-      "startDate": "2019-03",
-      "endDate": "2022-05",
+      "startDate": "2019",
+      "endDate": "2022",
       "summary": "Prestations de développement C# / .NET auprès de plusieurs clients.",
       "highlights": [
         "Betclic : maintenance et évolution, compliance.",
@@ -68,8 +68,8 @@
       "position": "Développeur web",
       "contract": "CDD",
       "location": "Mérignac",
-      "startDate": "2018-03",
-      "endDate": "2018-09",
+      "startDate": "2018",
+      "endDate": "2018",
       "summary": "Développement de l'ERP interne de l'entreprise. Adaptation aux besoins des utilisateurs et amélioration du système existant.",
       "highlights": [
         "Évolution du cahier des charges en cours de développement, en méthode semi-agile.",
@@ -83,8 +83,8 @@
       "position": "Développeur Unity3D",
       "contract": "CDD",
       "location": "Mérignac",
-      "startDate": "2017-10",
-      "endDate": "2018-02",
+      "startDate": "2017",
+      "endDate": "2018",
       "summary": "Développement d'un logiciel de rendu 3D.",
       "keywords": ["Unity 2017", "C#"]
     },
@@ -94,8 +94,8 @@
       "position": "Développeur web",
       "contract": "Stage",
       "location": "Nancy",
-      "startDate": "2016-04",
-      "endDate": "2016-08",
+      "startDate": "2016",
+      "endDate": "2016",
       "summary": "Maintenance et mise à niveau d'un outil de gestion du patrimoine gazier. Suivi et amélioration de l'outil, optimisation des ressources disponibles, ajout de fonctionnalités.",
       "keywords": ["AngularJS 1.5", "PHP Silex", "HTML5", "CSS3"]
     },
@@ -105,8 +105,8 @@
       "position": "Développeur progiciel",
       "contract": "Stage",
       "location": "Maxéville",
-      "startDate": "2015-09",
-      "endDate": "2016-02",
+      "startDate": "2015",
+      "endDate": "2016",
       "summary": "Développement d'outils de gestion de bases de données. Suite du précédent stage, à temps partiel.",
       "keywords": ["C#", "Visual Studio", "SQLite"]
     },
@@ -116,8 +116,8 @@
       "position": "Développeur progiciel",
       "contract": "Stage",
       "location": "Maxéville",
-      "startDate": "2015-04",
-      "endDate": "2015-07",
+      "startDate": "2015",
+      "endDate": "2015",
       "summary": "Développement d'outils de gestion de bases de données.",
       "keywords": ["C#", "Visual Studio", "SQLite"]
     },
@@ -127,8 +127,8 @@
       "position": "Développement web",
       "contract": "Stage",
       "location": "Cattenom",
-      "startDate": "2014-09",
-      "endDate": "2015-02",
+      "startDate": "2014",
+      "endDate": "2015",
       "highlights": [
         "Référencement des sites clients.",
         "Optimisation des sites clients.",
@@ -143,8 +143,8 @@
       "position": "Recherche",
       "contract": "Stage",
       "location": "Nancy",
-      "startDate": "2013-09",
-      "endDate": "2013-12",
+      "startDate": "2013",
+      "endDate": "2013",
       "summary": "Recherche au sein de l'équipe Maia, dans la continuité du travail de 2012.",
       "highlights": [
         "Familiarisation avec le système ROS.",
@@ -158,8 +158,8 @@
       "position": "Recherche",
       "contract": "Stage",
       "location": "Nancy",
-      "startDate": "2012-08",
-      "endDate": "2012-12",
+      "startDate": "2012",
+      "endDate": "2012",
       "summary": "Recherche au sein de l'équipe Maia : développement d'un programme pour un Habitat Intelligent pour la Santé (HIS).",
       "highlights": [
         "Détection de personnes sur un réseau de dalles équipées de multiples capteurs.",
@@ -174,8 +174,8 @@
       "title": "Licence informatique",
       "studyType": "Licence",
       "area": "Informatique",
-      "startDate": "2011-10",
-      "endDate": "2018-06",
+      "startDate": "2011",
+      "endDate": "2018",
       "url": "https://www.epitech.eu/",
       "summary": "École privée d'expertise en informatique. Quatrième année en échange à l'université Tongji de Shanghai (2016-2017)."
     },
@@ -184,8 +184,8 @@
       "title": "Études de santé",
       "studyType": "Première année commune des études de santé",
       "area": "Santé",
-      "startDate": "2009-09",
-      "endDate": "2011-06",
+      "startDate": "2009",
+      "endDate": "2011",
       "summary": "Première année commune des études de santé, admis au concours de pharmacie."
     },
     {
@@ -193,7 +193,7 @@
       "title": "Baccalauréat S",
       "studyType": "Baccalauréat",
       "area": "Scientifique",
-      "endDate": "2009-06"
+      "endDate": "2009"
     }
   ],
   "skills": [
@@ -222,13 +222,13 @@
     {
       "language": "Anglais",
       "fluency": "Lu, écrit et parlé",
-      "certifications": ["TOEIC 825 (janvier 2016)", "TOEFL 71"]
+      "certifications": ["TOEIC 825 (2016)", "TOEFL 71"]
     }
   ],
   "projects": [
     {
       "name": "Maverick Center",
-      "startDate": "2026-10",
+      "startDate": "2026",
       "description": "Wiki et générateur de fiches de personnage pour le jeu de rôle Maverick JDR.",
       "highlights": [
         "Site statique Astro : pages reliées par mots-clés, rétroliens, recherche, générateur de fiches piloté par des données de règles.",
@@ -240,8 +240,8 @@
     },
     {
       "name": "Ce portfolio",
-      "startDate": "2026-10",
-      "endDate": "2026-10",
+      "startDate": "2026",
+      "endDate": "2026",
       "description": "Ce CV en ligne : une page statique sans dépendance, le même contenu décliné en trois thèmes.",
       "highlights": [
         "Trois thèmes écrits en parallèle par des agents Claude Code, chacun repris par un agent critique puis par un agent de recette indépendants.",

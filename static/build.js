@@ -1,7 +1,7 @@
 // Animation de construction : au chargement et à chaque changement de thème, la fiche s'assemble
 // calque par calque, dans le style du thème (son « habillage », voir SKINS) :
 //   pro   une nuée de curseurs d'agents, flanqués de managers qui commentent, livrent la page ;
-//   tech  des daemons déchiffrent la page sous une pluie de glyphes, façon intrusion de film ;
+//   tech  personne : la page arrive comme un signal brouillé, par à-coups et effets glitch ;
 //   jdr   des feux follets tracent des cercles d'invocation et alignent les arcanes.
 // C'est un effet, rien de plus : la page est complète sans lui (sans JavaScript, à l'impression,
 // avec « réduire les animations »), et « Passer » ou Échap le termine aussitôt.
@@ -114,6 +114,8 @@
   // ---------- Habillages ----------
   // Chaque thème choisit son équipe (crew), dessine ses agents (agent), ses cadres de travail
   // (box), son geste d'apparition (reveal) et ses décors propres (begin, frame, finale).
+  // Un habillage sans équipe fournit son propre calendrier (schedule) et peut se passer des
+  // cadres esquissés (frames: false) et des cadres de travail (boxes: false).
   // Tout est piloté par l'horloge de l'animation : rien ne survit à stop().
 
   const DEFAULT = {
@@ -190,86 +192,124 @@
       fr(`Page livrée par ${state.builders} agents en ${seconds} s · ${state.meetings} ${plural(state.meetings, 'réunion')} · 0 bug`),
   };
 
-  // Tech : intrusion façon film. Une pluie de glyphes couvre l'écran puis se retire à mesure
-  // que les daemons verrouillent et déchiffrent chaque bloc ; un journal égrène les clichés.
-  const GLYPHS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789Z:.=*+<>#';
-  const TECH_LOG = [
-    'Connexion au mainframe…', 'Contournement du pare-feu…', 'ICE noir neutralisé', 'Injection du payload',
-    'Déchiffrement AES-4096…', 'Trace IP brouillée', 'Lien neuronal établi', 'Réveille-toi…', 'Suis le lapin blanc',
-    'Escalade de privilèges : root', 'Proxy en cascade : 7 nœuds', 'Hack the planet', 'Upload de conscience : 87 %',
-  ];
-  const glyphs = (count) => Array.from({ length: count }, () => pick(GLYPHS)).join('');
-  const hex = () => `0x${Math.floor(random(0x1000, 0xffff)).toString(16).toUpperCase()}`;
+  // Tech : la page arrive comme un signal brouillé qui s'accroche, sans personne pour la
+  // monter. L'écran s'allume comme un vieux moniteur, une neige d'image sans signal se retire
+  // à mesure que les blocs apparaissent, de haut en bas et par salves, chacun avec ses ratés
+  // (aberration chromatique, tranches décalées, coupures) ; des bandes de déchirure traversent
+  // l'écran et la page entière tressaute par instants (html[data-glitch]).
+  const TECH_HUES = ['#ff2bd6', '#22d3ee', '#4bef88', '#f5f749'];
+  // Une maille de neige couvre 3 × 3 pixels : du grain, pas des pavés, et peu de calcul.
+  const SNOW_CELL = 3;
+  // Les blocs commencent à apparaître une fois l'écran allumé.
+  const SIGNAL_START = 420;
+
+  // Générateur pseudo-aléatoire rapide (xorshift) : la neige tire des centaines de milliers de
+  // points à chaque image.
+  function xorshift(seed) {
+    let x = seed | 0 || 1;
+    return () => {
+      x ^= x << 13;
+      x ^= x >>> 17;
+      x ^= x << 5;
+      return x;
+    };
+  }
+
+  // Bande de déchirure, sur toute la largeur ou en bloc corrompu : elle recolore ce qu'elle
+  // couvre (feuille du thème) et s'efface d'elle-même en une fraction de seconde.
+  function tear(overlay) {
+    const node = element('span', 'cv-build__tear', overlay);
+    const height = Math.random() < 0.7 ? random(2, 14) : random(18, 56);
+    node.style.top = `${Math.round(random(0, innerHeight - height))}px`;
+    node.style.height = `${Math.round(height)}px`;
+    if (Math.random() < 0.45) {
+      const width = random(40, Math.min(420, innerWidth * 0.6));
+      node.style.left = `${Math.round(random(0, innerWidth - width))}px`;
+      node.style.width = `${Math.round(width)}px`;
+    }
+    node.style.setProperty('--_c', pick(TECH_HUES));
+    node.style.setProperty('--_shift', `${Math.round(random(-28, 28))}px`);
+    node.style.setProperty('--_hue', `${Math.round(random(90, 270))}deg`);
+    node.style.animationDuration = `${Math.round(random(70, 170))}ms`;
+    node.addEventListener('animationend', () => node.remove(), { once: true });
+  }
 
   const TECH = {
-    colors: ['#4bef88', '#22d3ee', '#ff2bd6', '#4bef88', '#f5f749', '#22d3ee', '#4bef88', '#ff2bd6', '#a3ff5c', '#22d3ee', '#4bef88', '#ff2bd6'],
-    crew: (count) => ({ builders: clamp(Math.ceil(count / 5), 4, 12), idlers: 0 }),
+    colors: ['#4bef88', '#22d3ee', '#ff2bd6', '#f5f749', '#a3ff5c'],
+    frames: false,
+    boxes: false,
+    // Personne ne construit : les blocs arrivent de haut en bas, un peu dans le désordre, par
+    // salves irrégulières (les blocs voisins d'une même salve s'allument ensemble). Le tout
+    // tient en 3,3 s au plus, sous LONGEST.
+    schedule(units) {
+      const span = clamp(units.length * 24, 1000, 1900);
+      const order = units
+        .map((unit) => ({ unit, key: unit.rect.y + random(-90, 90) }))
+        .sort((a, b) => a.key - b.key);
+      let burst = SIGNAL_START;
+      order.forEach(({ unit }, index) => {
+        const due = SIGNAL_START + (index / units.length) * span;
+        while (burst < due) burst += random(50, 190);
+        unit.color = pick(TECH_HUES);
+        unit.arrive = burst;
+        unit.reveal = burst;
+        unit.done = burst + 520;
+      });
+      return { agents: [], end: Math.max(...units.map((unit) => unit.done)) + 200 };
+    },
     begin(state) {
-      const ratio = Math.min(devicePixelRatio || 1, 1.5);
-      const canvas = element('canvas', 'cv-build__rain', null);
+      const canvas = element('canvas', 'cv-build__snow', null);
       state.overlay.prepend(canvas);
-      canvas.width = Math.round(innerWidth * ratio);
-      canvas.height = Math.round(innerHeight * ratio);
+      canvas.width = Math.ceil(innerWidth / SNOW_CELL);
+      canvas.height = Math.ceil(innerHeight / SNOW_CELL);
       const context = canvas.getContext('2d');
-      context.scale(ratio, ratio);
-      context.font = '15px ui-monospace, Consolas, "MS Gothic", monospace';
-      context.textBaseline = 'top';
-      const columns = Math.ceil(innerWidth / 16);
-      state.rain = {
-        canvas,
-        context,
-        // Colonnes déjà en chute à l'arrivée : la pluie couvre l'écran dès la première image.
-        drops: Array.from({ length: columns }, () => random(-innerHeight / 32, innerHeight / 20)),
-        tints: Array.from({ length: columns }, () => (Math.random() < 0.12 ? pick(['#22d3ee', '#ff2bd6']) : '#4bef88')),
-        last: -1,
-      };
-      state.console = element('ol', 'cv-build__console', state.overlay);
-      state.log = shuffle(TECH_LOG).slice(0, 5);
-      state.logged = 0;
-      element('span', 'cv-build__scan', state.overlay);
-    },
-    agent(node) {
-      node.innerHTML = '<span class="cv-build__reticle"></span>';
-      element('span', 'cv-build__name', node).textContent = hex();
-    },
-    tag: () => `DECRYPT ${hex()}`,
-    box(unit, box) {
-      const noise = element('span', 'cv-build__noise', box);
-      const count = Math.min(400, Math.ceil(unit.rect.w / 8) * Math.max(1, Math.round(unit.rect.h / 14)));
-      let next = 0;
-      return (t) => {
-        if (t < next) return;
-        next = t + 70;
-        noise.textContent = glyphs(count);
-      };
+      const image = context.createImageData(canvas.width, canvas.height);
+      state.snow = { canvas, context, image, pixels: new Uint32Array(image.data.buffer), next: xorshift(Date.now()), last: -1e9 };
+      element('span', 'cv-build__lines', state.overlay);
+      element('span', 'cv-build__roll', state.overlay);
+      element('span', 'cv-build__crt', state.overlay);
+      state.tearAt = SIGNAL_START - 120;
+      state.joltAt = SIGNAL_START + random(0, 200);
+      state.joltEnd = 0;
     },
     reveal(unit, point, world) {
-      spark('cv-build__ripple', point, unit.color, world);
+      // Un éclat de pixels corrompus sur une partie des blocs qui apparaissent.
+      if (Math.random() > 0.45) return;
+      const { x, y, w, h } = unit.rect;
+      const width = random(0.2, 0.9) * w;
+      const node = element('span', 'cv-build__shard', world);
+      node.style.left = `${Math.round(x + random(-12, w - width + 12))}px`;
+      node.style.top = `${Math.round(y + random(0, h))}px`;
+      node.style.width = `${Math.round(width)}px`;
+      node.style.height = `${Math.round(random(2, 7))}px`;
+      node.style.setProperty('--_c', unit.color);
+      node.addEventListener('animationend', () => node.remove(), { once: true });
     },
     frame(state, t) {
-      const { rain } = state;
-      if (t - rain.last >= 33) {
-        rain.last = t;
-        const { context, drops, tints } = rain;
-        context.globalCompositeOperation = 'destination-out';
-        context.fillStyle = 'rgb(0 0 0 / 0.16)';
-        context.fillRect(0, 0, innerWidth, innerHeight);
-        context.globalCompositeOperation = 'source-over';
-        drops.forEach((row, column) => {
-          const y = row * 16;
-          context.fillStyle = tints[column];
-          context.fillText(pick(GLYPHS), column * 16, y - 16);
-          context.fillStyle = '#eafff1';
-          context.fillText(pick(GLYPHS), column * 16, y);
-          drops[column] = y > innerHeight && Math.random() > 0.95 ? random(-8, 0) : row + 1;
-        });
-        rain.canvas.style.opacity = String(0.9 * (1 - state.built / state.total));
+      const { snow } = state;
+      if (t - snow.last >= 50) {
+        snow.last = t;
+        const { pixels, next } = snow;
+        // Gris aléatoire, opacité égale à la luminosité : les points sombres laissent voir la page.
+        for (let index = 0; index < pixels.length; index += 1) {
+          const value = next() & 255;
+          pixels[index] = (value << 24) | (value << 16) | (value << 8) | value;
+        }
+        snow.context.putImageData(snow.image, 0, 0);
+        snow.canvas.style.opacity = String(0.7 * (1 - state.built / state.total) ** 1.4);
       }
-      const due = Math.min(state.log.length, Math.floor(t / (state.end / state.log.length)) + 1);
-      while (state.logged < due) {
-        state.console.lastElementChild?.setAttribute('data-ok', '');
-        element('li', '', state.console).textContent = fr(state.log[state.logged]);
-        state.logged += 1;
+      if (t >= state.tearAt && t < state.end - 400) {
+        state.tearAt = t + random(70, 240);
+        for (let count = Math.floor(random(1, 3.6)); count > 0; count -= 1) tear(state.overlay);
+      }
+      if (state.joltEnd && t >= state.joltEnd) {
+        delete root.dataset.glitch;
+        state.joltEnd = 0;
+      }
+      if (!state.joltEnd && t >= state.joltAt && t < state.end - 450) {
+        root.dataset.glitch = pick(['a', 'b', 'c']);
+        state.joltEnd = t + random(60, 130);
+        state.joltAt = state.joltEnd + random(250, 650);
       }
     },
     finale() {
@@ -279,8 +319,8 @@
       node.textContent = 'ACCÈS AUTORISÉ';
       return node;
     },
-    status: (state) => `${state.builders} daemons · ${state.built} / ${state.total} ${state.total > 1 ? 'blocs déchiffrés' : 'bloc déchiffré'}`,
-    done: (state, seconds) => `Accès autorisé · page déchiffrée par ${state.builders} daemons en ${seconds} s`,
+    status: (state) => `Synchronisation du signal · ${state.built} / ${state.total} ${plural(state.total, 'bloc')}`,
+    done: (state, seconds) => `Signal stable · page chargée en ${seconds} s`,
   };
 
   // JDR : un grand cercle d'invocation se trace au centre de l'écran ; des feux follets portent
@@ -493,14 +533,14 @@
 
   // ---------- Barre d'état ----------
 
-  function showHud(agents) {
+  function showHud(colors) {
     hideHud();
     hud = element('div', 'cv-build-hud', document.body);
     hud.setAttribute('role', 'group');
     hud.setAttribute('aria-label', 'Animation de construction de la page');
     const dots = element('span', 'cv-build-hud__dots', hud);
     dots.setAttribute('aria-hidden', 'true');
-    for (const agent of agents.slice(0, 5)) element('i', '', dots).style.background = agent.color;
+    for (const color of colors.slice(0, 5)) element('i', '', dots).style.background = color;
     const text = element('span', 'cv-build-hud__text', hud);
     const bar = element('span', 'cv-build-hud__bar', hud);
     bar.setAttribute('aria-hidden', 'true');
@@ -542,6 +582,8 @@
     for (const node of document.querySelectorAll('[data-layer]')) delete node.dataset.layer;
     for (const node of document.querySelectorAll('.cv-build')) node.remove();
     root.removeAttribute('data-build');
+    // À-coup de page en cours (habillage Tech).
+    root.removeAttribute('data-glitch');
   }
 
   // Termine tout de suite : page complète, rien par-dessus.
@@ -581,7 +623,7 @@
     const overlay = element('div', 'cv-build');
     overlay.setAttribute('aria-hidden', 'true');
     const world = element('div', 'cv-build__world', overlay);
-    const frames = [...document.querySelectorAll(FRAMES)]
+    const frames = [...(skin.frames === false ? [] : document.querySelectorAll(FRAMES))]
       .map((frame) => frame.getBoundingClientRect())
       .filter(inView)
       .slice(0, 40)
@@ -593,8 +635,7 @@
       });
 
     const home = { x: scrollX + innerWidth / 2, y: scrollY + innerHeight - 44 };
-    const crew = skin.crew(units.length);
-    const { agents, end } = plan(units, home, crew, skin.colors);
+    const { agents, end } = skin.schedule ? skin.schedule(units) : plan(units, home, skin.crew(units.length), skin.colors);
     const builders = agents.filter((agent) => !agent.idle).length;
 
     run = {
@@ -628,7 +669,7 @@
       skin.agent(agent.node, agent, run);
     }
     document.body.append(overlay);
-    run.hud = showHud(agents);
+    run.hud = showHud(agents.length ? agents.map((agent) => agent.color) : skin.colors);
     run.watchdog = setInterval(() => {
       if (run && document.visibilityState === 'visible' && performance.now() - run.alive > WATCHDOG) finish();
     }, 250);
@@ -649,7 +690,7 @@
       agent.node.toggleAttribute('data-out', t > agent.leave - 120);
     }
     for (const unit of run.units) {
-      if (!unit.box && !unit.drawn && t >= unit.arrive && t < unit.done) {
+      if (run.skin.boxes !== false && !unit.box && !unit.drawn && t >= unit.arrive && t < unit.done) {
         unit.box = drawBox(unit, run);
         unit.drawn = true;
       }
@@ -658,7 +699,9 @@
         unit.revealed = true;
         unit.element.dataset.layer = 'in';
         run.built += 1;
-        run.skin.reveal(unit, run.agents[unit.agent].point, run.world, run);
+        // Sans équipe, le geste d'apparition part du centre du calque.
+        const point = run.agents[unit.agent]?.point ?? { x: unit.rect.x + unit.rect.w / 2, y: unit.rect.y + unit.rect.h / 2 };
+        run.skin.reveal(unit, point, run.world, run);
       }
       if (unit.box && t >= unit.done) {
         unit.box.remove();

@@ -21,8 +21,8 @@ npm run links    # vérifie que chaque adresse du CV répond encore (réseau req
 `shots` et `audit` pilotent Chrome ou Edge sans fenêtre, avec un profil jetable (chemin forcé par la variable `CHROME_PATH` si besoin).
 L'audit échoue si un thème masque, rogne, recouvre ou réduit à l'illisible un texte du CV, si un contraste est insuffisant sur fond uni,
 si la page déborde en largeur entre 360 et 1920 px, si le sélecteur de thème est inatteignable ou change mal de feuille de style,
-si la page s'affiche avant la feuille de son thème, si l'animation de construction ne démarre pas au chargement ou ne finit pas
-seule, ou si le décor animé ne suit pas le thème, passe devant la fiche ou capte la souris. Sur une image ou un dégradé, le contraste ne se mesure pas : l'audit affiche alors un ⚠ à vérifier à l'œil, sans échouer.
+si la page s'affiche avant la feuille de son thème, si l'animation de construction ne démarre pas au chargement, ne finit pas
+seule ou dessine des agents en thème Tech, ou si le décor animé ne suit pas le thème, passe devant la fiche ou capte la souris. Sur une image ou un dégradé, le contraste ne se mesure pas : l'audit affiche alors un ⚠ à vérifier à l'œil, sans échouer.
 Pour tout le reste, l'audit passe l'animation (bouton « Passer ») et juge la page finie ; `shots` capture la page sans animation.
 
 ## Modifier le CV
@@ -82,13 +82,16 @@ bilan avec **Rejouer**). C'est un effet, codé dans [static/build.js](static/bui
 
 - **Pro** : une nuée de curseurs (jusqu'à 24 agents) portant chacun un intitulé de poste, flanqués de managers en gris qui
   ne posent rien mais commentent (« On cale un point ? ») ; bilan : « Page livrée par 24 agents en 3,6 s · 6 réunions · 0 bug ».
-- **Tech** : intrusion façon film. Une pluie de glyphes couvre l'écran et se retire à mesure que des daemons (réticules néon)
-  verrouillent et déchiffrent chaque bloc ; un journal égrène les clichés, puis « ACCÈS AUTORISÉ » s'affiche une seconde.
+- **Tech** : personne ne construit, la page arrive comme un signal brouillé. L'écran s'allume comme un vieux moniteur, une
+  neige d'image sans signal se retire à mesure que les blocs apparaissent, de haut en bas et par salves, avec leurs ratés
+  (aberration chromatique, tranches décalées, coupures) ; des bandes de déchirure traversent l'écran et la page tressaute
+  par instants, puis « ACCÈS AUTORISÉ » s'affiche une seconde.
 - **JDR** : un grand cercle d'invocation se trace au centre ; des feux follets posent un sceau sur chaque calque, le relient
   au cercle par une ligne d'arcane, et le contenu se matérialise dans un éclat doré.
 
-Un habillage (`SKINS` dans `build.js`) choisit l'équipe et ses dessins ; la feuille du thème les met en forme. Un thème sans
-habillage reçoit les curseurs de base, et la barre d'état reprend toujours les couleurs du sélecteur.
+Un habillage (`SKINS` dans `build.js`) choisit l'équipe et ses dessins, ou s'en passe avec son propre calendrier
+(`schedule`, comme Tech) ; la feuille du thème les met en forme. Un thème sans habillage reçoit les curseurs de base, et la
+barre d'état reprend toujours les couleurs du sélecteur.
 
 - Seule la partie visible de la page est animée, le reste s'affiche tout de suite. L'ensemble dure au plus 3,6 s : une grande
   page ou une grande équipe resserre tout le plan.

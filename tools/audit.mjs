@@ -365,14 +365,23 @@ async function runAudit({ jobs, minFontSize, storageKey }) {
   };
 
   // L'animation de construction doit démarrer au chargement, puis finir seule sans rien laisser
-  // de masqué ni de dessiné par-dessus la page.
-  const buildsAlone = async () => {
+  // de masqué, de dessiné par-dessus la page ni de décalé (à-coups du thème Tech). Le thème Tech
+  // n'a pas d'équipe : aucun agent ne doit y apparaître.
+  const buildsAlone = async (theme) => {
     const doc = frame.contentWindow.document;
-    const state = doc.documentElement.dataset.build;
+    const root = doc.documentElement;
+    const state = root.dataset.build;
     if (state !== 'running') return [`pas lancée au chargement (data-build : ${state ?? 'absent'})`];
+    const failures = [];
+    let agents = 0;
     for (let waited = 0; waited < 8000; waited += 100) {
+      if (theme === 'tech') agents = Math.max(agents, doc.querySelectorAll('.cv-build__agent').length);
       await pause(100);
-      if (!doc.documentElement.hasAttribute('data-build') && !doc.querySelector('[data-layer], .cv-build')) return [];
+      if (!root.hasAttribute('data-build') && !doc.querySelector('[data-layer], .cv-build')) {
+        if (agents) failures.push(`${agents} agents dessinés`);
+        if (root.hasAttribute('data-glitch')) failures.push('à-coup de page resté actif');
+        return failures;
+      }
     }
     return ['toujours en cours après 8 s'];
   };
@@ -397,7 +406,7 @@ async function runAudit({ jobs, minFontSize, storageKey }) {
       frame.style.cssText = `width:${job.width}px;height:900px;border:0`;
       if (job.full) result.firstPaint = await firstPaint(job.theme);
       await load(`/index.html?theme=${job.theme}`);
-      if (job.full) result.build = await buildsAlone();
+      if (job.full) result.build = await buildsAlone(job.theme);
       let win = await settle();
       result.applied = win.document.documentElement.dataset.theme;
       result.sheet = win.document.getElementById('theme-css')?.getAttribute('href');

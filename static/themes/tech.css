@@ -1388,119 +1388,88 @@ a:hover {
   }
 }
 
-/* ---------- Animation de construction : intrusion façon film (build.js) ----------
-   Une pluie de glyphes couvre l'écran et se retire à mesure que les daemons (réticules néon)
-   verrouillent et déchiffrent chaque bloc ; un journal égrène les clichés du genre, puis
-   « ACCÈS AUTORISÉ » s'affiche une seconde. */
+/* ---------- Animation de construction : un signal brouillé qui s'accroche (build.js) ----------
+   L'écran s'allume comme un vieux moniteur (un trait, puis l'image s'ouvre), sous une neige
+   d'image sans signal et des lignes de balayage. Les blocs apparaissent par salves, chacun
+   avec ses ratés ; des bandes de déchirure recolorent l'écran et la page tressaute par
+   instants. Puis « ACCÈS AUTORISÉ » s'affiche une seconde. Ni éclair plein écran ni
+   clignotement régulier : seuls de petits éléments scintillent. */
 
-.cv-build__rain {
+.cv-build__snow {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  transition: opacity 0.2s linear;
+  image-rendering: pixelated;
+  transition: opacity 0.15s linear;
 }
 
-.cv-build__frame {
-  border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
-}
-
-.cv-build__reticle {
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  margin: -11px 0 0 -11px;
-  background:
-    linear-gradient(var(--_c), var(--_c)) left top / 7px 2px no-repeat,
-    linear-gradient(var(--_c), var(--_c)) left top / 2px 7px no-repeat,
-    linear-gradient(var(--_c), var(--_c)) right top / 7px 2px no-repeat,
-    linear-gradient(var(--_c), var(--_c)) right top / 2px 7px no-repeat,
-    linear-gradient(var(--_c), var(--_c)) left bottom / 7px 2px no-repeat,
-    linear-gradient(var(--_c), var(--_c)) left bottom / 2px 7px no-repeat,
-    linear-gradient(var(--_c), var(--_c)) right bottom / 7px 2px no-repeat,
-    linear-gradient(var(--_c), var(--_c)) right bottom / 2px 7px no-repeat,
-    radial-gradient(circle, var(--_c) 0 2px, transparent 2.5px);
-  filter: drop-shadow(0 0 4px var(--_c));
-  animation: tech-lock 0.9s linear infinite;
-}
-
-.cv-build__name {
-  position: absolute;
-  top: 8px;
-  left: 14px;
-  color: var(--_c);
-  font: 700 10px/1 var(--mono);
-  text-shadow: 0 0 6px var(--_c);
-  white-space: nowrap;
-}
-
-.cv-build__box {
-  border: 1px solid var(--_c);
-  background: color-mix(in srgb, var(--_c) 10%, transparent);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--_c) 45%, transparent);
-}
-
-.cv-build__noise {
+.cv-build__lines {
   position: absolute;
   inset: 0;
-  overflow: hidden;
-  color: var(--_c);
-  font: 400 11px/12px ui-monospace, Consolas, 'MS Gothic', monospace;
-  word-break: break-all;
-  opacity: 0.8;
-  text-shadow: 0 0 5px var(--_c);
+  background: repeating-linear-gradient(to bottom, rgb(0 0 0 / 0.3) 0 1px, transparent 1px 3px);
+  transition: opacity 0.45s ease;
 }
 
-.cv-build__tag {
-  border-radius: 0;
-  color: var(--void);
-  font-family: var(--mono);
-  letter-spacing: 0.06em;
-}
-
-.cv-build__ripple {
-  border-radius: 0;
-  box-shadow: 0 0 10px var(--_c);
-}
-
-.cv-build__console {
+/* Bande de défilement vertical d'un signal mal calé. */
+.cv-build__roll {
   position: absolute;
-  bottom: 68px;
-  left: 16px;
-  max-width: calc(100vw - 32px);
-  margin: 0;
-  padding: 10px 14px;
-  border: 1px solid var(--accent);
-  background: rgb(4 6 5 / 0.88);
-  box-shadow: 0 0 18px rgb(75 239 136 / 0.25);
-  color: var(--accent);
-  font: 400 12px/1.6 var(--mono);
-  list-style: none;
-  transition: opacity 0.4s ease;
-
-  & li::before {
-    content: '> ' / '';
-    color: var(--dim);
-  }
-
-  & li[data-ok]::after {
-    content: ' [OK]' / '';
-    color: #22d3ee;
-  }
+  top: -20%;
+  right: 0;
+  left: 0;
+  height: 18%;
+  background: linear-gradient(transparent, rgb(234 255 241 / 0.05) 45%, rgb(234 255 241 / 0.09) 55%, transparent);
+  animation: tech-roll 1.4s linear infinite;
+  transition: opacity 0.45s ease;
 }
 
-.cv-build__scan {
-  position: absolute;
-  inset: 0 0 auto;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), #22d3ee, transparent);
-  box-shadow: 0 0 14px var(--accent);
-  animation: tech-scan 1.2s linear infinite;
-  transition: opacity 0.4s ease;
-}
-
-.cv-build[data-out] :is(.cv-build__console, .cv-build__scan) {
+.cv-build[data-out] :is(.cv-build__lines, .cv-build__roll) {
   opacity: 0;
+}
+
+.cv-build[data-out] .cv-build__snow {
+  opacity: 0 !important;
+}
+
+/* Allumage : un trait au milieu de l'écran noir, puis les deux moitiés du noir s'ouvrent. */
+.cv-build__crt {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(var(--void), var(--void)) top / 100% 50% no-repeat,
+    linear-gradient(var(--void), var(--void)) bottom / 100% 50% no-repeat;
+  animation: tech-crt-open 0.3s cubic-bezier(0.7, 0, 0.3, 1) 0.2s both;
+}
+
+.cv-build__crt::after {
+  position: absolute;
+  top: calc(50% - 1px);
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: #eafff1;
+  box-shadow: 0 0 14px 2px var(--accent);
+  content: '';
+  animation: tech-crt-line 0.55s ease-out both;
+}
+
+/* Déchirure : la bande recolore ce qu'elle couvre et saute de côté. */
+.cv-build__tear {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  border-block: 1px solid color-mix(in srgb, var(--_c) 70%, transparent);
+  background: color-mix(in srgb, var(--_c) 16%, transparent);
+  backdrop-filter: hue-rotate(var(--_hue)) saturate(3) brightness(1.3);
+  animation: tech-tear 0.12s steps(1, end) both;
+}
+
+/* Éclat de pixels corrompus sur un bloc qui apparaît. */
+.cv-build__shard {
+  position: absolute;
+  background: var(--_c);
+  box-shadow: 0 0 8px var(--_c);
+  animation: tech-shard 0.16s steps(1, end) both;
 }
 
 .cv-build-flash {
@@ -1515,66 +1484,258 @@ a:hover {
   animation: tech-granted 1.3s steps(1, end) both;
 }
 
-@media screen and (max-width: 599.98px) {
-  .cv-build__console {
-    display: none;
-  }
-}
-
+/* Les blocs arrivent par sauts, sans transition douce : trois variantes de ratés, réparties
+   d'après la place du bloc parmi ses voisins. */
 @media screen {
   [data-layer='in'] {
-    animation: tech-decrypt 0.42s linear both;
-  }
-}
-
-@keyframes tech-lock {
-  50% {
-    transform: rotate(45deg) scale(0.8);
+    animation: tech-glitch-a 0.5s steps(1, end) both;
   }
 
-  to {
-    transform: rotate(90deg);
-  }
-}
-
-@keyframes tech-scan {
-  to {
-    transform: translateY(100vh);
-  }
-}
-
-@keyframes tech-decrypt {
-  0% {
-    opacity: 0;
-    clip-path: inset(0 0 100% 0);
+  [data-layer='in']:nth-child(3n + 2) {
+    animation-name: tech-glitch-b;
   }
 
-  20% {
-    opacity: 1;
-    clip-path: inset(12% 0 50% 0);
-    transform: translateX(-4px);
-    text-shadow: -2px 0 #ff2bd6, 2px 0 #22d3ee;
+  [data-layer='in']:nth-child(3n) {
+    animation-name: tech-glitch-c;
   }
 
-  40% {
-    clip-path: inset(58% 0 6% 0);
+  /* À-coups de la page entière : décalage et aberration chromatique, une fraction de seconde. */
+  html[data-glitch] :is(main, .colophon) {
+    transform: translateX(-5px);
+  }
+
+  html[data-glitch='b'] :is(main, .colophon) {
+    transform: translate(6px, -1px) skewX(-1deg);
+  }
+
+  html[data-glitch='c'] :is(main, .colophon) {
     transform: translateX(3px);
   }
 
-  60% {
-    clip-path: inset(28% 0 30% 0);
-    transform: translateX(-2px);
-    text-shadow: -1px 0 #ff2bd6, 1px 0 #22d3ee;
+  html[data-glitch] :is(main, .colophon) * {
+    text-shadow:
+      -2px 0 rgb(255 43 214 / 0.8),
+      2px 0 rgb(34 211 238 / 0.8);
   }
 
-  80% {
-    clip-path: inset(0);
-    transform: translateX(1px);
+  html[data-glitch='b'] :is(main, .colophon) * {
+    text-shadow:
+      3px 0 rgb(255 43 214 / 0.8),
+      -3px 0 rgb(34 211 238 / 0.8);
+  }
+}
+
+@keyframes tech-roll {
+  to {
+    transform: translateY(700%);
+  }
+}
+
+@keyframes tech-crt-open {
+  to {
+    background-size:
+      100% 0,
+      100% 0;
+  }
+}
+
+@keyframes tech-crt-line {
+  0% {
+    transform: scaleX(0);
+  }
+
+  36% {
+    opacity: 1;
+    transform: scaleX(1);
   }
 
   100% {
+    opacity: 0;
+    transform: scaleX(1) scaleY(4);
+  }
+}
+
+@keyframes tech-tear {
+  0% {
+    transform: translateX(var(--_shift));
+  }
+
+  50% {
+    transform: translateX(calc(var(--_shift) * -0.6));
+  }
+}
+
+@keyframes tech-shard {
+  0% {
+    transform: translateX(-10px);
+  }
+
+  35% {
+    opacity: 0;
+  }
+
+  60% {
+    opacity: 1;
+    transform: translateX(8px) scaleX(0.6);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes tech-glitch-a {
+  0% {
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 1;
+    clip-path: inset(18% 0 52% 0);
+    text-shadow:
+      -3px 0 #ff2bd6,
+      3px 0 #22d3ee;
+    transform: translateX(-8px);
+  }
+
+  14% {
+    opacity: 0;
+  }
+
+  22% {
+    opacity: 1;
+    clip-path: inset(55% 0 8% 0);
+    text-shadow:
+      3px 0 #ff2bd6,
+      -3px 0 #22d3ee;
+    transform: translateX(6px) skewX(-8deg);
+  }
+
+  32% {
+    clip-path: inset(0 0 62% 0);
+    transform: translateX(-3px);
+  }
+
+  42% {
+    opacity: 0.45;
     clip-path: inset(0);
+    text-shadow:
+      -2px 0 #ff2bd6,
+      2px 0 #22d3ee;
+    transform: translateX(2px);
+  }
+
+  52% {
+    opacity: 1;
     transform: none;
+  }
+
+  68% {
+    text-shadow:
+      -1px 0 #ff2bd6,
+      1px 0 #22d3ee;
+    transform: translateX(-1px);
+  }
+
+  80% {
+    text-shadow:
+      1px 0 #ff2bd6,
+      -1px 0 #22d3ee;
+    transform: none;
+  }
+}
+
+@keyframes tech-glitch-b {
+  0% {
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 1;
+    clip-path: inset(0 0 70% 0);
+    filter: brightness(1.8);
+    text-shadow:
+      4px 0 #22d3ee,
+      -4px 0 #ff2bd6;
+    transform: translate(9px, -2px);
+  }
+
+  16% {
+    clip-path: inset(40% 0 20% 0);
+    filter: none;
+    transform: translate(-5px, 1px);
+  }
+
+  26% {
+    opacity: 0;
+  }
+
+  34% {
+    opacity: 1;
+    clip-path: inset(10% 0 45% 0);
+    transform: translateX(3px) skewX(10deg);
+  }
+
+  46% {
+    clip-path: inset(0);
+    text-shadow:
+      -2px 0 #ff2bd6,
+      2px 0 #22d3ee;
+    transform: translateX(-2px);
+  }
+
+  60% {
+    transform: none;
+  }
+
+  74% {
+    text-shadow:
+      1px 0 #ff2bd6,
+      -1px 0 #22d3ee;
+  }
+}
+
+@keyframes tech-glitch-c {
+  0% {
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.7;
+    text-shadow:
+      -5px 0 #ff2bd6,
+      5px 0 #22d3ee;
+    transform: scaleY(0.4);
+  }
+
+  18% {
+    opacity: 0;
+  }
+
+  28% {
+    opacity: 1;
+    clip-path: inset(30% 0 30% 0);
+    transform: translateX(-6px);
+  }
+
+  38% {
+    opacity: 0.3;
+    clip-path: inset(0);
+    transform: translateX(4px);
+  }
+
+  48% {
+    opacity: 1;
+    text-shadow:
+      -2px 0 #ff2bd6,
+      2px 0 #22d3ee;
+    transform: none;
+  }
+
+  70% {
+    text-shadow:
+      1px 0 #22d3ee,
+      -1px 0 #ff2bd6;
   }
 }
 
@@ -1585,23 +1746,29 @@ a:hover {
 
   8% {
     opacity: 1;
+    text-shadow:
+      -4px 0 #ff2bd6,
+      4px 0 #22d3ee,
+      0 0 30px var(--accent);
     transform: skewX(-12deg) translateX(-8px);
-    text-shadow: -4px 0 #ff2bd6, 4px 0 #22d3ee, 0 0 30px var(--accent);
   }
 
   16% {
-    transform: none;
     text-shadow: 0 0 24px var(--accent);
+    transform: none;
   }
 
   44% {
+    text-shadow:
+      3px 0 #ff2bd6,
+      -3px 0 #22d3ee,
+      0 0 24px var(--accent);
     transform: translateX(5px);
-    text-shadow: 3px 0 #ff2bd6, -3px 0 #22d3ee, 0 0 24px var(--accent);
   }
 
   50% {
-    transform: none;
     text-shadow: 0 0 24px var(--accent);
+    transform: none;
   }
 
   84% {

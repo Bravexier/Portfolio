@@ -1,7 +1,7 @@
 // Animation de construction : au chargement et à chaque changement de thème, la fiche s'assemble
 // calque par calque, dans le style du thème (son « habillage », voir SKINS) :
 //   pro   une nuée de curseurs d'agents, flanqués de managers qui commentent, livrent la page ;
-//   tech  personne : la page arrive comme un signal brouillé, par à-coups et effets glitch ;
+//   tech  personne : la page arrive par à-coups, comme une image numérique qui décroche ;
 //   jdr   des feux follets tracent des cercles d'invocation et alignent les arcanes.
 //   manga personne : la planche se crayonne, puis s'encre dans le sens de lecture japonais.
 // C'est un effet, rien de plus : la page est complète sans lui (sans JavaScript, à l'impression,
@@ -193,27 +193,50 @@
       fr(`Page livrée par ${state.builders} agents en ${seconds} s · ${state.meetings} ${plural(state.meetings, 'réunion')} · 0 bug`),
   };
 
-  // Tech : la page arrive comme un signal brouillé qui s'accroche, sans personne pour la
-  // monter. L'écran s'allume comme un vieux moniteur, une neige d'image sans signal se retire
-  // à mesure que les blocs apparaissent, de haut en bas et par salves, chacun avec ses ratés
-  // (aberration chromatique, tranches décalées, coupures) ; des bandes de déchirure traversent
-  // l'écran et la page entière tressaute par instants (html[data-glitch]).
+  // Tech : la page arrive comme l'image d'un jeu vidéo qui charge, sans personne pour la
+  // monter. Elle reste nette entre deux salves de distorsion ; une salve dure un dixième de
+  // seconde : la page entière est découpée en tranches décalées de côté, le rouge et le cyan se
+  // séparent (filtre SVG, html[data-glitch]) et des blocs de couleur corrompus la traversent.
+  // La première salve découpe l'écran noir ; les blocs apparaissent ensuite de haut en bas,
+  // par salves, chacun avec ses ratés.
   const TECH_HUES = ['#ff2bd6', '#22d3ee', '#4bef88', '#f5f749'];
-  // Une maille de neige couvre 3 × 3 pixels : du grain, pas des pavés, et peu de calcul.
-  const SNOW_CELL = 3;
-  // Les blocs commencent à apparaître une fois l'écran allumé.
-  const SIGNAL_START = 420;
+  // Les blocs commencent à apparaître juste après la première salve.
+  const SIGNAL_START = 160;
+  // Durée d'une salve, puis attente avant la suivante (millisecondes).
+  const BURST = [80, 130];
+  const CALM = [220, 600];
 
-  // Générateur pseudo-aléatoire rapide (xorshift) : la neige tire des centaines de milliers de
-  // points à chaque image.
-  function xorshift(seed) {
-    let x = seed | 0 || 1;
-    return () => {
-      x ^= x << 13;
-      x ^= x >>> 17;
-      x ^= x << 5;
-      return x;
-    };
+  // Filtre de distorsion posé sur la page pendant une salve : un bruit en bandes horizontales,
+  // ramené à quelques paliers, décale chaque tranche de côté (bords nets) ; puis le rouge part
+  // d'un côté, le vert et le bleu de l'autre. distort() tire de nouvelles tranches.
+  function glitchFilter(parent) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'cv-build__fx');
+    svg.innerHTML = `<filter id="cv-glitch" x="-10%" y="0" width="120%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0 0.02" numOctaves="2" seed="1"/>
+      <feComponentTransfer result="bands">
+        <feFuncR type="discrete" tableValues="0 0.5 0.5 0.15 0.5 0.85 0.5 0.3 0.5 0.7 0.5 1"/>
+        <feFuncG type="linear" slope="0" intercept="0.5"/>
+      </feComponentTransfer>
+      <feDisplacementMap in="SourceGraphic" in2="bands" scale="60" xChannelSelector="R" yChannelSelector="G" result="sliced"/>
+      <feColorMatrix in="sliced" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/>
+      <feOffset dx="-4" result="red"/>
+      <feColorMatrix in="sliced" values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+      <feOffset dx="4" result="cyan"/>
+      <feBlend in="red" in2="cyan" mode="screen"/>
+    </filter>`;
+    parent.append(svg);
+    return { noise: svg.querySelector('feTurbulence'), map: svg.querySelector('feDisplacementMap'), split: svg.querySelectorAll('feOffset') };
+  }
+
+  // Nouvelles tranches : hauteur des bandes, ampleur et sens du décalage, écart des couleurs.
+  function distort(fx) {
+    fx.noise.setAttribute('seed', String(Math.floor(random(1, 10000))));
+    fx.noise.setAttribute('baseFrequency', `0 ${random(0.003, 0.03).toFixed(4)}`);
+    fx.map.setAttribute('scale', String(Math.round(random(30, 110)) * pick([-1, 1])));
+    const gap = Math.round(random(2, 8));
+    fx.split[0].setAttribute('dx', String(-gap));
+    fx.split[1].setAttribute('dx', String(gap));
   }
 
   // Bande de déchirure, sur toute la largeur ou en bloc corrompu : elle recolore ce qu'elle
@@ -259,19 +282,12 @@
       return { agents: [], end: Math.max(...units.map((unit) => unit.done)) + 200 };
     },
     begin(state) {
-      const canvas = element('canvas', 'cv-build__snow', null);
-      state.overlay.prepend(canvas);
-      canvas.width = Math.ceil(innerWidth / SNOW_CELL);
-      canvas.height = Math.ceil(innerHeight / SNOW_CELL);
-      const context = canvas.getContext('2d');
-      const image = context.createImageData(canvas.width, canvas.height);
-      state.snow = { canvas, context, image, pixels: new Uint32Array(image.data.buffer), next: xorshift(Date.now()), last: -1e9 };
-      element('span', 'cv-build__lines', state.overlay);
-      element('span', 'cv-build__roll', state.overlay);
-      element('span', 'cv-build__crt', state.overlay);
-      state.tearAt = SIGNAL_START - 120;
-      state.joltAt = SIGNAL_START + random(0, 200);
-      state.joltEnd = 0;
+      state.fx = glitchFilter(state.overlay);
+      // Écran noir, que la première salve découpe en tranches (feuille du thème).
+      element('span', 'cv-build__blackout', state.overlay);
+      state.burstAt = 0;
+      state.burstEnd = 0;
+      state.shiftAt = 0;
     },
     reveal(unit, point, world) {
       // Un éclat de pixels corrompus sur une partie des blocs qui apparaissent.
@@ -287,30 +303,21 @@
       node.addEventListener('animationend', () => node.remove(), { once: true });
     },
     frame(state, t) {
-      const { snow } = state;
-      if (t - snow.last >= 50) {
-        snow.last = t;
-        const { pixels, next } = snow;
-        // Gris aléatoire, opacité égale à la luminosité : les points sombres laissent voir la page.
-        for (let index = 0; index < pixels.length; index += 1) {
-          const value = next() & 255;
-          pixels[index] = (value << 24) | (value << 16) | (value << 8) | value;
-        }
-        snow.context.putImageData(snow.image, 0, 0);
-        snow.canvas.style.opacity = String(0.7 * (1 - state.built / state.total) ** 1.4);
-      }
-      if (t >= state.tearAt && t < state.end - 400) {
-        state.tearAt = t + random(70, 240);
-        for (let count = Math.floor(random(1, 3.6)); count > 0; count -= 1) tear(state.overlay);
-      }
-      if (state.joltEnd && t >= state.joltEnd) {
+      if (state.burstEnd && t >= state.burstEnd) {
         delete root.dataset.glitch;
-        state.joltEnd = 0;
+        state.burstEnd = 0;
       }
-      if (!state.joltEnd && t >= state.joltAt && t < state.end - 450) {
+      if (!state.burstEnd && t >= state.burstAt && t < state.end - 300) {
+        state.burstEnd = t + random(...BURST);
+        state.burstAt = state.burstEnd + random(...CALM);
+        state.shiftAt = t;
         root.dataset.glitch = pick(['a', 'b', 'c']);
-        state.joltEnd = t + random(60, 130);
-        state.joltAt = state.joltEnd + random(250, 650);
+        for (let count = Math.floor(random(2, 6)); count > 0; count -= 1) tear(state.overlay);
+      }
+      // Pendant une salve, l'image décroche autrement toutes les deux ou trois images.
+      if (state.burstEnd && t >= state.shiftAt) {
+        state.shiftAt = t + random(28, 50);
+        distort(state.fx);
       }
     },
     finale() {

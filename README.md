@@ -80,8 +80,8 @@ animation de construction).
 Au chargement et à chaque changement de thème, la fiche s'assemble calque par calque sous une barre d'état (avancement, puis
 bilan avec **Rejouer**). C'est un effet, codé dans [static/build.js](static/build.js), habillé selon le thème :
 
-- **Pro** : une nuée de curseurs (jusqu'à 24 agents) portant chacun un intitulé de poste, flanqués de managers en gris qui
-  ne posent rien mais commentent (« On cale un point ? ») ; bilan : « Page livrée par 24 agents en 3,6 s · 6 réunions · 0 bug ».
+- **Pro** : une nuée de curseurs (jusqu'à 24 agents) portant chacun son nom d'agent (« Instance-1 », « Designer-2 »…),
+  avec quelques relecteurs en gris qui passent sans rien poser ; bilan : « Page livrée par 24 agents en 3,6 s ».
 - **Tech** : personne ne construit, la page arrive comme un signal brouillé. L'écran s'allume comme un vieux moniteur, une
   neige d'image sans signal se retire à mesure que les blocs apparaissent, de haut en bas et par salves, avec leurs ratés
   (aberration chromatique, tranches décalées, coupures) ; des bandes de déchirure traversent l'écran et la page tressaute

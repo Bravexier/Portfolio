@@ -366,7 +366,9 @@ async function runAudit({ jobs, minFontSize, storageKey }) {
 
   // L'animation de construction doit démarrer au chargement, puis finir seule sans rien laisser
   // de masqué, de dessiné par-dessus la page ni de décalé (à-coups du thème Tech). Le thème Tech
-  // n'a pas d'équipe : aucun agent ne doit y apparaître.
+  // n'a pas d'équipe : aucun agent ne doit y apparaître. Un agent ne porte que son nom, un rôle
+  // et un numéro (Instance-1), et ne dit rien : pas de bulle.
+  const AGENT_NAME = /^\p{L}+-\d+$/u;
   const buildsAlone = async (theme) => {
     const doc = frame.contentWindow.document;
     const root = doc.documentElement;
@@ -374,11 +376,18 @@ async function runAudit({ jobs, minFontSize, storageKey }) {
     if (state !== 'running') return [`pas lancée au chargement (data-build : ${state ?? 'absent'})`];
     const failures = [];
     let agents = 0;
+    let bubbles = 0;
+    const names = new Set();
     for (let waited = 0; waited < 8000; waited += 100) {
       if (theme === 'tech') agents = Math.max(agents, doc.querySelectorAll('.cv-build__agent').length);
+      bubbles = Math.max(bubbles, doc.querySelectorAll('.cv-build__say').length);
+      for (const name of doc.querySelectorAll('.cv-build__name')) names.add(name.textContent);
       await pause(100);
       if (!root.hasAttribute('data-build') && !doc.querySelector('[data-layer], .cv-build')) {
         if (agents) failures.push(`${agents} agents dessinés`);
+        if (bubbles) failures.push(`${bubbles} bulles de dialogue`);
+        const odd = [...names].filter((name) => !AGENT_NAME.test(name));
+        if (odd.length) failures.push(`noms d'agents hors format : ${odd.slice(0, 3).join(', ')}`);
         if (root.hasAttribute('data-glitch')) failures.push('à-coup de page resté actif');
         return failures;
       }

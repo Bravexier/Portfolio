@@ -1,6 +1,6 @@
 // Animation de construction : au chargement et à chaque changement de thème, la fiche s'assemble
 // calque par calque, dans le style du thème (son « habillage », voir SKINS) :
-//   pro   une nuée de curseurs d'agents, flanqués de managers qui commentent, livrent la page ;
+//   pro   une nuée de curseurs d'agents nommés (Instance-1, Designer-2…) livre la page ;
 //   tech  personne : la page arrive par à-coups, comme une image numérique qui décroche ;
 //   jdr   des feux follets tracent des cercles d'invocation et alignent les arcanes.
 //   manga personne : la planche se crayonne, puis s'encre dans le sens de lecture japonais.
@@ -134,63 +134,29 @@
     done: (state, seconds) => `Page construite par ${state.builders} ${plural(state.builders, 'agent')} en ${seconds} s`,
   };
 
-  // Pro : la page livrée « en mode projet » par une équipe pléthorique. Les managers ne posent
-  // aucun calque : ils passent, commentent et comptent les réunions.
-  const PRO_TITLES = [
-    'Head of Padding', 'Chief Synergy Officer', 'Growth Hacker', 'Scrum Master', 'Product Owner', 'Coach agile',
-    'Data Wizard', 'Change Manager', 'Chief Happiness Officer', 'VP Kerning', 'Lead Alignement', 'Brand Ambassador',
-    'Ninja CSS', 'Évangéliste UX', 'Talent Partner', 'Consultant senior', 'Architecte solutions', 'Business Partner',
-    'Head of Innovation', 'Pixel Officer', 'Agile Champion', 'Directeur de la vision', 'Head of Marges', 'Facilitateur',
-    'Stagiaire', 'Office Manager', 'Expert ROI', 'Lead Disruption',
-  ];
-  const PRO_BOSSES = [
-    'Manager · en réunion', 'N+2 · en copie', 'Consultant · 1500 €/j', 'Comité de pilotage', 'DRH · bienveillance',
-    'PMO · reporting', 'Directeur · « ASAP »', 'Stagiaire · café',
-  ];
-  const PRO_WINS = [
-    'Livré ✓', 'Quick win !', 'Synergie +12 %', 'KPI au vert', 'Aligné ✓', 'On itère', 'Pixel perfect', 'Validé N+1',
-    'Scalable ✓', 'ROI ×3', 'Disruptif', 'Best practice', 'Craft ✓', 'Impact ✓', 'Process ✓', 'Agile ✓',
-  ];
-  const PRO_TALK = [
-    'On cale un point ?', 'Je mets en copie', 'Petit point synchro', 'On en reparle en daily', 'Tu me fais un slide ?',
-    'C\'est prioritaire', 'Pour hier', 'On challenge ça', 'Il faut plus de valeur', 'On garde le cap', 'Top, on scale',
-    'Quel est le ROI ?', 'On fait un atelier ?', 'Je remonte au COMEX',
-  ];
+  // Pro : la page livrée par une équipe d'agents. Chaque curseur porte son nom d'agent, un rôle
+  // et un numéro (Instance-1, Designer-2…). Les relecteurs (gris) ne posent aucun calque : ils
+  // passent d'un calque à l'autre.
+  const PRO_ROLES = ['Instance', 'Designer', 'Développeur', 'Intégrateur', 'Rédacteur', 'Testeur'];
+  const PRO_REVIEWER = 'Relecteur';
 
   const PRO = {
     colors: hues(28, 78, 50),
-    crew: (count) => ({ builders: clamp(Math.ceil(count / 2), 8, 24), idlers: count >= 12 ? PRO_BOSSES.length : 2 }),
+    crew: (count) => ({ builders: clamp(Math.ceil(count / 2), 8, 24), idlers: count >= 12 ? 4 : 2 }),
     begin(state) {
-      state.titles = shuffle(PRO_TITLES);
-      state.bosses = shuffle(PRO_BOSSES);
-      state.meetings = 0;
-      state.talk = 600;
+      state.roles = shuffle(PRO_ROLES);
     },
+    // Numéros uniques dans l'équipe : les agents d'abord, puis les relecteurs.
     agent(node, agent, state) {
       node.innerHTML = CURSOR;
       const name = element('span', 'cv-build__name', node);
-      name.textContent = fr(agent.idle ? state.bosses[agent.rank % state.bosses.length] : state.titles[agent.rank % state.titles.length]);
-    },
-    tag: (unit) => label(unit.element),
-    reveal(unit, point, world) {
-      spark('cv-build__ripple', point, unit.color, world);
-      if (Math.random() < 0.3) spark('cv-build__say', point, unit.color, world).textContent = fr(pick(PRO_WINS));
-    },
-    frame(state, t) {
-      if (t < state.talk) return;
-      state.talk = t + random(380, 650);
-      const bosses = state.agents.filter((agent) => agent.idle && agent.point && t < agent.leave - 300);
-      if (!bosses.length) return;
-      const boss = pick(bosses);
-      const bubble = spark('cv-build__say', boss.point, boss.color, state.world);
-      bubble.dataset.boss = '';
-      bubble.textContent = fr(pick(PRO_TALK));
-      state.meetings += 1;
+      name.textContent = agent.idle
+        ? `${PRO_REVIEWER}-${state.builders + agent.rank + 1}`
+        : `${state.roles[agent.rank % state.roles.length]}-${agent.rank + 1}`;
     },
     status: (state) =>
-      `${state.builders} agents · ${state.idlers} ${plural(state.idlers, 'manager')} · ${state.built} / ${state.total} ${plural(state.total, 'calque')}`,
-    done: (state, seconds) =>
-      fr(`Page livrée par ${state.builders} agents en ${seconds} s · ${state.meetings} ${plural(state.meetings, 'réunion')} · 0 bug`),
+      `${state.builders} agents · ${state.idlers} ${plural(state.idlers, 'relecteur')} · ${state.built} / ${state.total} ${plural(state.total, 'calque')}`,
+    done: (state, seconds) => `Page livrée par ${state.builders} agents en ${seconds} s`,
   };
 
   // Tech : la page arrive comme l'image d'un jeu vidéo qui charge, sans personne pour la

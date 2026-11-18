@@ -57,9 +57,10 @@ const withMentions = (link) => (text) =>
     .map((part) => (typeof part === 'string' ? attr(part) : `<a class="mention" href="${attr(part.url)}" rel="noopener">${attr(part.name)}</a>`))
     .join('');
 
-// Une ligne de parcours : poste, stage ou formation. Même balisage pour les trois.
-// `link` (facultatif) est le lieur d'organisations de cette ligne.
-function entry(item, { kind, heading, index, link }) {
+// Une ligne de parcours : poste, stage, formation ou projet. Même balisage pour tous.
+// `link` (facultatif) est le lieur d'organisations de cette ligne. Sans `endDate`, une ligne
+// est en cours (`current`), sauf avis contraire : un projet n'est jamais le poste actuel.
+function entry(item, { kind, heading, index, link, current = Boolean(item.startDate && !item.endDate) }) {
   const text = link ? withMentions(link) : e;
   const period = periodHtml(item);
   const meta = [
@@ -67,17 +68,18 @@ function entry(item, { kind, heading, index, link }) {
     item.contract && `<li class="entry__contract">${e(item.contract)}</li>`,
     item.location && `<li class="entry__place">${e(item.location)}</li>`,
   ].filter(Boolean);
-  const current = item.startDate && !item.endDate ? ' data-current' : '';
-
-  return `
-          <li class="entry" data-kind="${e(kind)}"${current} style="--i:${index}">
-            <article class="entry__card">
-              <header class="entry__head">
-                <${heading} class="entry__title">${e(item.title)}</${heading}>
-                <p class="entry__org">${maybeLink(item.org, item.url)}</p>
+  const metaList = meta.length
+    ? `
                 <ul class="entry__meta">
 ${meta.map((line) => `                  ${line}`).join('\n')}
-                </ul>
+                </ul>`
+    : '';
+
+  return `
+          <li class="entry" data-kind="${e(kind)}"${current ? ' data-current' : ''} style="--i:${index}">
+            <article class="entry__card">
+              <header class="entry__head">
+                <${heading} class="entry__title">${maybeLink(item.title, item.titleUrl)}</${heading}>${item.org ? `\n                <p class="entry__org">${maybeLink(item.org, item.url)}</p>` : ''}${metaList}
               </header>${item.about ? `\n              <p class="entry__about">${e(item.about)}</p>` : ''}${item.summary ? `\n              <p class="entry__summary">${text(item.summary)}</p>` : ''}${bullets('entry__highlights', item.highlights, text)}${tags(item.keywords)}
             </article>
           </li>`;
@@ -206,7 +208,7 @@ function experiences(resume) {
     ? `
         <div class="subsection" id="stages" data-subsection="stages">
           <h3 class="subsection__title">Stages</h3>
-          <ol class="timeline timeline--stages">
+          <ol class="timeline timeline--compact">
 ${list(internships, jobEntry('h4', linker))}
           </ol>
         </div>`
@@ -233,26 +235,20 @@ ${list(resume.education, (training, index) =>
   );
 }
 
+// Projets personnels : au second plan, avec le même balisage et la même liste compacte que les stages.
 function projects(resume) {
   if (!resume.projects?.length) return '';
   return section(
     'projets',
     'Projets personnels',
-    `        <ul class="projects">
-${list(resume.projects, (project, index) => {
-  const period = periodHtml(project);
-  return `          <li class="project" style="--i:${index}">
-            <article class="project__card">
-              <h3 class="project__name">${e(project.name)}</h3>${period ? `\n              <p class="project__period">${period}</p>` : ''}
-              <p class="project__desc">${e(project.description)}</p>${bullets('project__highlights', project.highlights)}${tags(project.keywords)}${
-                project.url
-                  ? `\n              <p class="project__link"><a href="${attr(project.url)}" rel="noopener">Voir le code</a></p>`
-                  : ''
-              }
-            </article>
-          </li>`;
-})}
-        </ul>`,
+    `        <ol class="timeline timeline--compact">
+${list(resume.projects, (project, index) =>
+  entry(
+    { ...project, title: project.name, titleUrl: project.url, summary: project.description },
+    { kind: 'projet', heading: 'h3', index, current: false },
+  ),
+)}
+        </ol>`,
   );
 }
 

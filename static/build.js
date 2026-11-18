@@ -20,7 +20,7 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const SCOPE = 'main, .colophon';
   // Cadres esquissés en pointillés pendant la construction.
-  const FRAMES = '.identity, .section, .skill-group, .entry, .project';
+  const FRAMES = '.identity, .section, .skill-group, .entry';
   const COLORS = ['#ff4d8d', '#ffb020', '#2ee6a6', '#38bdf8', '#a78bfa', '#f97316', '#e879f9', '#facc15', '#22d3ee', '#fb7185', '#4ade80', '#818cf8'];
   // Au-delà, le visiteur a déjà trop attendu la page : elle s'affiche sans animation.
   const LATE_START = 2500;

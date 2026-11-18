@@ -166,12 +166,27 @@ test('llms.txt suit le format llmstxt.org', () => {
   }
 });
 
-test('chaque poste et chaque stage a sa ligne, dans le bon bloc', () => {
+test('chaque poste, stage, formation et projet a sa ligne, dans le bon bloc', () => {
   const stages = html.slice(html.indexOf('id="stages"'), html.indexOf('id="formations"'));
+  const projects = html.slice(html.indexOf('id="projets"'), html.indexOf('</main>'));
   assert.equal(count(stages, 'data-kind="stage"'), resume.work.filter(isInternship).length);
-  assert.equal(count(html, '<li class="entry"'), resume.work.length + resume.education.length);
+  assert.equal(count(projects, 'data-kind="projet"'), resume.projects.length);
+  assert.equal(count(html, '<li class="entry"'), resume.work.length + resume.education.length + resume.projects.length);
+  // Un projet sans date de fin n'est pas le poste actuel.
   const ongoing = [...resume.work, ...resume.education].filter((item) => item.startDate && !item.endDate);
-  assert.equal(count(html, 'data-current'), ongoing.length, 'une marque par ligne en cours');
+  assert.equal(count(html, 'data-current'), ongoing.length, 'une marque par poste ou formation en cours');
+});
+
+test('les projets ont la même liste compacte que les stages', () => {
+  const stages = html.slice(html.indexOf('id="stages"'), html.indexOf('id="formations"'));
+  const projects = html.slice(html.indexOf('id="projets"'), html.indexOf('</main>'));
+  assert.ok(stages.includes('<ol class="timeline timeline--compact">'), 'stages');
+  assert.ok(projects.includes('<ol class="timeline timeline--compact">'), 'projets');
+  const withUrl = { ...resume.projects[0], name: 'Outil', url: 'https://code.exemple/outil' };
+  const page = render({ ...resume, projects: [withUrl] })['index.html'];
+  assert.ok(page.includes('<h3 class="entry__title"><a href="https://code.exemple/outil" rel="noopener">Outil</a></h3>'), 'nom lié');
+  const undated = render({ ...resume, projects: [{ name: 'Sans date', description: 'Projet sans période.' }] })['index.html'];
+  assert.doesNotMatch(undated, /<ul class="entry__meta">\s*<\/ul>/, 'pas de liste de dates vide');
 });
 
 test('le rendu échappe le HTML venu du contenu', () => {

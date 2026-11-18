@@ -4,6 +4,7 @@ export const THEMES = [
   { id: 'pro', label: 'Pro' },
   { id: 'tech', label: 'Tech' },
   { id: 'jdr', label: 'JDR' },
+  { id: 'manga', label: 'Manga' },
 ];
 
 export const DEFAULT_THEME = THEMES[0].id;

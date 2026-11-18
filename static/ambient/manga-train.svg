@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 120">
+  <!-- Rame de banlieue vue de profil, trois voitures ; elle roule vers la gauche. -->
+  <defs>
+    <g id="car">
+      <rect x="0" y="24" width="300" height="70" rx="9" fill="#eef2f6" stroke="#2b3550" stroke-width="3"/>
+      <rect x="4" y="18" width="292" height="8" rx="3" fill="#c3ccd8" stroke="#2b3550" stroke-width="2"/>
+      <rect x="2" y="70" width="296" height="9" fill="#2bb673"/>
+      <rect x="2" y="79" width="296" height="3" fill="#ffd23f"/>
+      <g fill="#3d5a80" stroke="#2b3550" stroke-width="2">
+        <rect x="20" y="36" width="44" height="24" rx="3"/>
+        <rect x="104" y="36" width="44" height="24" rx="3"/>
+        <rect x="152" y="36" width="44" height="24" rx="3"/>
+        <rect x="236" y="36" width="44" height="24" rx="3"/>
+      </g>
+      <g fill="#dfe6ee" stroke="#2b3550" stroke-width="2">
+        <rect x="70" y="32" width="28" height="56" rx="2"/>
+        <rect x="202" y="32" width="28" height="56" rx="2"/>
+      </g>
+      <g fill="#3d5a80">
+        <rect x="74" y="38" width="9" height="22" rx="2"/>
+        <rect x="85" y="38" width="9" height="22" rx="2"/>
+        <rect x="206" y="38" width="9" height="22" rx="2"/>
+        <rect x="217" y="38" width="9" height="22" rx="2"/>
+      </g>
+      <g fill="#ffffff" opacity=".55">
+        <path d="M24 40l12 0-14 16z"/>
+        <path d="M108 40l12 0-14 16z"/>
+        <path d="M156 40l12 0-14 16z"/>
+        <path d="M240 40l12 0-14 16z"/>
+      </g>
+      <g fill="#2b3550">
+        <rect x="30" y="94" width="70" height="10" rx="3"/>
+        <rect x="200" y="94" width="70" height="10" rx="3"/>
+        <circle cx="45" cy="106" r="8"/>
+        <circle cx="85" cy="106" r="8"/>
+        <circle cx="215" cy="106" r="8"/>
+        <circle cx="255" cy="106" r="8"/>
+      </g>
+    </g>
+  </defs>
+  <use href="#car" x="10"/>
+  <use href="#car" x="340"/>
+  <use href="#car" x="670"/>
+  <g fill="#2b3550">
+    <rect x="310" y="70" width="30" height="8"/>
+    <rect x="640" y="70" width="30" height="8"/>
+  </g>
+  <!-- Nez de la voiture de tête, et ses phares. -->
+  <path d="M14 30 Q2 30 2 46 L2 88 Q2 94 10 94 L18 94 Z" fill="#eef2f6" stroke="#2b3550" stroke-width="3"/>
+  <rect x="6" y="40" width="10" height="22" rx="2" fill="#3d5a80"/>
+  <circle cx="9" cy="76" r="3.5" fill="#fff4b0" stroke="#2b3550" stroke-width="1.5"/>
+  <!-- Pantographe sur la voiture du milieu. -->
+  <path d="M470 18 L488 4 L520 4 L502 18 M488 4 H530" fill="none" stroke="#2b3550" stroke-width="2.5" stroke-linejoin="round"/>
+  <rect x="465" y="14" width="44" height="6" rx="2" fill="#2b3550"/>
+</svg>

@@ -3,6 +3,7 @@
 //   pro   une nuée de curseurs d'agents, flanqués de managers qui commentent, livrent la page ;
 //   tech  personne : la page arrive comme un signal brouillé, par à-coups et effets glitch ;
 //   jdr   des feux follets tracent des cercles d'invocation et alignent les arcanes.
+//   manga personne : la planche se crayonne, puis s'encre dans le sens de lecture japonais.
 // C'est un effet, rien de plus : la page est complète sans lui (sans JavaScript, à l'impression,
 // avec « réduire les animations »), et « Passer » ou Échap le termine aussitôt.
 //
@@ -406,7 +407,102 @@
     done: (state, seconds) => `Fiche invoquée par ${state.builders} arcanistes en ${seconds} s`,
   };
 
-  const SKINS = { pro: PRO, tech: TECH, jdr: JDR };
+  // Manga : la page se fabrique comme une planche, sans personne à l'écran. Le crayonné bleu
+  // des cases d'abord, puis l'encrage, case par case dans le sens de lecture japonais (de
+  // droite à gauche, puis de haut en bas), ponctué d'onomatopées. À la fin, les lignes de
+  // vitesse convergent et le titre de l'épisode traverse l'écran de droite à gauche.
+  const MANGA_SFX = ['ドン！', 'バン！', 'ズバッ', 'シャキーン', 'キラッ', 'ドドド', 'ゴゴゴ', 'ババン！', 'ピカッ', 'ガッ', 'シュッ', 'ドキッ'];
+  const MANGA_HUES = ['#d1193f', '#111111', '#0a64a4', '#ffe066', '#ff8fa6'];
+  // L'encrage commence une fois les cases crayonnées.
+  const INK_START = 520;
+  // Les cases de la page, du plus grand cadre au plus petit : un calque est encré avec sa case.
+  const PANELS = '.identity, .section, .colophon';
+
+  // Lignes de concentration (集中線) : de fines pointes qui convergent vers le centre de l'écran
+  // en laissant un cœur vide. Tracées dans un carré de 200 unités centré sur l'origine.
+  function speedLines(count) {
+    const at = (angle, radius) => `${(Math.cos(angle) * radius).toFixed(1)} ${(Math.sin(angle) * radius).toFixed(1)}`;
+    let path = '';
+    for (let index = 0; index < count; index += 1) {
+      const angle = (index / count) * Math.PI * 2 + random(-0.03, 0.03);
+      const spread = random(0.004, 0.014);
+      path += `M${at(angle - spread, 150)}L${at(angle, random(34, 62))}L${at(angle + spread, 150)}Z`;
+    }
+    return `<svg viewBox="-100 -100 200 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="${path}"/></svg>`;
+  }
+
+  const MANGA = {
+    colors: MANGA_HUES,
+    boxes: false,
+    // Ordre de lecture d'un manga : les cases par rangées de haut en bas, de droite à gauche
+    // dans une rangée ; dans une case, ligne par ligne, de droite à gauche. Le tout tient en
+    // 3,2 s au plus, sous LONGEST.
+    schedule(units) {
+      const panels = new Map();
+      for (const unit of units) {
+        const frame = unit.element.closest(PANELS);
+        const box = frame ? toPage(frame.getBoundingClientRect()) : unit.rect;
+        if (!panels.has(frame)) panels.set(frame, { box, units: [] });
+        panels.get(frame).units.push(unit);
+      }
+      const rightToLeft = (a, b) => b.x + b.w - (a.x + a.w);
+      const rows = (items, rectOf, tolerance) => {
+        const sorted = [...items].sort((a, b) => rectOf(a).y - rectOf(b).y);
+        const grouped = [];
+        for (const item of sorted) {
+          const row = grouped.at(-1);
+          if (row && rectOf(item).y - row.top < tolerance) row.items.push(item);
+          else grouped.push({ top: rectOf(item).y, items: [item] });
+        }
+        return grouped.flatMap((row) => row.items.sort((a, b) => rightToLeft(rectOf(a), rectOf(b))));
+      };
+      const order = rows([...panels.values()], (panel) => panel.box, 40).flatMap((panel) =>
+        rows(panel.units, (unit) => unit.rect, 8),
+      );
+      const step = Math.min(70, 1900 / order.length);
+      order.forEach((unit, index) => {
+        unit.color = pick([MANGA_HUES[0], MANGA_HUES[1], MANGA_HUES[2]]);
+        unit.arrive = INK_START + index * step;
+        unit.reveal = unit.arrive;
+        unit.done = unit.reveal + 450;
+      });
+      return { agents: [], end: INK_START + (order.length - 1) * step + 700 };
+    },
+    begin(state) {
+      state.t = 0;
+      state.sfxAt = INK_START;
+    },
+    reveal(unit, point, world, state) {
+      // Une onomatopée de temps en temps, plantée au-dessus du bloc qui vient d'être encré.
+      if (state.t < state.sfxAt || unit.rect.w < 60 || Math.random() > 0.55) return;
+      state.sfxAt = state.t + random(220, 380);
+      const spot = { x: unit.rect.x + unit.rect.w * random(0.35, 0.95), y: unit.rect.y + random(-4, unit.rect.h * 0.4) };
+      const sfx = spark('cv-build__sfx', spot, unit.color, world);
+      sfx.textContent = pick(MANGA_SFX);
+      sfx.style.setProperty('--_r', `${random(-16, 16).toFixed(1)}deg`);
+    },
+    frame(state, t) {
+      state.t = t;
+    },
+    // Fin de l'épisode : lignes de vitesse et titre de l'épisode, une seconde et demie.
+    finale() {
+      const node = element('div', 'cv-build-flash', document.body);
+      node.setAttribute('aria-hidden', 'true');
+      element('div', 'cv-build-flash__lines', node).innerHTML = speedLines(140);
+      const band = element('div', 'cv-build-flash__band', node);
+      element('span', 'cv-build-flash__episode', band).textContent = '第1話';
+      element('strong', 'cv-build-flash__title', band).textContent = '開発者、参上！';
+      element('span', 'cv-build-flash__subtitle', band).textContent = fr('Épisode 1 : le développeur entre en scène !');
+      return node;
+    },
+    status: (state) =>
+      state.built
+        ? `Encrage · ${state.built} / ${state.total} ${plural(state.total, 'bloc')} · sens de lecture ←`
+        : 'Crayonné des cases…',
+    done: (state, seconds) => `Chapitre 1 encré en ${seconds} s · lu de droite à gauche`,
+  };
+
+  const SKINS = { pro: PRO, tech: TECH, jdr: JDR, manga: MANGA };
   const skinOf = (theme) => ({ ...DEFAULT, ...SKINS[theme] });
 
   // ---------- Plan : qui construit quoi, et quand ----------

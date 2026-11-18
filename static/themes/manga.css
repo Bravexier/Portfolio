@@ -1,0 +1,1663 @@
+/* Thème Manga : une planche de manga posée sur un monde d'animé. La fiche est une page en
+   noir et blanc découpée en cases (bordures à l'encre, gouttières blanches, trames de points),
+   relevée d'une couleur comme les pages couleur d'ouverture de chapitre. Chaque section est un
+   chapitre (第一話, 第二話…), les projets personnels sont les « histoires annexes » (番外編),
+   le poste en cours est « en cours de parution » (連載中) et la page finit sur « à suivre » (つづく).
+   Les mesures sont en rem, filets et contours mis à part. */
+
+/* ---------- Palette, typographie, espacements ---------- */
+
+:root {
+  --ink: #111;
+  --ink-soft: #383838;
+  --muted: #565656;
+  --paper: #fffdf8;
+  --rule: #c9c6be;
+  --red: #d1193f;
+  --red-soft: #ffd9e1;
+  --link: #0a64a4;
+  --yellow: #ffe066;
+  --sky-top: #3f9be0;
+  --sky-low: #bfe6ff;
+
+  /* Trame : des points d'encre sur une grille, comme une trame à coller. */
+  --tone: radial-gradient(circle, rgb(17 17 17 / 0.22) 0.07rem, transparent 0.09rem) 0 0 / 0.375rem 0.375rem;
+  --tone-light: radial-gradient(circle, rgb(17 17 17 / 0.12) 0.06rem, transparent 0.08rem) 0 0 / 0.375rem 0.375rem;
+
+  --font: 'Segoe UI', 'Yu Gothic UI', 'Hiragino Sans', 'Noto Sans JP', system-ui, sans-serif;
+  --font-title: Impact, Haettenschweiler, 'Arial Narrow Bold', 'Arial Black', sans-serif;
+  --font-jp: 'Yu Gothic', YuGothic, Meiryo, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  --fs-name: clamp(2.25rem, 1.6rem + 3vw, 3.4rem);
+  --fs-chapter: 1.45rem;
+  --fs-h3: 1.0625rem;
+  --fs-body: 0.9375rem;
+  --fs-side: 0.875rem;
+  --fs-small: 0.8125rem;
+  --fs-tiny: 0.75rem;
+  --lh: 1.55;
+  --lh-tight: 1.45;
+
+  --border: 3px;
+  --sheet-w: 44rem;
+  --side-w: 18rem;
+  --gap: 0.625rem;
+  --pad: 1rem;
+  --space-entry: 0.875rem;
+  --space-tags: 0.55rem;
+  --label-w: 6.5rem;
+  --sep: 0.625rem;
+  --photo: 6rem;
+
+  --switcher-bg: var(--paper);
+  --switcher-fg: var(--ink);
+  --switcher-border: var(--ink);
+  --switcher-active-bg: var(--red);
+  --switcher-active-fg: #fff;
+  --switcher-font: var(--font);
+  --switcher-radius: 3px;
+  --switcher-shadow: 3px 3px 0 var(--ink);
+}
+
+/* ---------- Page : le ciel d'un animé, une planche par-dessus ---------- */
+
+body {
+  background: linear-gradient(to bottom, var(--sky-top), var(--sky-low)) fixed;
+  color: var(--ink);
+  font: 400 var(--fs-body) / var(--lh) var(--font);
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+/* La planche : un papier blanc, les cases y sont collées avec leur gouttière. */
+.sheet {
+  display: grid;
+  gap: var(--gap);
+  max-width: var(--sheet-w);
+  margin-inline: auto;
+  padding: var(--gap);
+  background: var(--paper);
+  counter-reset: chapter;
+}
+
+.sheet__side,
+.sheet__main {
+  display: grid;
+  align-content: start;
+  gap: var(--gap);
+}
+
+/* Une case : un cadre à l'encre. */
+.identity,
+.section {
+  position: relative;
+  padding: var(--pad);
+  border: var(--border) solid var(--ink);
+  background: var(--paper);
+}
+
+.subsection,
+.timeline,
+.colophon {
+  position: relative;
+}
+
+/* ---------- Liens ---------- */
+
+a:not(.action) {
+  color: var(--link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+
+  &:hover {
+    color: var(--red);
+    text-decoration-thickness: 2px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 1px;
+    border-radius: 2px;
+  }
+}
+
+/* Employeurs, écoles et organisations citées : le lien garde la couleur du texte. */
+.entry__org a,
+a.mention {
+  color: inherit;
+  text-decoration-color: var(--muted);
+
+  &:hover {
+    color: var(--red);
+    text-decoration-color: currentColor;
+  }
+}
+
+/* ---------- Identité : l'entrée en scène du héros ---------- */
+
+/* Le fond de la case : des lignes de vitesse qui convergent vers le portrait. */
+.identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'photo heading'
+    'status status'
+    'facts facts'
+    'links links';
+  gap: 1rem;
+  align-items: center;
+  overflow: hidden;
+  background:
+    repeating-conic-gradient(from 0deg at 12% 40%, transparent 0deg 3deg, rgb(17 17 17 / 0.07) 3deg 4deg),
+    var(--paper);
+}
+
+/* Portrait : une case dans la case, penchée, en noir et blanc contrasté. */
+.identity__photo {
+  grid-area: photo;
+  width: var(--photo);
+  aspect-ratio: 3 / 4;
+  border: var(--border) solid var(--ink);
+  object-fit: cover;
+  object-position: top;
+  filter: grayscale(1) contrast(1.3) brightness(1.05);
+  box-shadow: 5px 5px 0 var(--red);
+  rotate: -2deg;
+}
+
+/* Sans photo, les initiales occupent la même case. */
+.identity:not(:has(.identity__photo))::before {
+  content: attr(data-initials);
+  grid-area: photo;
+  display: grid;
+  place-items: center;
+  width: var(--photo);
+  aspect-ratio: 3 / 4;
+  border: var(--border) solid var(--ink);
+  background: var(--paper);
+  font: 400 calc(var(--photo) * 0.42) / 1 var(--font-title);
+  box-shadow: 5px 5px 0 var(--red);
+}
+
+.identity__heading {
+  grid-area: heading;
+  overflow-wrap: break-word;
+}
+
+/* Légende de présentation d'un personnage, comme à sa première apparition. */
+.identity__heading::before {
+  content: '主人公 · PROTAGONISTE' / '';
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  padding: 0.15rem 0.5rem;
+  background: var(--ink);
+  color: #fff;
+  font: 700 0.6875rem/1.3 var(--font-jp);
+  letter-spacing: 0.08em;
+}
+
+/* Le nom en logo de titre : capitales grasses penchées, ombre rouge décalée. */
+.identity__name {
+  color: var(--ink);
+  font: italic 400 var(--fs-name) / 1 var(--font-title);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-shadow: 0.06em 0.06em 0 var(--red);
+}
+
+.identity__title {
+  display: inline-block;
+  margin-top: 0.55rem;
+  padding: 0.2rem 0.7rem;
+  background: var(--red);
+  color: #fff;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.3;
+  clip-path: polygon(0.4rem 0, 100% 0, calc(100% - 0.4rem) 100%, 0 100%);
+}
+
+.identity__tagline {
+  margin-top: 0.35rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  font-weight: 600;
+}
+
+.identity__status {
+  grid-area: status;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.7rem;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: var(--paper);
+    font-size: var(--fs-small);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  li::before {
+    content: '★' / '';
+    color: var(--red);
+  }
+}
+
+/* Repères : une bulle de narration rectangulaire. */
+.facts {
+  grid-area: facts;
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.6rem 0.8rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  font-size: var(--fs-side);
+  line-height: 1.4;
+}
+
+.fact {
+  display: grid;
+  grid-template-columns: var(--label-w) minmax(0, 1fr);
+  column-gap: 0.75rem;
+  align-items: baseline;
+
+  dt {
+    color: var(--red);
+    font-size: var(--fs-tiny);
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  dd {
+    font-weight: 600;
+  }
+}
+
+.identity__links {
+  grid-area: links;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* Boutons de bande dessinée : cadre épais, ombre pleine ; ils s'enfoncent au survol. */
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.375rem;
+  padding: 0.3rem 0.95rem;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 800 var(--fs-side) / 1.2 var(--font);
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--yellow);
+    box-shadow: 1px 1px 0 var(--ink);
+    translate: 2px 2px;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--red);
+    outline-offset: 3px;
+  }
+
+  &[data-kind='contact'] {
+    background: var(--red);
+    color: #fff;
+  }
+
+  &[data-kind='contact']:hover {
+    background: var(--ink);
+  }
+}
+
+/* ---------- Chapitres ---------- */
+
+.section,
+.subsection {
+  scroll-margin-top: 1rem;
+  counter-increment: chapter;
+}
+
+.subsection {
+  counter-increment: none;
+  margin-top: 1.25rem;
+}
+
+/* Titre de chapitre : un bandeau noir sur toute la largeur de la case, le numéro en japonais. */
+.section__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.6rem;
+  margin: calc(-1 * var(--pad)) calc(-1 * var(--pad)) var(--pad);
+  padding: 0.4rem var(--pad) 0.35rem;
+  background: var(--ink);
+  color: #fff;
+  font: italic 400 var(--fs-chapter) / 1.15 var(--font-title);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+
+  &::before {
+    content: '第' counter(chapter, cjk-decimal) '話' / '';
+    color: #ff8fa6;
+    font: normal 700 0.62em/1 var(--font-jp);
+    letter-spacing: 0.1em;
+  }
+}
+
+.section[data-section='projets'] > .section__title::before {
+  content: '番外編' / '';
+}
+
+/* Puces : un éclat d'encre rouge. */
+.profile__highlights,
+.entry__highlights,
+.project__highlights {
+  margin-top: 0.4rem;
+  padding-inline-start: 1.1rem;
+
+  li {
+    position: relative;
+  }
+
+  li::before {
+    content: '' / '';
+    position: absolute;
+    top: 0.5em;
+    left: -1rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--red);
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  }
+
+  li + li {
+    margin-top: 0.2rem;
+  }
+}
+
+/* Profil : le héros parle, dans une bulle dont la pointe remonte vers lui. */
+.profile__summary {
+  position: relative;
+  padding: 0.8rem 1rem;
+  border: 2.5px solid var(--ink);
+  border-radius: 1.5rem;
+  background: var(--paper);
+  font-size: 1rem;
+  font-weight: 600;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 2.2rem;
+    clip-path: polygon(0 100%, 30% 0, 100% 100%);
+  }
+
+  &::before {
+    bottom: 100%;
+    width: 1.6rem;
+    height: 1rem;
+    background: var(--ink);
+  }
+
+  &::after {
+    bottom: calc(100% - 3px);
+    left: calc(2.2rem + 4px);
+    width: calc(1.6rem - 8px);
+    height: calc(1rem - 1px);
+    background: var(--paper);
+  }
+}
+
+/* Les atouts : des cases de narration, en trame légère. */
+.profile__highlights {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  padding: 0;
+
+  li {
+    padding: 0.4rem 0.7rem 0.4rem 1.5rem;
+    border: 2px solid var(--ink);
+    background: var(--tone-light), var(--paper);
+  }
+
+  li::before {
+    left: 0.5rem;
+  }
+
+  li + li {
+    margin-top: 0;
+  }
+}
+
+/* ---------- Compétences et langues : la fiche de personnage ---------- */
+
+.sheet__side {
+  font-size: var(--fs-side);
+  line-height: 1.4;
+}
+
+.section[data-section='competences'] .section__body,
+.languages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr));
+  gap: 1.1rem 2rem;
+}
+
+.skill-group {
+  container-type: inline-size;
+}
+
+/* Titre de catégorie : un onglet noir collé au-dessus des compétences. */
+.skill-group__title {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  border: 2px solid var(--ink);
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: var(--fs-small);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.skills {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.skill {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'name meter'
+    'level meter';
+  column-gap: 0.75rem;
+  align-items: baseline;
+}
+
+/* Catégories au second plan : une ligne par compétence, sans jauge. */
+.skill-group[data-display='compact'] {
+  .skill-group__title {
+    background: var(--paper);
+    font-size: var(--fs-tiny);
+  }
+
+  .skills {
+    gap: 0.1rem 2rem;
+  }
+
+  .skill {
+    grid-template-areas: 'name level';
+    column-gap: 0.5rem;
+  }
+
+  .skill__name {
+    font-size: var(--fs-small);
+    font-weight: 400;
+  }
+
+  .skill__meter {
+    display: none;
+  }
+}
+
+@container (width >= 19rem) {
+  .skill-group:not([data-display]) .skill {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: 'name level meter';
+  }
+
+  .skill-group[data-display='compact'] {
+    .skills {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .skill:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.skill__name {
+  grid-area: name;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.skill__level {
+  grid-area: level;
+  color: var(--muted);
+  font-size: var(--fs-tiny);
+}
+
+/* Jauge de puissance : cinq segments penchés, tramés à vide, rouges selon le niveau. */
+.skill__meter {
+  --seg: 0.625rem;
+  --seg-step: 0.8125rem;
+
+  grid-area: meter;
+  position: relative;
+  width: calc(4 * var(--seg-step) + var(--seg));
+  height: 0.6875rem;
+  transform: skewX(-20deg);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to right,
+      currentColor 0 var(--seg),
+      transparent var(--seg) var(--seg-step)
+    );
+  }
+
+  &::before {
+    color: #d4d0c7;
+  }
+
+  &::after {
+    color: var(--red);
+    clip-path: inset(0 calc((5 - var(--level)) * var(--seg-step)) 0 0);
+  }
+}
+
+.language {
+  display: grid;
+  align-content: start;
+}
+
+.language__name {
+  font-weight: 800;
+}
+
+.language__fluency,
+.language__certs {
+  color: var(--muted);
+  font-size: var(--fs-tiny);
+}
+
+/* ---------- Parcours : une case par poste ---------- */
+
+.entry__card {
+  position: relative;
+  padding: 0.75rem 0.9rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+}
+
+/* Le poste en cours est « en cours de parution » : cadre rouge et vignette sur le filet. */
+.entry[data-current] > .entry__card {
+  border-color: var(--red);
+  box-shadow: 4px 4px 0 var(--red);
+  padding-top: 0.95rem;
+
+  &::before {
+    content: '連載中 · EN COURS' / '';
+    position: absolute;
+    top: -0.7rem;
+    left: 0.7rem;
+    padding: 0.1rem 0.45rem;
+    background: var(--red);
+    color: #fff;
+    font: 700 0.6875rem/1.3 var(--font-jp);
+    letter-spacing: 0.06em;
+  }
+}
+
+.timeline--postes > .entry + .entry,
+.timeline--formations > .entry + .entry {
+  margin-top: var(--space-entry);
+}
+
+.entry__title {
+  color: var(--ink);
+  font-size: var(--fs-h3);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.entry__org {
+  font-weight: 700;
+}
+
+/* Dates, contrat et lieu : une ligne qui ne se replie qu'entre deux éléments. */
+.entry__meta,
+.timeline--stages .entry__head,
+.timeline--compact .entry__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--sep);
+  overflow-x: clip;
+}
+
+.entry__meta {
+  color: var(--muted);
+  font-size: var(--fs-small);
+  line-height: var(--lh-tight);
+
+  li::before {
+    content: '·';
+    display: inline-block;
+    inline-size: var(--sep);
+    margin-inline-start: calc(-1 * var(--sep));
+    text-align: center;
+  }
+}
+
+.entry[data-current] .entry__period {
+  color: var(--red);
+  font-weight: 800;
+}
+
+.entry__summary {
+  margin-top: 0.4rem;
+}
+
+.entry__about {
+  margin-top: 0.1rem;
+  color: var(--ink-soft);
+  font-size: var(--fs-small);
+  font-style: italic;
+}
+
+/* Stages : de petites cases, plus serrées. */
+.subsection__title {
+  margin-bottom: 0.7rem;
+  color: var(--ink);
+  font: italic 400 1.0625rem/1.2 var(--font-title);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  &::after {
+    content: ' · 回想' / '';
+    color: var(--red);
+    font: normal 700 0.8em/1 var(--font-jp);
+  }
+}
+
+.timeline--stages,
+.timeline--compact {
+  display: grid;
+  align-items: start;
+  gap: 0.7rem;
+  font-size: var(--fs-small);
+  line-height: var(--lh-tight);
+
+  .entry__card {
+    padding: 0.55rem 0.7rem;
+    background: var(--tone-light), var(--paper);
+  }
+
+  .entry__head {
+    margin-inline: -0.1875rem;
+    padding-inline: 0.1875rem;
+  }
+
+  .entry__meta {
+    display: contents;
+    overflow-x: visible;
+    font-size: var(--fs-tiny);
+  }
+
+  .entry__head::after {
+    content: '';
+    flex-basis: 100%;
+    order: 1;
+  }
+
+  .entry__contract,
+  .entry__place {
+    order: 2;
+  }
+
+  .entry__title {
+    flex: 0 0 100%;
+    font-size: var(--fs-side);
+  }
+
+  .entry__summary,
+  .entry__highlights {
+    margin-top: 0.25rem;
+  }
+
+  .entry__about {
+    font-size: var(--fs-tiny);
+  }
+
+  .tags {
+    margin-top: 0.4rem;
+  }
+}
+
+/* ---------- Projets : les histoires annexes ---------- */
+
+.project + .project {
+  margin-top: var(--space-entry);
+}
+
+.project__card {
+  display: grid;
+  grid-template-columns: minmax(min-content, 1fr) auto;
+  column-gap: 1rem;
+  align-items: baseline;
+  padding: 0.75rem 0.9rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+
+  > * {
+    grid-column: 1 / -1;
+  }
+}
+
+.project__card > .project__name {
+  grid-column: 1;
+  color: var(--ink);
+  font-size: var(--fs-h3);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.project__card > .project__period {
+  grid-column: 2;
+  grid-row: 1;
+  color: var(--muted);
+  font-size: var(--fs-small);
+  text-align: end;
+}
+
+.project__desc {
+  margin-top: 0.3rem;
+}
+
+.project__link {
+  margin-top: 0.55rem;
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+
+/* ---------- Technologies : des autocollants ---------- */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: var(--space-tags);
+}
+
+.tag {
+  padding: 0.05rem 0.45rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: var(--fs-tiny);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* ---------- Pied de page : à suivre ---------- */
+
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 1.5rem;
+  max-width: var(--sheet-w);
+  margin: 0 auto 1.5rem;
+  padding: 0.7rem 1rem;
+  border: var(--border) solid var(--ink);
+  border-top-width: 0;
+  background: var(--paper);
+  color: var(--ink-soft);
+  font-size: var(--fs-small);
+
+  &::after {
+    content: 'つづく →' / '';
+    margin-inline-start: auto;
+    padding: 0.15rem 0.7rem;
+    background: var(--ink);
+    color: #fff;
+    font: 700 0.8125rem/1.3 var(--font-jp);
+    letter-spacing: 0.12em;
+    clip-path: polygon(0 0, calc(100% - 0.6rem) 0, 100% 50%, calc(100% - 0.6rem) 100%, 0 100%);
+    padding-inline-end: 1.1rem;
+  }
+}
+
+.colophon__formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+}
+
+/* ---------- Jusqu'à 639 px : la planche occupe tout l'écran ---------- */
+
+@media screen and (width < 40em) {
+  :root {
+    --pad: 0.875rem;
+    --gap: 0.5rem;
+    --photo: 5.25rem;
+  }
+
+  /* La case touche le coin de l'écran : le nom s'arrête avant le bouton du sélecteur de thème. */
+  .identity__heading {
+    padding-inline-end: 2.25rem;
+  }
+
+  .identity__links li {
+    flex: 1 1 auto;
+  }
+
+  .action {
+    width: 100%;
+  }
+
+  .colophon {
+    margin-bottom: 0;
+    border-inline-width: 0;
+  }
+}
+
+@media screen and (width < 30em) {
+  .identity__links li:has(> [href^='mailto:']) {
+    flex-basis: 100%;
+  }
+}
+
+/* ---------- À partir de 480 px : dates à droite de l'intitulé ---------- */
+
+@media print, (width >= 30em) {
+  .timeline--postes,
+  .timeline--formations {
+    .entry__head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'title meta'
+        'org meta';
+      column-gap: 1rem;
+    }
+
+    .entry__title {
+      grid-area: title;
+    }
+
+    .entry__org {
+      grid-area: org;
+    }
+
+    .entry__meta {
+      grid-area: meta;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-content: start;
+      justify-items: end;
+      column-gap: 0;
+      padding-top: 0.2rem;
+    }
+
+    .entry__period {
+      grid-column: 1 / -1;
+    }
+
+    .entry__meta li::before {
+      margin-inline-start: 0;
+    }
+
+    .entry__period::before,
+    .entry__period + li::before {
+      content: none;
+    }
+  }
+}
+
+/* ---------- À partir de 640 px : la planche se détache du ciel, stages sur deux colonnes ---------- */
+
+@media screen and (width >= 40em) {
+  :root {
+    --photo: 7rem;
+  }
+
+  body {
+    padding: 1.5rem 1.5rem 0;
+  }
+
+  .sheet {
+    border: var(--border) solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+
+  .colophon {
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+
+  .timeline--stages,
+  .timeline--compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile__highlights {
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+}
+
+/* ---------- De 640 à 927 px : les repères côte à côte, libellé au-dessus ---------- */
+
+@media screen and (40em <= width < 58em) {
+  .facts {
+    grid-auto-flow: column;
+    justify-content: start;
+    column-gap: 2.5rem;
+  }
+
+  .fact {
+    grid-template-columns: none;
+    align-content: start;
+    row-gap: 0.15rem;
+  }
+}
+
+/* ---------- À partir de 928 px : identité sur deux blocs, colonne de fiche à gauche ---------- */
+
+@media print, (width >= 58em) {
+  :root {
+    --sheet-w: 60rem;
+    --pad: 1.15rem;
+    --photo: 8rem;
+  }
+
+  .sheet {
+    grid-template-columns: var(--side-w) minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      'identity identity'
+      'side profil'
+      'side main';
+  }
+
+  .identity {
+    grid-area: identity;
+    grid-template-columns: auto minmax(0, 1fr) fit-content(26rem);
+    gap: 0.9rem 1.5rem;
+    padding-block: 1.5rem;
+  }
+
+  .sheet > .section {
+    grid-area: profil;
+  }
+
+  .sheet__side {
+    grid-area: side;
+  }
+
+  .sheet__main {
+    grid-area: main;
+  }
+}
+
+@media screen and (width >= 58em) {
+  .identity {
+    grid-template-areas:
+      'photo heading facts'
+      'status status links';
+  }
+
+  /* La fiche de personnage reste en vue pendant la lecture du parcours (voir le thème Pro :
+     --side-height est la hauteur réelle de la colonne, mesurée par app.js). */
+  .sheet__side {
+    position: sticky;
+    top: min(0.75rem, 100vh - var(--side-height, 6250rem) - 1rem);
+    align-self: start;
+  }
+}
+
+/* ---------- Contrastes forcés : la jauge garde ses segments ---------- */
+
+@media (forced-colors: active) {
+  .skill__meter {
+    forced-color-adjust: none;
+
+    &::before {
+      color: GrayText;
+    }
+
+    &::after {
+      color: CanvasText;
+    }
+  }
+}
+
+/* ---------- Mouvement ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .action {
+    transition:
+      background-color 0.12s ease,
+      box-shadow 0.12s ease,
+      translate 0.12s ease;
+  }
+}
+
+/* ---------- Impression : la planche sur papier, sans ombres ni lignes de vitesse ---------- */
+
+@page {
+  size: A4;
+  margin: 10mm;
+}
+
+@media print {
+  :root {
+    font-size: 9.4pt;
+
+    --border: 1.5px;
+    --gap: 0.5rem;
+    --pad: 0.75rem;
+    --space-entry: 0.6rem;
+    --space-tags: 0.35rem;
+    --lh: 1.42;
+    --lh-tight: 1.4;
+    --fs-tiny: 0.78rem;
+    --side-w: 15.5rem;
+    --photo: 6.5rem;
+  }
+
+  body {
+    background: none;
+  }
+
+  .sheet {
+    max-width: none;
+    padding: 0;
+    grid-template-rows: none;
+    grid-template-areas:
+      'identity identity'
+      'side profil'
+      'side main';
+    print-color-adjust: exact;
+  }
+
+  .identity {
+    grid-template-areas:
+      'photo heading facts'
+      'photo status links';
+    column-gap: 1.25rem;
+    background: var(--paper);
+  }
+
+  .identity__photo,
+  .entry[data-current] > .entry__card {
+    box-shadow: none;
+  }
+
+  /* Les boutons deviennent des lignes de coordonnées : libellé, puis adresse en clair. */
+  .identity__links {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .identity .action {
+    display: grid;
+    grid-template-columns: var(--label-w) minmax(0, 1fr);
+    column-gap: 0.75rem;
+    align-items: baseline;
+    justify-content: start;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font-size: var(--fs-tiny);
+    box-shadow: none;
+  }
+
+  .identity .action:not([href^='mailto:']),
+  .identity .action[href^='mailto:']::before {
+    color: var(--red);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .identity .action:not([href^='mailto:'])::after,
+  .identity .action[href^='mailto:'] {
+    color: var(--ink);
+    letter-spacing: 0;
+    text-transform: none;
+    overflow-wrap: anywhere;
+  }
+
+  .identity .action:not([href^='mailto:'])::after {
+    content: attr(href);
+  }
+
+  .identity .action[href^='mailto:']::before {
+    content: 'E-mail';
+  }
+
+  .project__link a::after {
+    content: ' : ' attr(href);
+  }
+
+  .timeline--stages,
+  .timeline--compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+
+  .entry,
+  .project,
+  .skill-group,
+  .language,
+  .profile__highlights li {
+    break-inside: avoid;
+  }
+
+  p,
+  li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .colophon {
+    max-width: none;
+    margin: 0.5rem 0 0;
+    padding: 0.4rem 0 0;
+    border: 0;
+    border-top: 1px solid var(--rule);
+    font-size: var(--fs-tiny);
+  }
+}
+
+/* ---------- Animation de construction : une planche qui se dessine (build.js) ----------
+   Le crayonné d'abord : le cadre de chaque case au crayon bleu (celui que la reproduction
+   ignore), tracé de droite à gauche. Puis l'encrage : chaque bloc apparaît d'un coup de
+   pinceau, de droite à gauche, dans le sens de lecture japonais, ponctué d'onomatopées. Pour finir, des
+   lignes de vitesse et le titre de l'épisode. */
+
+.cv-build__frame {
+  border: 1.5px solid rgb(86 156 226 / 0.8);
+  border-radius: 2px;
+  box-shadow: 2px -1px 0 -0.5px rgb(86 156 226 / 0.35);
+  animation: manga-pencil 0.4s ease-out backwards;
+}
+
+.cv-build__frame:nth-child(odd) {
+  rotate: 0.35deg;
+}
+
+.cv-build__frame:nth-child(3n) {
+  rotate: -0.45deg;
+  translate: 2px 1px;
+}
+
+.cv-build__sfx {
+  position: absolute;
+  color: var(--_c);
+  font: 900 clamp(22px, 2.4vw, 36px) / 1 var(--font-jp);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  text-shadow:
+    -2px -2px 0 #fff,
+    2px -2px 0 #fff,
+    -2px 2px 0 #fff,
+    2px 2px 0 #fff,
+    0 3px 0 #fff,
+    4px 5px 0 var(--ink);
+  translate: -50% -100%;
+  rotate: var(--_r, 0deg);
+  animation: manga-sfx 0.75s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+
+/* Chaque bloc est encré d'un coup de pinceau, de droite à gauche. */
+@media screen {
+  [data-layer='in'] {
+    animation: manga-ink 0.42s cubic-bezier(0.25, 1, 0.4, 1) both;
+  }
+}
+
+/* Titre de l'épisode : tout s'achève en même temps, le salut s'efface à la fin de son animation. */
+.cv-build-flash {
+  overflow: hidden;
+  animation: manga-flash 1.5s linear both;
+}
+
+.cv-build-flash__lines {
+  position: absolute;
+  inset: 0;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  animation: manga-lines 1.5s ease-out both;
+
+  path {
+    fill: rgb(17 17 17 / 0.6);
+  }
+}
+
+.cv-build-flash__band {
+  position: absolute;
+  top: 50%;
+  right: -10vw;
+  left: -10vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 0 14px;
+  border-block: 5px solid var(--red);
+  background: var(--ink);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 0 4px #fff;
+  translate: 0 -50%;
+  rotate: -4deg;
+  animation: manga-band 1.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.cv-build-flash__episode {
+  color: #ff8fa6;
+  font: 700 14px/1 var(--font-jp);
+  letter-spacing: 0.3em;
+}
+
+.cv-build-flash__title {
+  font: 900 clamp(30px, 6vw, 70px) / 1.1 var(--font-jp);
+  letter-spacing: 0.06em;
+  text-shadow: 4px 4px 0 var(--red);
+}
+
+.cv-build-flash__subtitle {
+  font: italic 700 clamp(13px, 1.5vw, 18px) / 1.3 var(--font);
+}
+
+@keyframes manga-pencil {
+  from {
+    opacity: 0.3;
+    clip-path: inset(0 0 0 100%);
+  }
+}
+
+@keyframes manga-ink {
+  0% {
+    opacity: 0;
+    clip-path: inset(-12% -12% -12% 100%);
+    translate: 0.75rem 0;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  60% {
+    clip-path: inset(-12% -12% -12% -12%);
+    translate: 0 0;
+    scale: 1.04;
+  }
+}
+
+@keyframes manga-sfx {
+  0% {
+    opacity: 0;
+    scale: 2.2;
+  }
+
+  18% {
+    opacity: 1;
+    scale: 0.92;
+  }
+
+  28% {
+    scale: 1.04;
+  }
+
+  72% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    scale: 1.1;
+  }
+}
+
+@keyframes manga-flash {
+  92% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes manga-lines {
+  0% {
+    opacity: 0;
+    scale: 1.4;
+  }
+
+  14% {
+    opacity: 1;
+    scale: 1;
+  }
+
+  50% {
+    scale: 1.03;
+  }
+}
+
+/* Le bandeau arrive par la droite, comme on tourne les pages d'un manga, et repart à gauche. */
+@keyframes manga-band {
+  0% {
+    transform: translateX(120vw);
+  }
+
+  14% {
+    transform: translateX(-3vw);
+  }
+
+  20% {
+    transform: none;
+  }
+
+  80% {
+    transform: none;
+  }
+
+  100% {
+    transform: translateX(-130vw);
+  }
+}
+
+/* ---------- Décor animé : un ciel d'été d'animé (ambient.js) ----------
+   Derrière la planche, le monde de l'animé : grand ciel bleu, cumulus ombrés en aplats, soleil
+   et reflets d'objectif, une ville au loin, un train de banlieue qui passe, les poteaux
+   électriques et leurs fils au premier plan. Des pétales de cerisier tombent dans les marges,
+   des onomatopées verticales y surgissent, et dans le coin bas gauche, là où la place le permet,
+   une mascotte code sur sa pile de mangas. Les dessins sont dans static/ambient/. */
+
+.cv-ambient[data-scene='manga'] {
+  background: var(--sky-top);
+
+  & > * {
+    position: absolute;
+  }
+}
+
+.cv-ambient__sky {
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    #2a86d8 0%,
+    #3f9be0 22%,
+    #6db8ee 48%,
+    #a8d8fa 70%,
+    #e3f3ff 84%,
+    #fff3dc 100%
+  );
+}
+
+/* Soleil hors champ, en haut à droite, et ses reflets d'objectif en diagonale. */
+.cv-ambient__sun {
+  inset: 0;
+  background:
+    radial-gradient(circle at 96% 4%, rgb(255 255 255 / 0.95) 0 3vh, rgb(255 250 220 / 0.55) 7vh, transparent 26vh),
+    radial-gradient(circle at 78% 22%, rgb(255 255 255 / 0.22) 0 2.2vh, transparent 2.4vh),
+    radial-gradient(circle at 70% 31%, rgb(190 230 255 / 0.28) 0 4.5vh, transparent 4.8vh),
+    radial-gradient(circle at 60% 44%, rgb(255 230 250 / 0.18) 0 1.4vh, transparent 1.6vh);
+  animation: manga-flare 9s ease-in-out infinite alternate;
+}
+
+.cv-ambient__clouds {
+  inset: 4vh 0 auto;
+  height: 52vh;
+  background: url('../ambient/manga-nuages.svg') 0 100% / auto 100% repeat-x;
+  animation: manga-clouds 240s linear infinite;
+
+  /* Un second banc, plus petit et plus lent : de la profondeur. */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 46% 0 0;
+    background: url('../ambient/manga-nuages.svg') 900px 100% / auto 100% repeat-x;
+    opacity: 0.7;
+    animation: manga-clouds 420s linear infinite reverse;
+  }
+}
+
+.cv-ambient__city {
+  right: 0;
+  bottom: 9vh;
+  left: 0;
+  height: 22vh;
+  background: url('../ambient/manga-ville.svg') 0 100% / auto 100% repeat-x;
+}
+
+/* Le talus, la voie, et le train qui la parcourt de droite à gauche. */
+.cv-ambient__track {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 9vh;
+  background:
+    linear-gradient(#556680, #556680) 0 0 / 100% 0.5vh no-repeat,
+    repeating-linear-gradient(to right, #6c7f9c 0 6px, transparent 6px 22px) 0 0.5vh / 100% 0.6vh no-repeat,
+    linear-gradient(to bottom, #8cc27a, #5f9d5a);
+}
+
+.cv-ambient__train {
+  bottom: 100%;
+  left: 0;
+  height: 7vh;
+  aspect-ratio: 980 / 120;
+  position: absolute;
+  background: url('../ambient/manga-train.svg') center / contain no-repeat;
+  animation: manga-train 38s linear infinite;
+}
+
+.cv-ambient__poles {
+  right: 0;
+  bottom: 2vh;
+  left: 0;
+  height: 74vh;
+  background: url('../ambient/manga-poteaux.svg') 0 100% / auto 100% repeat-x;
+}
+
+.cv-ambient__chibi {
+  display: none;
+  bottom: 6px;
+  left: 12px;
+  width: min(250px, calc(var(--room-left) - 24px));
+  aspect-ratio: 300 / 320;
+  background: url('../ambient/manga-chibi.svg') left bottom / contain no-repeat;
+}
+
+/* La bulle de la mascotte : sa pointe descend vers elle. */
+.cv-ambient__bubble {
+  display: none;
+  bottom: calc(6px + min(250px, var(--room-left) - 24px) * 1.02);
+  left: 18px;
+  max-width: min(250px, calc(var(--room-left) - 36px));
+  margin: 0;
+  padding: 8px 12px;
+  border: 2.5px solid var(--ink);
+  border-radius: 16px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 13px/1.35 var(--font);
+  opacity: 0;
+  scale: 0.6;
+  transform-origin: 30% 100%;
+  transition:
+    opacity 0.25s ease,
+    scale 0.3s cubic-bezier(0.2, 1.6, 0.4, 1);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 40%;
+    width: 16px;
+    height: 14px;
+    background: var(--ink);
+    clip-path: polygon(0 0, 100% 0, 20% 100%);
+  }
+
+  &[data-on] {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.cv-ambient[data-wide] :is(.cv-ambient__chibi, .cv-ambient__bubble) {
+  display: block;
+}
+
+.cv-ambient__petal {
+  top: -24px;
+  width: var(--size, 10px);
+  height: var(--size, 10px);
+  border-radius: 85% 0 85% 0;
+  background: linear-gradient(135deg, #fff0f4, #ffb3c8 60%, #ff8fae);
+  box-shadow: 0 0 2px rgb(255 120 160 / 0.4);
+  animation: manga-petal var(--d, 10s) linear both;
+}
+
+.cv-ambient__sound {
+  writing-mode: vertical-rl;
+  color: #fff;
+  font: 900 clamp(30px, 3.2vw, 48px) / 1 var(--font-jp);
+  letter-spacing: -0.04em;
+  text-shadow:
+    -2px -2px 0 var(--ink),
+    2px -2px 0 var(--ink),
+    -2px 2px 0 var(--ink),
+    2px 2px 0 var(--ink),
+    5px 5px 0 var(--red);
+  rotate: var(--r, 0deg);
+  animation: manga-sound 3.2s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+
+@keyframes manga-flare {
+  to {
+    opacity: 0.75;
+    translate: -1.5vw 1vh;
+  }
+}
+
+@keyframes manga-clouds {
+  to {
+    background-position-x: -2400px;
+  }
+}
+
+@keyframes manga-train {
+  0% {
+    translate: 100vw 0;
+  }
+
+  34%,
+  100% {
+    translate: -100% 0;
+  }
+}
+
+@keyframes manga-petal {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  6% {
+    opacity: 1;
+  }
+
+  30% {
+    transform: translate(calc(var(--dx, 0px) * 0.3 + 24px), 30vh) rotate(calc(var(--spin, 360deg) * 0.3));
+  }
+
+  60% {
+    transform: translate(calc(var(--dx, 0px) * 0.6 - 18px), 62vh) rotate(calc(var(--spin, 360deg) * 0.6));
+  }
+
+  92% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx, 0px), 104vh) rotate(var(--spin, 360deg));
+  }
+}
+
+@keyframes manga-sound {
+  0% {
+    opacity: 0;
+    scale: 1.8;
+  }
+
+  12% {
+    opacity: 1;
+    scale: 0.95;
+  }
+
+  20% {
+    scale: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    scale: 1.05;
+  }
+}

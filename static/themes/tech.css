@@ -1388,69 +1388,27 @@ a:hover {
   }
 }
 
-/* ---------- Animation de construction : un signal brouillé qui s'accroche (build.js) ----------
-   L'écran s'allume comme un vieux moniteur (un trait, puis l'image s'ouvre), sous une neige
-   d'image sans signal et des lignes de balayage. Les blocs apparaissent par salves, chacun
-   avec ses ratés ; des bandes de déchirure recolorent l'écran et la page tressaute par
-   instants. Puis « ACCÈS AUTORISÉ » s'affiche une seconde. Ni éclair plein écran ni
-   clignotement régulier : seuls de petits éléments scintillent. */
+/* ---------- Animation de construction : une image numérique qui décroche (build.js) ----------
+   Comme le chargement d'un jeu vidéo : la page reste nette entre deux salves de distorsion
+   d'un dixième de seconde, où elle se découpe en tranches décalées et ses couleurs se séparent
+   (filtre SVG #cv-glitch), traversée de blocs de couleur corrompus. La première salve découpe
+   l'écran noir ; les blocs apparaissent par salves, chacun avec ses ratés. Puis « ACCÈS
+   AUTORISÉ » s'affiche une seconde. Ni éclair plein écran ni clignotement régulier. */
 
-.cv-build__snow {
+/* Porte la définition du filtre : invisible, mais pas masquée (un filtre masqué ne s'applique pas). */
+.cv-build__fx {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Écran noir du départ, coupé en tranches qui sautent de côté puis disparaissent. */
+.cv-build__blackout {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-  transition: opacity 0.15s linear;
-}
-
-.cv-build__lines {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(to bottom, rgb(0 0 0 / 0.3) 0 1px, transparent 1px 3px);
-  transition: opacity 0.45s ease;
-}
-
-/* Bande de défilement vertical d'un signal mal calé. */
-.cv-build__roll {
-  position: absolute;
-  top: -20%;
-  right: 0;
-  left: 0;
-  height: 18%;
-  background: linear-gradient(transparent, rgb(234 255 241 / 0.05) 45%, rgb(234 255 241 / 0.09) 55%, transparent);
-  animation: tech-roll 1.4s linear infinite;
-  transition: opacity 0.45s ease;
-}
-
-.cv-build[data-out] :is(.cv-build__lines, .cv-build__roll) {
-  opacity: 0;
-}
-
-.cv-build[data-out] .cv-build__snow {
-  opacity: 0 !important;
-}
-
-/* Allumage : un trait au milieu de l'écran noir, puis les deux moitiés du noir s'ouvrent. */
-.cv-build__crt {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(var(--void), var(--void)) top / 100% 50% no-repeat,
-    linear-gradient(var(--void), var(--void)) bottom / 100% 50% no-repeat;
-  animation: tech-crt-open 0.3s cubic-bezier(0.7, 0, 0.3, 1) 0.2s both;
-}
-
-.cv-build__crt::after {
-  position: absolute;
-  top: calc(50% - 1px);
-  right: 0;
-  left: 0;
-  height: 2px;
-  background: #eafff1;
-  box-shadow: 0 0 14px 2px var(--accent);
-  content: '';
-  animation: tech-crt-line 0.55s ease-out both;
+  background: var(--void);
+  animation: tech-cut 0.14s steps(1, end) 0.04s forwards;
 }
 
 /* Déchirure : la bande recolore ce qu'elle couvre et saute de côté. */
@@ -1499,59 +1457,45 @@ a:hover {
     animation-name: tech-glitch-c;
   }
 
-  /* À-coups de la page entière : décalage et aberration chromatique, une fraction de seconde. */
+  /* Salve : la page entière se découpe en tranches décalées et ses couleurs se séparent
+     (filtre redessiné par build.js), avec un saut d'ensemble. Un dixième de seconde. */
   html[data-glitch] :is(main, .colophon) {
+    filter: url('#cv-glitch');
     transform: translateX(-5px);
   }
 
   html[data-glitch='b'] :is(main, .colophon) {
-    transform: translate(6px, -1px) skewX(-1deg);
+    transform: translate(6px, -2px);
   }
 
   html[data-glitch='c'] :is(main, .colophon) {
-    transform: translateX(3px);
-  }
-
-  html[data-glitch] :is(main, .colophon) * {
-    text-shadow:
-      -2px 0 rgb(255 43 214 / 0.8),
-      2px 0 rgb(34 211 238 / 0.8);
-  }
-
-  html[data-glitch='b'] :is(main, .colophon) * {
-    text-shadow:
-      3px 0 rgb(255 43 214 / 0.8),
-      -3px 0 rgb(34 211 238 / 0.8);
+    transform: translateX(3px) scaleY(1.01);
   }
 }
 
-@keyframes tech-roll {
-  to {
-    transform: translateY(700%);
-  }
-}
-
-@keyframes tech-crt-open {
-  to {
-    background-size:
-      100% 0,
-      100% 0;
-  }
-}
-
-@keyframes tech-crt-line {
+@keyframes tech-cut {
   0% {
-    transform: scaleX(0);
+    clip-path: inset(0 0 46% 0);
+    transform: translateX(-24px);
   }
 
-  36% {
-    opacity: 1;
-    transform: scaleX(1);
+  25% {
+    clip-path: inset(38% 0 0 0);
+    transform: translateX(18px);
+  }
+
+  50% {
+    clip-path: inset(12% 0 64% 0);
+    transform: translateX(-10px);
+  }
+
+  75% {
+    clip-path: inset(70% 0 8% 0);
+    transform: translateX(30px);
   }
 
   100% {
-    opacity: 0;
-    transform: scaleX(1) scaleY(4);
+    visibility: hidden;
   }
 }
 

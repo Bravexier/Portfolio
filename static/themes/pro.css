@@ -1259,9 +1259,9 @@ a.mention {
   }
 }
 
-/* ---------- Animation de construction : une nuée d'agents et leurs managers (build.js) ----------
-   Chaque curseur porte son intitulé de poste ; les managers (gris) ne posent rien, ils
-   commentent. Les bulles et les étiquettes sont du décor, ôté à la fin. */
+/* ---------- Animation de construction : une nuée d'agents (build.js) ----------
+   Chaque curseur porte son nom d'agent (Instance-1, Designer-2…) ; les relecteurs (gris) ne
+   posent rien. Les étiquettes sont du décor, ôté à la fin. */
 
 .cv-build__name {
   position: absolute;
@@ -1278,54 +1278,11 @@ a.mention {
 
 .cv-build__agent[data-idle] .cv-build__name {
   background: var(--navy);
-  font-style: italic;
-}
-
-.cv-build__say {
-  position: absolute;
-  margin: -36px 0 0 12px;
-  padding: 4px 9px;
-  border: 1.5px solid var(--_c);
-  border-radius: 10px 10px 10px 2px;
-  background: #fff;
-  color: var(--navy);
-  font: 600 11.5px/1.2 var(--font);
-  white-space: nowrap;
-  box-shadow: 0 4px 14px rgb(23 32 56 / 0.18);
-  animation: pro-say 1.25s ease-out both;
-}
-
-.cv-build__say[data-boss] {
-  border-color: var(--navy);
-  background: var(--navy);
-  color: #fff;
-  font-style: italic;
 }
 
 @media screen {
   [data-layer='in'] {
     animation: pro-layer-in 0.36s ease-out both;
-  }
-}
-
-@keyframes pro-say {
-  0% {
-    opacity: 0;
-    transform: translateY(6px) scale(0.9);
-  }
-
-  12% {
-    opacity: 1;
-    transform: none;
-  }
-
-  75% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-    transform: translateY(-10px);
   }
 }
 

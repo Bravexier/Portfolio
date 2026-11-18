@@ -1,4 +1,4 @@
-/* Socle commun aux trois thèmes : rien de visuel ici, à part le sélecteur de thème, le
+/* Socle commun à tous les thèmes : rien de visuel ici, à part le sélecteur de thème, le
    socle de l'animation de construction et celui du décor animé.
    Toute la mise en page et l'habillage vivent dans themes/<id>.css. */
 

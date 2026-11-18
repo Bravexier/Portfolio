@@ -1,7 +1,7 @@
 # Portfolio — Xavier Erb
 
-CV et portfolio en une page statique, affichable dans trois thèmes : **Pro** (classique), **Tech** (terminal) et **JDR** (fiche de personnage).
-Le contenu est le même dans les trois ; seul l'habillage change.
+CV et portfolio en une page statique, affichable dans quatre thèmes : **Pro** (classique), **Tech** (terminal), **JDR** (fiche de personnage)
+et **Manga** (planche de manga sur un ciel d'animé). Le contenu est le même dans les quatre ; seul l'habillage change.
 
 ## Démarrage
 
@@ -88,9 +88,12 @@ bilan avec **Rejouer**). C'est un effet, codé dans [static/build.js](static/bui
   par instants, puis « ACCÈS AUTORISÉ » s'affiche une seconde.
 - **JDR** : un grand cercle d'invocation se trace au centre ; des feux follets posent un sceau sur chaque calque, le relient
   au cercle par une ligne d'arcane, et le contenu se matérialise dans un éclat doré.
+- **Manga** : la planche se fabrique sous nos yeux. Le cadre des cases se crayonne au bleu, puis chaque bloc s'encre d'un coup
+  de pinceau dans le sens de lecture japonais (de droite à gauche, puis de haut en bas), ponctué d'onomatopées (ドン！,
+  シャキーン…). Pour finir, des lignes de vitesse et le titre de l'épisode : « 開発者、参上！ », le développeur entre en scène.
 
 Un habillage (`SKINS` dans `build.js`) choisit l'équipe et ses dessins, ou s'en passe avec son propre calendrier
-(`schedule`, comme Tech) ; la feuille du thème les met en forme. Un thème sans habillage reçoit les curseurs de base, et la
+(`schedule`, comme Tech et Manga) ; la feuille du thème les met en forme. Un thème sans habillage reçoit les curseurs de base, et la
 barre d'état reprend toujours les couleurs du sélecteur.
 
 - Seule la partie visible de la page est animée, le reste s'affiche tout de suite. L'ensemble dure au plus 3,6 s : une grande
@@ -114,9 +117,13 @@ Derrière la fiche, chaque thème a son décor permanent, codé dans [static/amb
 - **JDR** : paysage au crépuscule (deux lunes, montagnes, château sur sa falaise, forêt, brume), un dragon qui traverse le ciel
   de temps en temps et, dans le coin bas gauche, un archimage plongé dans son grimoire. Les dessins sont des SVG animés,
   dans [static/ambient/](static/ambient/).
+- **Manga** : grand ciel d'été d'animé, cumulus ombrés en aplats, reflets du soleil, une ville au loin, un train de banlieue
+  qui passe, les poteaux électriques et leurs fils au premier plan ; des pétales de cerisier tombent dans les marges, des
+  onomatopées verticales y surgissent et, dans le coin bas gauche, une mascotte en chibi code sur sa pile de mangas en
+  commentant (« Compilation… ドキドキ »).
 
 C'est de la décoration : le calque est peint sous la fiche opaque, ne capte jamais la souris, et ses éléments de côté ne
-s'affichent que là où la place existe (150 px libres au moins ; l'archimage en demande 220). Sur un écran où la fiche occupe
+s'affichent que là où la place existe (150 px libres au moins ; l'archimage et la mascotte en demandent 220). Sur un écran où la fiche occupe
 toute la largeur, il ne se voit donc presque pas : c'est le cas du thème Tech sous 1426 px. Rien à l'impression, sans
 JavaScript ni avec « réduire les animations » ; les minuteurs se taisent quand l'onglet est caché.
 

@@ -3,6 +3,8 @@
 //   pro   vagues « corporate » et phrases de recruteur qui défilent sur les côtés ;
 //   tech  pluie de glyphes, terminaux qui défilent, éditeurs de code qui vont et viennent ;
 //   jdr   paysage de fantasy au crépuscule, un dragon dans le ciel, un archimage dans le coin.
+//   manga ciel d'été d'animé : nuages, ville, train, poteaux électriques, pétales de cerisier,
+//         onomatopées dans les marges et une mascotte qui code dans le coin.
 // Pure décoration : le calque est aria-hidden, ne capte jamais la souris et reste sous la fiche,
 // opaque (z-index négatif, voir static/base.css). Rien à l'impression, sans JavaScript ni pour qui
 // a demandé moins d'animations. Les éléments de côté n'apparaissent que là où la place existe ;
@@ -501,7 +503,78 @@
     return { timers: [setInterval(() => !document.hidden && mote(), 450)] };
   }
 
-  const SCENES = { pro, tech, jdr };
+  // ---------- Manga : un ciel d'été d'animé ----------
+
+  // Ce que dit la mascotte, en français et en japonais, avec ses émoticônes.
+  const MANGA_TALK = [
+    'Compilation… ドキドキ', 'Ça compile ! ✨', 'デバッグ中… (；・∀・)', 'Un bug ! (╯°□°)╯', 'Les tests passent ! ヤッター',
+    'Encore un café ☕', 'Mise en prod… 南無三', 'がんばるぞ！', 'Pull request fusionnée ✓', 'Refactor ? Demain… (￣▽￣;)',
+    'Revue de code : OK ✧', '締め切りまで あと三日…', 'Prompt envoyé… ワクワク', 'Ça marche chez moi ¯\\_(ツ)_/¯',
+  ];
+  // Onomatopées écrites à la verticale, comme dans les cases.
+  const MANGA_SOUNDS = ['キラキラ', 'ワクワク', 'ドキドキ', 'ゴゴゴゴ', 'シーン', 'フワッ', 'ピカーン', 'ザワッ', 'ドドド', 'ポカポカ'];
+
+  function manga(stage) {
+    stage.innerHTML = [
+      '<div class="cv-ambient__sky"></div>',
+      '<div class="cv-ambient__sun"></div>',
+      '<div class="cv-ambient__clouds"></div>',
+      '<div class="cv-ambient__city"></div>',
+      '<div class="cv-ambient__track"><div class="cv-ambient__train"></div></div>',
+      '<div class="cv-ambient__poles"></div>',
+      '<div class="cv-ambient__chibi"></div>',
+      '<p class="cv-ambient__bubble"></p>',
+    ].join('');
+    const bubble = stage.querySelector('.cv-ambient__bubble');
+    let said = -1;
+
+    // La mascotte parle toutes les 5 s ; la bulle se tait un instant entre deux répliques.
+    const talk = () => {
+      said = (said + 1 + int(0, MANGA_TALK.length - 2)) % MANGA_TALK.length;
+      bubble.textContent = fr(MANGA_TALK[said]);
+      bubble.dataset.on = '';
+      setTimeout(() => delete bubble.dataset.on, 3600);
+    };
+
+    // Pétales de cerisier qui tombent dans l'espace libre de part et d'autre de la fiche.
+    const petal = () => {
+      const free = sides(60);
+      if (!free.length) return;
+      const side = pick(free);
+      const node = element('span', 'cv-ambient__petal', stage);
+      node.style[side] = `${random(4, room[side] - 12).toFixed(0)}px`;
+      node.style.setProperty('--d', `${random(7, 13).toFixed(1)}s`);
+      node.style.setProperty('--dx', `${random(-90, 60).toFixed(0)}px`);
+      node.style.setProperty('--spin', `${random(240, 720).toFixed(0)}deg`);
+      node.style.setProperty('--size', `${random(7, 13).toFixed(0)}px`);
+      node.addEventListener('animationend', () => node.remove(), { once: true });
+    };
+
+    // Une onomatopée verticale surgit dans la marge, en haut de l'écran (le bas gauche est à la mascotte).
+    const sound = () => {
+      const free = sides();
+      if (!free.length) return;
+      const side = pick(free);
+      const node = element('span', 'cv-ambient__sound', stage);
+      node.textContent = pick(MANGA_SOUNDS);
+      node.style[side] = `${random(12, Math.max(14, room[side] - 70)).toFixed(0)}px`;
+      node.style.top = `${random(6, 42).toFixed(1)}%`;
+      node.style.setProperty('--r', `${random(-12, 12).toFixed(1)}deg`);
+      node.addEventListener('animationend', () => node.remove(), { once: true });
+    };
+
+    talk();
+    for (let index = 0; index < 8; index += 1) petal();
+    return {
+      timers: [
+        setInterval(() => !document.hidden && petal(), 420),
+        setInterval(() => !document.hidden && sound(), 3800),
+        setInterval(() => !document.hidden && talk(), 5000),
+      ],
+    };
+  }
+
+  const SCENES = { pro, tech, jdr, manga };
 
   // ---------- Montage ----------
 

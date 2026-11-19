@@ -5,6 +5,7 @@ export const THEMES = [
   { id: 'tech', label: 'Tech' },
   { id: 'jdr', label: 'JDR' },
   { id: 'manga', label: 'Manga' },
+  { id: 'retro', label: 'Rétro' },
 ];
 
 export const DEFAULT_THEME = THEMES[0].id;

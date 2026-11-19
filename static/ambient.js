@@ -5,6 +5,8 @@
 //   jdr   paysage de fantasy au crépuscule, un dragon dans le ciel, un archimage dans le coin.
 //   manga ciel d'été d'animé : nuages, ville, train, poteaux électriques, pétales de cerisier,
 //         onomatopées dans les marges et une mascotte qui code dans le coin.
+//   retro bureau d'un PC de l'an 2000 : icônes, barre des tâches et son horloge, fenêtres
+//         d'époque qui s'ouvrent et se ferment dans les marges.
 // Pure décoration : le calque est aria-hidden, ne capte jamais la souris et reste sous la fiche,
 // opaque (z-index négatif, voir static/base.css). Rien à l'impression, sans JavaScript ni pour qui
 // a demandé moins d'animations. Les éléments de côté n'apparaissent que là où la place existe ;
@@ -574,7 +576,307 @@
     };
   }
 
-  const SCENES = { pro, tech, jdr, manga };
+  // ---------- Rétro : le bureau d'un PC de l'an 2000 ----------
+
+  // Icônes en 32 × 32, dessinées comme au pixel près.
+  const RETRO_ICONS = {
+    computer:
+      '<rect x="4" y="3" width="24" height="18" fill="#c0c0c0" stroke="#000"/><rect x="7" y="6" width="18" height="12" fill="#008080"/><path d="M8 7h6v2H8z" fill="#6cc"/><rect x="10" y="21" width="12" height="4" fill="#c0c0c0" stroke="#000"/><rect x="5" y="25" width="22" height="5" fill="#c0c0c0" stroke="#000"/><path d="M8 27.5h6" stroke="#080"/>',
+    folder: '<path d="M2 8h10l2 3h16v17H2z" fill="#ffd34d" stroke="#000"/><path d="M2.5 13.5h27" stroke="#c90"/>',
+    bin: '<path d="M8 9h16l-2 20H10z" fill="#e4e4e4" stroke="#000"/><path d="M6 6h20v3H6z" fill="#c0c0c0" stroke="#000"/><path d="M13 12v14M16 12v14M19 12v14" stroke="#808080"/>',
+    globe:
+      '<circle cx="16" cy="16" r="13" fill="#2a7de1" stroke="#001a66"/><path d="M9 8c4 0 6 2 6 5.5S11 18 9 21c-2-2-3.5-4.5-3.5-7S7 8 9 8zM20.5 6.5c3.5 1.5 6 5 6 9-2 0-3.5-1.5-5.5-1.5s-2-4.5-.5-7.5zM18 20c2 0 4 1.5 4 3.5l-3.5 2c-.5-2-2-3.5-.5-5.5z" fill="#33cc33"/>',
+    doc: '<path d="M7 2h13l6 6v22H7z" fill="#fff" stroke="#000"/><path d="M20 2v6h6" fill="none" stroke="#000"/><rect x="9" y="11" width="14" height="9" fill="#1f4fbf"/><path d="M11 14h10M11 17h10" stroke="#fff"/><path d="M10 23h13M10 26h9" stroke="#000080"/>',
+    mine: '<path d="M16 4v24M4 16h24M8 8l16 16M24 8 8 24" stroke="#000" stroke-width="2"/><circle cx="16" cy="16" r="8" fill="#000"/><rect x="12" y="12" width="3" height="3" fill="#fff"/>',
+    error: '<circle cx="16" cy="16" r="13" fill="#e00" stroke="#600"/><path d="M11 11l10 10M21 11 11 21" stroke="#fff" stroke-width="3"/>',
+    chat: '<circle cx="12" cy="10" r="5" fill="#3c3" stroke="#060"/><path d="M4 28c0-7 4-11 8-11s8 4 8 11z" fill="#3c3" stroke="#060"/><circle cx="22" cy="12" r="4.5" fill="#39f" stroke="#036"/><path d="M15 28c1-6 4-9 7-9s7 3 7 9z" fill="#39f" stroke="#036"/>',
+    modem: '<rect x="3" y="5" width="14" height="10" fill="#c0c0c0" stroke="#000"/><rect x="5" y="7" width="10" height="6" fill="#0a0"/><rect x="15" y="17" width="14" height="10" fill="#c0c0c0" stroke="#000"/><rect x="17" y="19" width="10" height="6" fill="#0a0"/><path d="M10 15v7h5" fill="none" stroke="#000"/>',
+    mail: '<rect x="3" y="8" width="26" height="17" fill="#ffffcc" stroke="#000"/><path d="M3 8l13 10 13-10" fill="none" stroke="#000"/>',
+    download: '<path d="M4 18h24v10H4z" fill="#c0c0c0" stroke="#000"/><path d="M6 22h14" stroke="#0a0" stroke-width="2"/><path d="M13 3h6v8h5l-8 8-8-8h5z" fill="#3c3" stroke="#060"/>',
+    disk: '<rect x="3" y="9" width="26" height="15" fill="#c0c0c0" stroke="#000"/><rect x="6" y="12" width="14" height="3" fill="#000"/><circle cx="24" cy="19" r="1.5" fill="#0c0"/><path d="M6 20h4" stroke="#808080"/>',
+  };
+  const svg = (body, size = 32) => `<svg viewBox="0 0 ${size} ${size}" aria-hidden="true">${body}</svg>`;
+
+  const RETRO_DESKTOP = [
+    ['computer', 'Poste de travail'], ['folder', 'Mes documents'], ['globe', 'Internet'], ['bin', 'Corbeille'],
+    ['doc', 'CV_final_v3_DEFINITIF.doc'], ['mine', 'Démineur'],
+  ];
+  const RETRO_START =
+    '<rect x="1.5" y="1.5" width="13" height="9" fill="#c0c0c0" stroke="#000"/><rect x="3" y="3" width="10" height="6" fill="#008080"/><rect x="4.5" y="11.5" width="7" height="3" fill="#c0c0c0" stroke="#000"/>';
+  const RETRO_TRAY = [
+    '<rect x="0.5" y="1.5" width="9" height="7" fill="#c0c0c0" stroke="#000"/><rect class="cv-ambient__led" x="2" y="3" width="6" height="4" fill="#3f3"/><rect x="6.5" y="7.5" width="9" height="7" fill="#c0c0c0" stroke="#000"/><rect class="cv-ambient__led" x="8" y="9" width="6" height="4" fill="#3f3"/>',
+    '<path d="M1.5 6h3l4-3v10l-4-3h-3z" fill="#ff0" stroke="#000"/><path d="M11 5c1.5 1.5 1.5 4.5 0 6M13 3c3 3 3 7 0 10" fill="none" stroke="#000"/>',
+  ];
+
+  const RETRO_BUDDIES = ['Kevin_du_69', 'xX-Jessica-Xx', 'DarkAngel_31', 'P’tit Loup', 'Mathieu (au boulot)', 'Bibi_la_ouf', 'Champions_du_monde_98'];
+  const RETRO_CHAT = [
+    (who) => `${who} vient de se connecter.`,
+    (who) => `${who} : t’es là ?? :-)`,
+    (who) => `${who} : ASV ?`,
+    (who) => `${who} a changé son pseudo en « ~*~ ${who} ~*~ ».`,
+  ];
+  const RETRO_DOWNLOADS = [['demo_jeu_complet.zip', 48], ['bande-annonce.avi', 12], ['pilotes_carte_son.exe', 3.2], ['maj_antivirus.exe', 8]];
+  const RETRO_DIAL = ['Composition du numéro…', 'Vérification du nom d’utilisateur et du mot de passe…', 'Connexion au réseau…'];
+  const RETRO_SPEEDS = ['28\u202f800', '33\u202f600', '44\u202f000', '49\u202f333', '52\u202f000'];
+  const RETRO_MAILS = [
+    ['Tata Josiane', 'FW: FW: FW: TROP DRÔLE !!! à faire suivre à 10 personnes'],
+    ['Tonton Gérard', 'FW: La chaîne de l’amitié, ne la brisez pas'],
+    ['Kevin_du_69', 'Joyeux an 2000 !!!'],
+    ['Le chef', 'Photos du séminaire (4 Mo, désolé)'],
+    ['Tata Josiane', 'FW: ATTENTION VIRUS !!! Prévenez tout le monde'],
+  ];
+  const RETRO_PROGRAMS = ['Démineur', 'Explorateur', 'CV_final_v3.exe', 'Navigateur Internet', 'Solitaire'];
+  const RETRO_TRACKS = ['04 - tube_de_l_ete.mp3', '01 - generique_dessin_anime.mp3', '07 - slow_de_la_boum.mp3', '02 - techno_1999.mp3', '11 - chanson_du_mariage.mp3'];
+  const decimal = (value, digits = 1) => value.toLocaleString('fr-FR', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+
+  // Une fenêtre : barre de titre, puis son contenu ; elle part seule à la fin de sa vie.
+  function retroWindow(stage, slot, title) {
+    const node = element('div', 'cv-ambient__win', stage);
+    node.style[slot.side] = `${slot.x}px`;
+    node.style.top = `${slot.y}px`;
+    node.style.width = `${slot.w}px`;
+    element('span', '', element('div', 'cv-ambient__bar', node)).textContent = fr(title);
+    return { node, body: element('div', 'cv-ambient__body', node) };
+  }
+
+  // Une icône et son texte, côte à côte.
+  function says(body, name, text) {
+    const row = element('div', 'cv-ambient__row', body);
+    row.innerHTML = svg(RETRO_ICONS[name]);
+    const line = element('p', '', row);
+    line.textContent = fr(text);
+    return line;
+  }
+
+  function buttons(body, labels) {
+    const row = element('div', 'cv-ambient__buttons', body);
+    for (const label of labels) element('span', '', row).textContent = label;
+  }
+
+  function progress(body) {
+    return element('i', '', element('div', 'cv-ambient__progress', body));
+  }
+
+  // « Opération non conforme » ; une fois sur trois, la fenêtre figée laisse sa traînée.
+  function crash(stage, slot) {
+    const win = retroWindow(stage, slot, pick(RETRO_PROGRAMS));
+    says(win.body, 'error', 'Ce programme va être arrêté car il a effectué une opération non conforme.');
+    buttons(win.body, ['Fermer', 'Détails >>']);
+    const trail = Math.random() < 0.35 ? int(6, 10) : 0;
+    const copies = [];
+    return {
+      ...win,
+      life: 6500,
+      tick() {
+        if (copies.length >= trail) return;
+        const copy = win.node.cloneNode(true);
+        copy.style.animation = 'none';
+        copy.style[slot.side] = `${slot.x + (copies.length + 1) * 7}px`;
+        copy.style.top = `${slot.y + (copies.length + 1) * 9}px`;
+        stage.append(copy);
+        copies.push(copy);
+      },
+      close() {
+        for (const copy of copies) copy.remove();
+      },
+    };
+  }
+
+  function chat(stage, slot) {
+    const win = retroWindow(stage, slot, 'Messagerie instantanée');
+    const who = pick(RETRO_BUDDIES);
+    const wizz = Math.random() < 0.35;
+    says(win.body, 'chat', wizz ? `${who} vous a envoyé un Wizz !` : pick(RETRO_CHAT)(who));
+    if (wizz) win.node.dataset.wizz = '';
+    return { ...win, life: 5500 };
+  }
+
+  function download(stage, slot) {
+    const [file, size] = pick(RETRO_DOWNLOADS);
+    const win = retroWindow(stage, slot, `0 % de ${file}`);
+    const title = win.node.querySelector('span');
+    says(win.body, 'download', `Téléchargement de ${file}`);
+    const bar = progress(win.body);
+    const info = element('p', 'cv-ambient__small', win.body);
+    let done = random(0.02, 0.4) * size * 1024;
+    let every = 0;
+    buttons(win.body, ['Annuler']);
+    return {
+      ...win,
+      life: 9000,
+      tick() {
+        if (every-- > 0) return;
+        every = 9;
+        const speed = random(1.8, 4.8);
+        done += speed;
+        const share = done / (size * 1024);
+        const left = Math.round((size * 1024 - done) / speed / 60);
+        bar.style.setProperty('--p', share.toFixed(3));
+        title.textContent = `${Math.floor(share * 100)} % de ${file}`;
+        info.textContent = fr(
+          `Temps restant estimé : ${Math.floor(left / 60)} h ${left % 60} min (${decimal(done / 1024)} Mo sur ${decimal(size, size % 1 ? 1 : 0)} Mo copiés, ${decimal(speed)} Ko/s)`,
+        );
+      },
+    };
+  }
+
+  function dialup(stage, slot) {
+    const win = retroWindow(stage, slot, 'Connexion à Internet');
+    const line = says(win.body, 'modem', RETRO_DIAL[0]);
+    buttons(win.body, ['Annuler']);
+    let step = 0;
+    let every = 12;
+    return {
+      ...win,
+      life: 7000,
+      tick() {
+        if (every-- > 0 || step >= RETRO_DIAL.length) return;
+        every = 14;
+        step += 1;
+        line.textContent = fr(step < RETRO_DIAL.length ? RETRO_DIAL[step] : `Connecté à ${pick(RETRO_SPEEDS)} bit/s`);
+      },
+    };
+  }
+
+  function mail(stage, slot) {
+    const win = retroWindow(stage, slot, 'Nouveau message');
+    const [from, subject] = pick(RETRO_MAILS);
+    const line = says(win.body, 'mail', '');
+    line.innerHTML = `<b>De :</b> ${escape(fr(from))}<br><b>Objet :</b> ${escape(fr(subject))}`.replace(/ :/g, '\u202f:');
+    buttons(win.body, ['Lire', 'Plus tard']);
+    return { ...win, life: 6500 };
+  }
+
+  // Défragmentation : les pavés se rangent un à un, et le pourcentage ne bouge presque pas.
+  function defrag(stage, slot) {
+    const win = retroWindow(stage, slot, 'Défragmentation du lecteur C:');
+    const disk = element('div', 'cv-ambient__disk', win.body);
+    const columns = Math.max(4, Math.floor((slot.w - 24) / 8));
+    const cells = Array.from({ length: columns * 8 }, () => {
+      const cell = element('i', '', disk);
+      cell.dataset.s = String(pick([0, 1, 2, 2, 3]));
+      return cell;
+    });
+    const status = element('p', 'cv-ambient__small', win.body);
+    let cursor = 0;
+    const start = int(3, 11);
+    return {
+      ...win,
+      life: 10000,
+      tick() {
+        const cell = cells[cursor % cells.length];
+        if (cell) {
+          cell.dataset.s = '3';
+          const previous = cells[(cursor - 1 + cells.length) % cells.length];
+          previous.dataset.s = '1';
+          cells[int(cursor + 1, cells.length - 1)].dataset.s = pick(['0', '2']);
+        }
+        cursor += 1;
+        status.textContent = fr(`${start + Math.floor(cursor / 40)} % terminé`);
+      },
+    };
+  }
+
+  function player(stage, slot) {
+    const win = retroWindow(stage, slot, 'Lecteur multimédia');
+    const screen = element('div', 'cv-ambient__screen', win.body);
+    element('span', '', screen).textContent = `♪ ${pick(RETRO_TRACKS)}`;
+    const time = element('span', '', screen);
+    const eq = element('div', 'cv-ambient__eq', screen);
+    for (let index = 0; index < 12; index += 1) {
+      const bar = element('i', '', eq);
+      bar.style.animationDuration = `${random(0.25, 0.6).toFixed(2)}s`;
+      bar.style.animationDelay = `${random(-0.6, 0).toFixed(2)}s`;
+    }
+    buttons(win.body, ['|◄', '►', '■', '►|']);
+    let seconds = int(5, 120);
+    let every = 0;
+    return {
+      ...win,
+      life: 11000,
+      tick() {
+        if (every-- > 0) return;
+        every = 9;
+        seconds += 1;
+        time.textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}  128 kbit/s`;
+      },
+    };
+  }
+
+  const RETRO_WINDOWS = [crash, crash, chat, chat, chat, download, dialup, mail, mail, defrag, player];
+
+  function retro(stage) {
+    stage.innerHTML = [
+      `<ul class="cv-ambient__icons">${RETRO_DESKTOP.map(([name, label]) => `<li class="cv-ambient__icon">${svg(RETRO_ICONS[name])}<span>${label}</span></li>`).join('')}</ul>`,
+      '<div class="cv-ambient__taskbar">',
+      `<span class="cv-ambient__start">${svg(RETRO_START, 16)}Démarrer</span>`,
+      `<span class="cv-ambient__tray">${RETRO_TRAY.map((tray) => svg(tray, 16)).join('')}<span class="cv-ambient__clock"></span></span>`,
+      '</div>',
+    ].join('');
+    const clock = stage.querySelector('.cv-ambient__clock');
+    const windows = new Set();
+    let slots = [];
+
+    const tell = () => {
+      clock.textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    };
+
+    const shut = (win) => {
+      windows.delete(win);
+      win.slot.busy = false;
+      win.close?.();
+      leave(win.node);
+    };
+
+    // Emplacements des fenêtres, dans l'espace libre de chaque côté, au-dessus de la barre des tâches.
+    const layout = () => {
+      for (const win of windows) shut(win);
+      slots = [];
+      const count = clamp(Math.floor((room.height - 40) / 200), 1, 5);
+      const height = (room.height - 40) / count;
+      for (const side of sides()) {
+        const w = Math.min(room[side] - 16, 250);
+        for (let index = 0; index < count; index += 1) {
+          slots.push({ side, x: Math.round(random(6, room[side] - w - 10)), y: Math.round(index * height + random(8, 24)), w, busy: false });
+        }
+      }
+    };
+
+    const open = () => {
+      const free = slots.filter((slot) => !slot.busy);
+      if (!free.length || free.length < slots.length * 0.4) return;
+      const slot = pick(free);
+      const win = pick(RETRO_WINDOWS)(stage, slot);
+      slot.busy = true;
+      win.slot = slot;
+      win.born = performance.now();
+      // La fenêtre la plus récente est la seule active : les autres grisent leur barre de titre.
+      for (const other of windows) other.node.dataset.inactive = '';
+      windows.add(win);
+    };
+
+    const step = () => {
+      const now = performance.now();
+      for (const win of windows) {
+        win.tick?.();
+        if (now - win.born > win.life) shut(win);
+      }
+    };
+
+    tell();
+    layout();
+    open();
+    return {
+      resize: layout,
+      timers: [
+        setInterval(() => !document.hidden && open(), 2400),
+        setInterval(() => !document.hidden && step(), 100),
+        setInterval(tell, 10000),
+      ],
+    };
+  }
+
+  const SCENES = { pro, tech, jdr, manga, retro };
 
   // ---------- Montage ----------
 

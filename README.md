@@ -1,7 +1,8 @@
 # Portfolio — Xavier Erb
 
-CV et portfolio en une page statique, affichable dans quatre thèmes : **Pro** (classique), **Tech** (terminal), **JDR** (fiche de personnage)
-et **Manga** (planche de manga sur un ciel d'animé). Le contenu est le même dans les quatre ; seul l'habillage change.
+CV et portfolio en une page statique, affichable dans cinq thèmes : **Pro** (classique), **Tech** (terminal), **JDR** (fiche de personnage),
+**Manga** (planche de manga sur un ciel d'animé) et **Rétro** (page perso de l'an 2000 dans un navigateur d'époque).
+Le contenu est le même dans les cinq ; seul l'habillage change.
 
 ## Démarrage
 
@@ -22,7 +23,7 @@ npm run links    # vérifie que chaque adresse du CV répond encore (réseau req
 L'audit échoue si un thème masque, rogne, recouvre ou réduit à l'illisible un texte du CV, si un contraste est insuffisant sur fond uni,
 si la page déborde en largeur entre 360 et 1920 px, si le sélecteur de thème est inatteignable ou change mal de feuille de style,
 si la page s'affiche avant la feuille de son thème, si l'animation de construction ne démarre pas au chargement, ne finit pas
-seule ou dessine des agents en thème Tech, ou si le décor animé ne suit pas le thème, passe devant la fiche ou capte la souris. Sur une image ou un dégradé, le contraste ne se mesure pas : l'audit affiche alors un ⚠ à vérifier à l'œil, sans échouer.
+seule, laisse la page décalée ou floue, ou dessine des agents en thème Tech, ou si le décor animé ne suit pas le thème, passe devant la fiche ou capte la souris. Sur une image ou un dégradé, le contraste ne se mesure pas : l'audit affiche alors un ⚠ à vérifier à l'œil, sans échouer.
 Pour tout le reste, l'audit passe l'animation (bouton « Passer ») et juge la page finie ; `shots` capture la page sans animation.
 
 ## Modifier le CV
@@ -91,9 +92,14 @@ bilan avec **Rejouer**). C'est un effet, codé dans [static/build.js](static/bui
 - **Manga** : la planche se fabrique sous nos yeux. Le cadre des cases se crayonne au bleu, puis chaque bloc s'encre d'un coup
   de pinceau dans le sens de lecture japonais (de droite à gauche, puis de haut en bas), ponctué d'onomatopées (ドン！,
   シャキーン…). Pour finir, des lignes de vitesse et le titre de l'épisode : « 開発者、参上！ », le développeur entre en scène.
+- **Rétro** : une télé cathodique s'allume. Un point lumineux s'étire en trait et s'ouvre sur la neige d'une chaîne sans
+  signal ; la télé cherche la chaîne (« RECHERCHE UHF 471,25 MHz » en vert) pendant que les blocs se posent sous la neige.
+  Puis le signal s'accroche : l'image arrive floue, en gros pixels, terne et mal calée, et se précise par paliers jusqu'à
+  l'image nette (filtre SVG redessiné par `build.js`, `html[data-tube]`). Lignes de balayage et bord du tube jusqu'au bout,
+  puis « PR 01 CV » s'affiche une seconde.
 
 Un habillage (`SKINS` dans `build.js`) choisit l'équipe et ses dessins, ou s'en passe avec son propre calendrier
-(`schedule`, comme Tech et Manga) ; la feuille du thème les met en forme. Un thème sans habillage reçoit les curseurs de base, et la
+(`schedule`, comme Tech, Manga et Rétro) ; la feuille du thème les met en forme. Un thème sans habillage reçoit les curseurs de base, et la
 barre d'état reprend toujours les couleurs du sélecteur.
 
 - Seule la partie visible de la page est animée, le reste s'affiche tout de suite. L'ensemble dure au plus 3,6 s : une grande
@@ -121,6 +127,11 @@ Derrière la fiche, chaque thème a son décor permanent, codé dans [static/amb
   qui passe, les poteaux électriques et leurs fils au premier plan ; des pétales de cerisier tombent dans les marges, des
   onomatopées verticales y surgissent et, dans le coin bas gauche, une mascotte en chibi code sur sa pile de mangas en
   commentant (« Compilation… ドキドキ »).
+- **Rétro** : le bureau d'un PC de l'an 2000, bleu canard, avec sa barre des tâches et son horloge (l'heure réelle) et,
+  là où la place le permet, ses icônes (« Poste de travail », « Corbeille », « CV_final_v3_DEFINITIF.doc »…). Dans les
+  marges, des fenêtres d'époque s'ouvrent et se ferment : messagerie qui « wizze », téléchargement interminable en 56k,
+  connexion par modem, chaîne de courriels de Tata Josiane, défragmentation, lecteur de musique et, parfois, le programme
+  qui « a effectué une opération non conforme » et laisse sa traînée de fenêtres.
 
 C'est de la décoration : le calque est peint sous la fiche opaque, ne capte jamais la souris, et ses éléments de côté ne
 s'affichent que là où la place existe (150 px libres au moins ; l'archimage et la mascotte en demandent 220). Sur un écran où la fiche occupe
@@ -154,7 +165,7 @@ Le balisage est produit par [src/render-html.mjs](src/render-html.mjs) ; `dist/i
 | `a.mention` | Organisation citée dans le texte d'un poste (client, donneur d'ordre) |
 | `.tags > .tag` | Technologies |
 | `.colophon` | Pied de page |
-| `html[data-build]`, `[data-layer]` | Posés par `build.js` pendant l'animation de construction, retirés à la fin |
+| `html[data-build]`, `[data-layer]` | Posés par `build.js` pendant l'animation de construction, retirés à la fin ; de même `html[data-glitch]` (Tech) et `html[data-tube]` (Rétro) |
 | `.cv-build`, `.cv-build-flash` | Dessins de l'animation de construction et salut final d'un habillage, à mettre en forme par le thème |
 | `.cv-ambient[data-scene]` | Décor animé du thème ; `--room-left`, `--room-right` (place libre de chaque côté de la fiche), `[data-wide]` |
 

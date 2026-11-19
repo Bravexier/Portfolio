@@ -389,6 +389,7 @@ async function runAudit({ jobs, minFontSize, storageKey }) {
         const odd = [...names].filter((name) => !AGENT_NAME.test(name));
         if (odd.length) failures.push(`noms d'agents hors format : ${odd.slice(0, 3).join(', ')}`);
         if (root.hasAttribute('data-glitch')) failures.push('à-coup de page resté actif');
+        if (root.hasAttribute('data-tube')) failures.push('image de télé restée floue');
         return failures;
       }
     }

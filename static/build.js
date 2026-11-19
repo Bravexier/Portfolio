@@ -4,6 +4,7 @@
 //   tech  personne : la page arrive par à-coups, comme une image numérique qui décroche ;
 //   jdr   des feux follets tracent des cercles d'invocation et alignent les arcanes.
 //   manga personne : la planche se crayonne, puis s'encre dans le sens de lecture japonais.
+//   retro personne : une télé cathodique s'allume, neige, puis image en gros pixels qui se précise.
 // C'est un effet, rien de plus : la page est complète sans lui (sans JavaScript, à l'impression,
 // avec « réduire les animations »), et « Passer » ou Échap le termine aussitôt.
 //
@@ -475,7 +476,172 @@
     done: (state, seconds) => `Chapitre 1 encré en ${seconds} s · lu de droite à gauche`,
   };
 
-  const SKINS = { pro: PRO, tech: TECH, jdr: JDR, manga: MANGA };
+  // Rétro : une télé cathodique qui s'allume, sans personne à l'écran. Un point lumineux
+  // s'étire en trait et s'ouvre sur la neige d'une chaîne sans signal pendant que la télé
+  // cherche la chaîne ; les blocs de la page sont posés sous la neige, de haut en bas. Puis le
+  // signal s'accroche : l'image arrive floue, en gros pixels, terne et mal calée (filtre SVG,
+  // html[data-tube]), et les pixels rapetissent jusqu'à l'image nette.
+  const TV_HUES = ['#ffff00', '#00ffff', '#00ff00', '#ff00ff', '#ff0000'];
+  // Le trait s'est ouvert sur la neige ; le signal s'accroche ; la page est rendue (millisecondes).
+  const TV_OPEN = 600;
+  const TV_PICTURE = 1350;
+  const TV_END = 2950;
+  // Mise au point : taille des pixels de l'image au fil du temps, jusqu'à l'image nette (0).
+  const TV_FOCUS = [
+    [TV_PICTURE, 48], [1490, 32], [1620, 22], [1740, 15], [1850, 10], [1950, 7], [2040, 5], [2120, 3], [2200, 2], [2270, 0],
+  ];
+  // Une maille de neige couvre 3 × 3 pixels : du grain, pas des pavés, et peu de calcul.
+  const SNOW_CELL = 3;
+  const SNOW_FADE = 420;
+
+  // Générateur pseudo-aléatoire rapide (xorshift) : la neige tire des centaines de milliers de
+  // points à chaque image.
+  function xorshift(seed) {
+    let x = seed | 0 || 1;
+    return () => {
+      x ^= x << 13;
+      x ^= x >>> 17;
+      x ^= x << 5;
+      return x;
+    };
+  }
+
+  // Filtre posé sur la page pendant la mise au point : un point de l'image sur chaque case de
+  // la grille (feFlood, feTile), étendu à toute la case (feMorphology), puis flou, délavé et
+  // sombre comme un tube qui chauffe. focus() règle la taille des cases et le réchauffement.
+  function tubeFilter(parent) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'cv-build__fx');
+    svg.innerHTML = `<filter id="cv-tube" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feFlood x="0" y="0" width="1" height="1" flood-color="#000"/>
+      <feComposite width="48" height="48"/>
+      <feTile result="grid"/>
+      <feComposite in="SourceGraphic" in2="grid" operator="in"/>
+      <feMorphology operator="dilate" radius="24"/>
+      <feGaussianBlur stdDeviation="9"/>
+      <feColorMatrix type="saturate" values="0.25"/>
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="0.55" intercept="0.04"/>
+        <feFuncG type="linear" slope="0.55" intercept="0.04"/>
+        <feFuncB type="linear" slope="0.55" intercept="0.06"/>
+      </feComponentTransfer>
+    </filter>`;
+    parent.append(svg);
+    return {
+      dot: svg.querySelector('feFlood'),
+      cell: svg.querySelector('feComposite'),
+      grow: svg.querySelector('feMorphology'),
+      blur: svg.querySelector('feGaussianBlur'),
+      tone: svg.querySelector('feColorMatrix'),
+      funcs: svg.querySelectorAll('feComponentTransfer > *'),
+    };
+  }
+
+  // Cases de `size` pixels, échantillonnées en leur milieu ; `warm` va de 0 (tube froid) à 1.
+  function focus(fx, size, warm) {
+    const middle = String(Math.floor(size / 2));
+    fx.dot.setAttribute('x', middle);
+    fx.dot.setAttribute('y', middle);
+    fx.cell.setAttribute('width', String(size));
+    fx.cell.setAttribute('height', String(size));
+    fx.grow.setAttribute('radius', String(Math.ceil(size / 2)));
+    fx.blur.setAttribute('stdDeviation', (size * 0.19).toFixed(1));
+    fx.tone.setAttribute('values', (0.25 + 0.75 * warm).toFixed(2));
+    for (const func of fx.funcs) func.setAttribute('slope', (0.55 + 0.45 * warm).toFixed(2));
+  }
+
+  const RETRO = {
+    colors: TV_HUES,
+    frames: false,
+    boxes: false,
+    // Les blocs sont posés sous la neige, de haut en bas, entre l'ouverture du trait et
+    // l'arrivée de l'image : tous ensemble à l'écran quand le signal s'accroche.
+    schedule(units) {
+      const order = [...units].sort((a, b) => a.rect.y - b.rect.y);
+      const span = TV_PICTURE - 60 - (TV_OPEN + 80);
+      order.forEach((unit, index) => {
+        unit.color = pick(TV_HUES);
+        unit.arrive = TV_OPEN + 80 + (index / order.length) * span;
+        unit.reveal = unit.arrive;
+        unit.done = unit.arrive;
+      });
+      return { agents: [], end: TV_END };
+    },
+    begin(state) {
+      const { overlay } = state;
+      const canvas = element('canvas', 'cv-build__snow', overlay);
+      canvas.width = Math.ceil(innerWidth / SNOW_CELL);
+      canvas.height = Math.ceil(innerHeight / SNOW_CELL);
+      const context = canvas.getContext('2d');
+      const image = context.createImageData(canvas.width, canvas.height);
+      state.snow = { canvas, context, image, pixels: new Uint32Array(image.data.buffer), next: xorshift(Date.now()), last: -1e9 };
+      element('span', 'cv-build__roll', overlay);
+      element('span', 'cv-build__scan', overlay);
+      // Écran éteint, et le point lumineux qui s'allume au milieu.
+      element('span', 'cv-build__tube', overlay);
+      element('span', 'cv-build__beam', overlay);
+      state.osd = element('span', 'cv-build__osd', overlay);
+      state.fx = tubeFilter(overlay);
+      state.focus = -1;
+      state.t = 0;
+    },
+    reveal() {},
+    frame(state, t) {
+      state.t = t;
+      // L'allumage part de la première image affichée (feuille du thème).
+      if (!('tv' in state.overlay.dataset)) state.overlay.dataset.tv = '';
+
+      // Neige opaque, redessinée toutes les 50 ms, puis fondue quand l'image arrive.
+      const { snow } = state;
+      const fade = clamp((t - TV_PICTURE) / SNOW_FADE, 0, 1);
+      if (fade < 1 && t - snow.last >= 50) {
+        snow.last = t;
+        const { pixels, next } = snow;
+        for (let index = 0; index < pixels.length; index += 1) {
+          const value = next() & 255;
+          pixels[index] = 0xff000000 | (value * 0x010101);
+        }
+        snow.context.putImageData(snow.image, 0, 0);
+      }
+      snow.canvas.style.opacity = String(1 - fade);
+      snow.canvas.hidden = fade >= 1;
+
+      // Affichage de la télé : recherche de la chaîne, puis son numéro.
+      if (t >= TV_OPEN && t < TV_PICTURE) {
+        const mhz = 471.25 + ((t - TV_OPEN) / (TV_PICTURE - TV_OPEN)) * 144;
+        state.osd.textContent = `RECHERCHE\nUHF ${mhz.toFixed(2).replace('.', ',')} MHz`;
+      } else if (t >= TV_PICTURE) {
+        state.osd.textContent = 'PR 01';
+      }
+
+      // Mise au point par paliers : l'image entière se redessine à chaque palier seulement.
+      const step = TV_FOCUS.findLastIndex(([at]) => t >= at);
+      if (step === state.focus) return;
+      state.focus = step;
+      const size = TV_FOCUS[step]?.[1] ?? 0;
+      if (size) {
+        focus(state.fx, size, step / (TV_FOCUS.length - 1));
+        root.dataset.tube = '';
+      } else {
+        delete root.dataset.tube;
+      }
+    },
+    finale() {
+      const node = element('div', 'cv-build-flash', document.body);
+      node.setAttribute('aria-hidden', 'true');
+      element('span', 'cv-build-flash__osd', node).textContent = 'PR 01\nCV';
+      return node;
+    },
+    status: (state) =>
+      state.t < TV_OPEN
+        ? 'Préchauffage du tube…'
+        : state.t < TV_PICTURE
+          ? `Recherche du signal · ${state.built} / ${state.total} ${plural(state.total, 'calque')}`
+          : 'Réglage de l’image…',
+    done: (state, seconds) => `Image réglée · télé allumée en ${seconds} s`,
+  };
+
+  const SKINS = { pro: PRO, tech: TECH, jdr: JDR, manga: MANGA, retro: RETRO };
   const skinOf = (theme) => ({ ...DEFAULT, ...SKINS[theme] });
 
   // ---------- Plan : qui construit quoi, et quand ----------
@@ -651,8 +817,9 @@
     for (const node of document.querySelectorAll('[data-layer]')) delete node.dataset.layer;
     for (const node of document.querySelectorAll('.cv-build')) node.remove();
     root.removeAttribute('data-build');
-    // À-coup de page en cours (habillage Tech).
+    // À-coup de page en cours (habillage Tech), mise au point de l'image (habillage Rétro).
     root.removeAttribute('data-glitch');
+    root.removeAttribute('data-tube');
   }
 
   // Termine tout de suite : page complète, rien par-dessus.

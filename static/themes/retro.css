@@ -1,0 +1,1929 @@
+/* Thème Rétro : une page perso de l'an 2000, ouverte dans le navigateur d'un PC de l'époque.
+   La fiche est la fenêtre du navigateur (barre de titre bleue, menus, barre d'adresse, barre
+   d'état « Terminé »), posée sur un bureau bleu canard. Dedans, la page d'accueil comme on les
+   écrivait à la main en HTML : fond étoilé, tableaux en relief, titres en Comic Sans soulignés
+   d'arc-en-ciel, liens bleus soulignés, texte qui défile, compteur de visites, bandeau « en
+   construction » et « NOUVEAU ! » qui clignote. Les mesures sont en rem, filets, reliefs et
+   chrome du navigateur mis à part. */
+
+/* ---------- Palette, typographie, espacements ---------- */
+
+:root {
+  /* Interface de l'époque : gris clair, reliefs blanc et gris foncé, barre de titre bleue. */
+  --face: #c0c0c0;
+  --hilite: #fff;
+  --light: #dfdfdf;
+  --shade: #808080;
+  --dark: #0a0a0a;
+  --title-a: #000080;
+  --title-b: #1084d0;
+  --desk: #008080;
+
+  /* La page perso : nuit étoilée, tableaux blancs, couleurs de la palette web. */
+  --night: #000033;
+  --panel-night: #000040;
+  --paper: #fff;
+  --cell: #ffffcc;
+  --ink: #000;
+  --ink-soft: #333;
+  --muted: #555;
+  --link: #0000ee;
+  --visited: #551a8b;
+  --hover: #e00000;
+  --red: #cc0000;
+  --navy: #000080;
+  --green: #006600;
+  --purple: #800080;
+  --orange: #a35200;
+  --magenta: #990099;
+  --yellow: #ff0;
+  --gold: #fc0;
+  --cyan: #0ff;
+
+  /* Reliefs des boutons et des cases, comme dessinés au pixel près. */
+  --raised: inset -1px -1px var(--dark), inset 1px 1px var(--hilite), inset -2px -2px var(--shade), inset 2px 2px var(--light);
+  --pressed: inset -1px -1px var(--hilite), inset 1px 1px var(--dark), inset -2px -2px var(--light), inset 2px 2px var(--shade);
+  --sunken: inset -1px -1px var(--hilite), inset 1px 1px var(--shade), inset -2px -2px var(--light), inset 2px 2px var(--dark);
+  --rainbow: linear-gradient(to right, #f00, #f90, #ff0, #0c0, #09f, #63f, #c0c);
+
+  /* Fond étoilé en mosaïque, comme l'image de fond qu'on répétait sur toute la page. */
+  --stars:
+    radial-gradient(circle at 23px 41px, #fff 0 1px, transparent 1.6px) 0 0 / 140px 140px,
+    radial-gradient(circle at 97px 12px, #bcd6ff 0 0.8px, transparent 1.4px) 0 0 / 140px 140px,
+    radial-gradient(circle at 61px 103px, #fff 0 1.3px, transparent 2px) 0 0 / 190px 190px,
+    radial-gradient(circle at 150px 70px, #ffffaa 0 1px, transparent 1.6px) 0 0 / 230px 230px,
+    radial-gradient(circle at 12px 150px, #fff 0 0.7px, transparent 1.2px) 0 0 / 170px 170px,
+    radial-gradient(circle at 120px 160px, #ffd6f5 0 0.9px, transparent 1.5px) 0 0 / 210px 210px;
+
+  /* Icônes du chrome : une petite planète (navigateur, zone Internet), une page (« Terminé »). */
+  --globe: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.5' fill='%232a7de1' stroke='%23001a66'/%3E%3Cpath d='M4.5 4c2 0 3 1 3 2.8S5.6 9 4.6 10.6C3.7 9.7 2.9 8.3 2.9 7S3.6 4 4.5 4zM10.2 3.2c1.8.8 3 2.6 3 4.6-1 0-1.8-.8-2.8-.8s-1-2.2-.2-3.8zM9 10c1 0 2 .8 2 1.8l-1.8 1C9.1 11.9 8.4 11 9 10z' fill='%2333cc33'/%3E%3C/svg%3E");
+  --page-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath d='M3 1h7l3 3v11H3z' fill='%23fff' stroke='%23000'/%3E%3Cpath d='M10 1v3h3' fill='none' stroke='%23000'/%3E%3Cpath d='M5 7h6M5 9h6M5 11h4' stroke='%23000080'/%3E%3C/svg%3E");
+  /* Les trois boutons de la barre de titre : réduire, agrandir, fermer. */
+  --caption-buttons: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='14' viewBox='0 0 52 14' shape-rendering='crispEdges'%3E%3Cdefs%3E%3Cg id='b'%3E%3Crect width='16' height='14' fill='%230a0a0a'/%3E%3Crect width='15' height='13' fill='%23fff'/%3E%3Crect x='1' y='1' width='14' height='12' fill='%23808080'/%3E%3Crect x='1' y='1' width='13' height='11' fill='%23dfdfdf'/%3E%3Crect x='2' y='2' width='12' height='10' fill='%23c0c0c0'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23b'/%3E%3Cuse href='%23b' x='16'/%3E%3Cuse href='%23b' x='36'/%3E%3Cpath d='M4 9h6v2H4z'/%3E%3Cpath d='M20 2h9v9h-9zM21 4v6h7V4z' fill-rule='evenodd'/%3E%3Cpath d='M40.5 3.5l6 6M46.5 3.5l-6 6' stroke='%23000' stroke-width='1.8' shape-rendering='auto'/%3E%3C/svg%3E");
+
+  --font: Verdana, Tahoma, 'DejaVu Sans', Geneva, sans-serif;
+  --font-ui: Tahoma, 'Segoe UI', Verdana, 'DejaVu Sans', sans-serif;
+  --font-fun: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', Verdana, sans-serif;
+  --font-word: Impact, Haettenschweiler, 'Arial Black', 'Arial Narrow Bold', sans-serif;
+  --font-lcd: 'Courier New', Courier, 'Lucida Console', monospace;
+  --fs-name: clamp(2.1rem, 1.5rem + 2.8vw, 3.2rem);
+  --fs-section: 1.375rem;
+  --fs-h3: 1rem;
+  --fs-body: 0.875rem;
+  --fs-side: 0.8125rem;
+  --fs-small: 0.75rem;
+  --fs-tiny: 0.75rem;
+  --lh: 1.6;
+  --lh-tight: 1.45;
+
+  --frame: 3px;
+  --marquee: 1.75rem;
+  --sheet-w: 44rem;
+  --side-w: 18rem;
+  --gap: 0.75rem;
+  --pad: 1rem;
+  --space-entry: 0.875rem;
+  --space-tags: 0.55rem;
+  --label-w: 7.5rem;
+  --sep: 0.625rem;
+  --photo: 6rem;
+
+  --switcher-bg: var(--face);
+  --switcher-fg: var(--ink);
+  --switcher-border: var(--dark);
+  --switcher-active-bg: var(--navy);
+  --switcher-active-fg: #fff;
+  --switcher-font: var(--font-ui);
+  --switcher-radius: 0;
+  --switcher-shadow: var(--raised);
+}
+
+/* ---------- Page : le bureau, et la fenêtre du navigateur par-dessus ---------- */
+
+body {
+  background: var(--desk);
+  color: var(--ink);
+  font: 400 var(--fs-body) / var(--lh) var(--font);
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+/* La fenêtre : un cadre gris en relief ; la page affichée dedans, sur son fond étoilé.
+   La barre de titre (::before) et la barre de menus et d'adresse (::after) occupent les deux
+   premières rangées de la grille. La barre d'état est le pied de page (.colophon). */
+.sheet {
+  display: grid;
+  gap: var(--gap);
+  max-width: var(--sheet-w);
+  margin-inline: auto;
+  padding: 0 var(--gap) var(--gap);
+  border: var(--frame) solid var(--face);
+  border-bottom: 0;
+  background: var(--stars), var(--night);
+  box-shadow:
+    1px 0 var(--dark),
+    -1px 0 var(--light),
+    0 -1px var(--light);
+}
+
+/* Barre de titre : dégradé bleu, petite planète, nom de la page, trois boutons. */
+.sheet::before {
+  content: 'Ma page perso - Navigateur Internet' / '';
+  overflow: hidden;
+  margin: 0 calc(-1 * var(--gap)) calc(-1 * var(--gap));
+  padding: 3px 64px 3px 24px;
+  background:
+    var(--globe) 4px 50% / 16px 16px no-repeat,
+    var(--caption-buttons) right 3px top 50% / 52px 14px no-repeat,
+    linear-gradient(to right, var(--title-a), var(--title-b));
+  color: #fff;
+  font: 700 12px/18px var(--font-ui);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Menus, puis barre d'adresse : le lien est tapé dans un champ blanc creusé. La tabulation
+   aligne l'adresse sur le champ, quelle que soit la police. */
+.sheet::after {
+  content: 'Fichier    Édition    Affichage    Favoris    Outils    ?\A Adresse\9 http://perso.cv2000.fr/~xavier/index.htm' / '';
+  grid-row: 2;
+  overflow: hidden;
+  margin-inline: calc(-1 * var(--gap));
+  padding: 2px 8px 4px;
+  border-bottom: 1px solid var(--shade);
+  background:
+    linear-gradient(var(--shade), var(--shade)) 64px 25px / calc(100% - 72px) 1px no-repeat,
+    linear-gradient(var(--shade), var(--shade)) 64px 25px / 1px 18px no-repeat,
+    linear-gradient(var(--hilite), var(--hilite)) 64px 25px / calc(100% - 72px) 18px no-repeat,
+    linear-gradient(var(--shade), var(--shade)) 0 22px / 100% 1px no-repeat,
+    linear-gradient(var(--hilite), var(--hilite)) 0 23px / 100% 1px no-repeat,
+    var(--face);
+  color: var(--ink);
+  font: 400 12px/21px var(--font-ui);
+  white-space: pre;
+  tab-size: 60px;
+}
+
+.sheet__side,
+.sheet__main {
+  display: grid;
+  align-content: start;
+  gap: var(--gap);
+}
+
+/* Un tableau en relief : clair en haut et à gauche, sombre en bas et à droite. */
+.identity,
+.section {
+  position: relative;
+  padding: var(--pad);
+  border: 3px solid;
+  border-color: var(--light) var(--shade) var(--shade) var(--light);
+  background: var(--paper);
+}
+
+.subsection,
+.timeline,
+.colophon {
+  position: relative;
+}
+
+/* ---------- Liens : bleus et soulignés, violets une fois visités ---------- */
+
+a:not(.action) {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+
+  &:visited {
+    color: var(--visited);
+  }
+
+  &:hover {
+    color: var(--hover);
+  }
+
+  &:focus-visible {
+    outline: 2px dotted currentColor;
+    outline-offset: 1px;
+  }
+}
+
+/* ---------- Identité : la page d'accueil ---------- */
+
+/* Un bandeau de nuit, avec un texte qui défile tout en haut. */
+.identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'photo heading'
+    'status status'
+    'facts facts'
+    'links links';
+  gap: 1rem;
+  align-items: center;
+  overflow: hidden;
+  padding-top: calc(var(--marquee) + var(--pad));
+  background: var(--panel-night);
+  color: #fff;
+}
+
+/* Le texte défilant : la bande noire (::before) ne bouge pas, le texte (::after) la traverse
+   de droite à gauche et s'arrête quand la souris passe dessus. */
+.identity::before,
+.identity::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: var(--marquee);
+}
+
+.identity::before {
+  content: '';
+  right: 0;
+  border-bottom: 2px solid var(--gold);
+  background: #000;
+}
+
+.identity::after {
+  content: '\2605  Bonne visite\202F! \2605  N\2019 oubliez pas de signer mon livre d\2019 or \2605  Ajoutez cette page à vos favoris\202F! \2605  Nouveau\202F: mon CV en ligne \2605' / '';
+  padding-left: 100%;
+  color: var(--yellow);
+  font: 700 0.9375rem / var(--marquee) var(--font-fun);
+  white-space: nowrap;
+}
+
+.identity__photo {
+  grid-area: photo;
+  width: var(--photo);
+  aspect-ratio: 3 / 4;
+  padding: 4px;
+  background: var(--face);
+  box-shadow: var(--raised);
+  object-fit: cover;
+  object-position: top;
+}
+
+.identity__heading {
+  grid-area: heading;
+  overflow-wrap: break-word;
+}
+
+.identity__heading::before {
+  content: '~ Bienvenue sur la page perso de ~' / '';
+  display: block;
+  margin-bottom: 0.3rem;
+  color: #9fd4ff;
+  font: italic 700 0.875rem/1.3 var(--font-fun);
+}
+
+/* Le nom en WordArt : capitales épaisses, dorées, avec leur relief orange. */
+.identity__name {
+  color: var(--gold);
+  font: 400 var(--fs-name) / 1.05 var(--font-word);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-shadow:
+    1px 1px 0 #ff8000,
+    2px 2px 0 #f60,
+    3px 3px 0 #e04000,
+    4px 4px 0 #a00,
+    5px 6px 4px rgb(0 0 0 / 0.7);
+}
+
+.identity__title {
+  margin-top: 0.5rem;
+  color: var(--cyan);
+  font: 700 1.125rem/1.3 var(--font-fun);
+}
+
+.identity__tagline {
+  margin-top: 0.2rem;
+  color: #fff;
+  font-style: italic;
+}
+
+/* Situation : comme un statut de messagerie, avec sa pastille verte. */
+.identity__status {
+  grid-area: status;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.15rem 0.6rem 0.15rem 0.45rem;
+    border: 1px solid var(--shade);
+    background: var(--paper);
+    color: var(--ink);
+    font: 700 var(--fs-small) / 1.45 var(--font-ui);
+  }
+
+  li::before {
+    content: '';
+    flex: none;
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 1px solid #060;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #cfc 0 18%, #2c2 45%, #080);
+  }
+}
+
+/* Repères : un tableau HTML à bordure fine, intitulés en gris, valeurs en blanc. */
+.facts {
+  grid-area: facts;
+  display: grid;
+  gap: 1px;
+  border: 1px solid var(--shade);
+  background: var(--shade);
+  color: var(--ink);
+  font-size: var(--fs-side);
+  line-height: 1.4;
+}
+
+.fact {
+  display: grid;
+  grid-template-columns: var(--label-w) minmax(0, 1fr);
+  gap: 1px;
+
+  dt,
+  dd {
+    padding: 0.3rem 0.55rem;
+  }
+
+  dt {
+    background: var(--face);
+    font: 700 var(--fs-tiny) / 1.4 var(--font-ui);
+  }
+
+  dd {
+    background: var(--paper);
+    font-weight: 700;
+  }
+}
+
+.identity__links {
+  grid-area: links;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Boutons gris en relief, qui s'enfoncent quand on clique. Celui du contact est le bouton par
+   défaut d'une boîte de dialogue : cerné de noir. */
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0.3rem 1rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--face);
+  color: var(--ink);
+  font: 400 var(--fs-side) / 1.2 var(--font-ui);
+  text-decoration: none;
+  box-shadow: var(--raised);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--light);
+  }
+
+  &:active {
+    box-shadow: var(--pressed);
+    padding: calc(0.3rem + 1px) calc(1rem - 1px) calc(0.3rem - 1px) calc(1rem + 1px);
+  }
+
+  &:focus-visible {
+    outline: 1px dotted var(--ink);
+    outline-offset: -5px;
+  }
+
+  &[data-kind='contact'] {
+    font-weight: 700;
+    box-shadow:
+      0 0 0 1px var(--dark),
+      var(--raised);
+  }
+
+  &[data-kind='contact']::before {
+    content: '';
+    flex: none;
+    width: 1rem;
+    height: 0.75rem;
+    margin-right: 0.45rem;
+    border: 1px solid var(--ink);
+    background:
+      linear-gradient(to top right, transparent calc(50% - 0.5px), var(--ink) 50%, transparent calc(50% + 0.5px)) right top / 50% 60% no-repeat,
+      linear-gradient(to top left, transparent calc(50% - 0.5px), var(--ink) 50%, transparent calc(50% + 0.5px)) left top / 50% 60% no-repeat,
+      var(--cell);
+  }
+}
+
+/* Au focus clavier dans un fond clair, les pointillés se voient sur le gris. */
+.identity .action:focus-visible {
+  outline-color: var(--ink);
+}
+
+/* ---------- Sections : un titre en Comic Sans souligné d'arc-en-ciel ---------- */
+
+.section,
+.subsection {
+  scroll-margin-top: 1rem;
+}
+
+.subsection {
+  margin-top: 1.25rem;
+}
+
+.section__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.55rem;
+  row-gap: 0.3rem;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 4px solid;
+  border-image: var(--rainbow) 1;
+  color: var(--navy);
+  font: 700 var(--fs-section) / 1.25 var(--font-fun);
+  text-shadow: 2px 2px 0 var(--light);
+
+  /* L'étoile tourne sur elle-même, comme le petit GIF animé d'à côté. */
+  &::before {
+    content: '\2605' / '';
+    display: inline-block;
+    color: var(--gold);
+    font-size: 1.1em;
+    line-height: 1;
+    text-shadow:
+      -1px -1px 0 #a60,
+      1px -1px 0 #a60,
+      -1px 1px 0 #a60,
+      1px 1px 0 #a60;
+  }
+}
+
+.section[data-section='profil'] .section__title {
+  color: var(--red);
+}
+
+.section[data-section='competences'] .section__title {
+  color: var(--green);
+}
+
+.section[data-section='langues'] .section__title {
+  color: var(--purple);
+}
+
+.section[data-section='formations'] .section__title {
+  color: var(--orange);
+}
+
+.section[data-section='projets'] .section__title {
+  color: var(--magenta);
+}
+
+/* Les projets personnels sont encore « en construction » : un panneau rayé jaune et noir. */
+.section[data-section='projets'] .section__title::after {
+  content: 'EN CONSTRUCTION' / '';
+  padding: 0.15rem 0.5rem;
+  border: 4px solid;
+  border-image: repeating-linear-gradient(-45deg, #000 0 5px, #fd0 5px 10px) 4;
+  background: #fd0;
+  color: #000;
+  font: 700 0.6875rem/1.2 var(--font-ui);
+  letter-spacing: 0.08em;
+  text-shadow: none;
+}
+
+/* Le compteur de visites, en bas de la dernière section : chiffres verts sur écran noir. */
+.section[data-section='projets']::after {
+  content: 'Vous êtes le visiteur n\00B0  004217' / '';
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 1.1rem auto 0;
+  padding: 0.25rem 0.7rem;
+  border: 2px solid;
+  border-color: var(--shade) var(--hilite) var(--hilite) var(--shade);
+  background: #000;
+  color: #3f3;
+  font: 700 0.875rem/1.4 var(--font-lcd);
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-shadow: 0 0 4px rgb(51 255 51 / 0.6);
+}
+
+/* Puces : une flèche rouge, comme les petites images qu'on mettait devant chaque ligne. */
+.profile__highlights,
+.entry__highlights {
+  margin-top: 0.4rem;
+  padding-inline-start: 1.1rem;
+
+  li {
+    position: relative;
+  }
+
+  li::before {
+    content: '\25BA' / '';
+    position: absolute;
+    top: 0.1em;
+    left: -1.05rem;
+    color: var(--red);
+    font-size: 0.7rem;
+    line-height: inherit;
+  }
+
+  li + li {
+    margin-top: 0.2rem;
+  }
+}
+
+/* Profil : une lettrine en Comic Sans, puis les atouts sur fond jaune pâle. */
+.profile__summary::first-letter {
+  float: left;
+  margin: 0.05em 0.3rem 0 0;
+  color: var(--red);
+  font: 700 2.6em/0.85 var(--font-fun);
+  text-shadow: 2px 2px 0 var(--light);
+}
+
+.profile__highlights {
+  display: grid;
+  gap: 0.35rem 2.25rem;
+  margin-top: 0.9rem;
+  padding: 0.6rem 0.8rem 0.6rem 1.9rem;
+  border: 1px dashed var(--shade);
+  background: var(--cell);
+
+  li + li {
+    margin-top: 0;
+  }
+}
+
+/* ---------- Compétences et langues : des barres de progression ---------- */
+
+.sheet__side {
+  font-size: var(--fs-side);
+  line-height: 1.45;
+}
+
+.section[data-section='competences'] .section__body,
+.languages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr));
+  gap: 1.1rem 2rem;
+}
+
+.skill-group {
+  container-type: inline-size;
+}
+
+/* Titre de catégorie : un onglet gris en relief. */
+.skill-group__title {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  padding: 0.15rem 0.6rem;
+  background: var(--face);
+  color: var(--ink);
+  font: 700 var(--fs-small) / 1.35 var(--font-ui);
+  box-shadow: var(--raised);
+}
+
+.skills {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.skill {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'name meter'
+    'level meter';
+  column-gap: 0.75rem;
+  align-items: baseline;
+}
+
+/* Catégories au second plan : une ligne par compétence, sans barre. */
+.skill-group[data-display='compact'] {
+  .skill-group__title {
+    font-weight: 400;
+  }
+
+  .skills {
+    gap: 0.1rem 2rem;
+  }
+
+  .skill {
+    grid-template-areas: 'name level';
+    column-gap: 0.5rem;
+  }
+
+  .skill__name {
+    font-size: var(--fs-small);
+    font-weight: 400;
+  }
+
+  .skill__meter {
+    display: none;
+  }
+}
+
+@container (width >= 19rem) {
+  .skill-group:not([data-display]) .skill {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: 'name level meter';
+  }
+
+  .skill-group[data-display='compact'] {
+    .skills {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .skill:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.skill__name {
+  grid-area: name;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.skill__level {
+  grid-area: level;
+  color: var(--muted);
+  font-size: var(--fs-tiny);
+}
+
+/* Barre de progression creusée : dix pavés bleus, deux par niveau. */
+.skill__meter {
+  grid-area: meter;
+  position: relative;
+  width: calc(5rem + 6px);
+  height: calc(0.5rem + 6px);
+  align-self: center;
+  background: var(--paper);
+  box-shadow: var(--sunken);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: repeating-linear-gradient(to right, var(--navy) 0 0.375rem, transparent 0.375rem 0.5rem);
+    clip-path: inset(0 calc((5 - var(--level)) * 20%) 0 0);
+  }
+}
+
+.language {
+  display: grid;
+  align-content: start;
+}
+
+.language__name {
+  font-weight: 700;
+}
+
+.language__fluency,
+.language__certs {
+  color: var(--muted);
+  font-size: var(--fs-tiny);
+}
+
+/* ---------- Parcours : un cadre gravé par poste ---------- */
+
+.entry__card {
+  position: relative;
+  padding: 0.75rem 0.9rem;
+  border: 2px groove var(--face);
+  background: var(--paper);
+}
+
+/* Le poste en cours porte l'étiquette « NOUVEAU ! », qui clignote quelques secondes. */
+.entry[data-current] > .entry__card {
+  padding-top: 1.1rem;
+  border-color: var(--title-b);
+
+  &::before {
+    content: 'NOUVEAU\202F!' / '';
+    position: absolute;
+    top: -0.85rem;
+    left: 0.6rem;
+    padding: 0.15rem 0.5rem;
+    border: 2px solid var(--yellow);
+    background: var(--red);
+    color: var(--yellow);
+    font: 700 0.75rem/1.2 var(--font-fun);
+    letter-spacing: 0.04em;
+    rotate: -4deg;
+  }
+}
+
+.timeline--postes > .entry + .entry,
+.timeline--formations > .entry + .entry {
+  margin-top: var(--space-entry);
+}
+
+.entry__title {
+  color: var(--navy);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.entry__org {
+  font-weight: 700;
+}
+
+/* Dates, contrat et lieu : une ligne qui ne se replie qu'entre deux éléments. */
+.entry__meta,
+.timeline--compact .entry__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--sep);
+  overflow-x: clip;
+}
+
+.entry__meta {
+  color: var(--muted);
+  font-size: var(--fs-small);
+  line-height: var(--lh-tight);
+
+  li::before {
+    content: '·';
+    display: inline-block;
+    inline-size: var(--sep);
+    margin-inline-start: calc(-1 * var(--sep));
+    text-align: center;
+  }
+}
+
+.entry[data-current] .entry__period {
+  color: var(--red);
+  font-weight: 700;
+}
+
+.entry__summary {
+  margin-top: 0.4rem;
+}
+
+.entry__about {
+  margin-top: 0.1rem;
+  color: var(--ink-soft);
+  font-size: var(--fs-small);
+  font-style: italic;
+}
+
+/* Stages et projets : de petits cadres sur fond jaune pâle. */
+.subsection__title {
+  margin-bottom: 0.7rem;
+  color: var(--navy);
+  font: 700 1.0625rem/1.25 var(--font-fun);
+
+  &::before {
+    content: '\00BB  ' / '';
+    color: var(--red);
+  }
+}
+
+.timeline--compact {
+  display: grid;
+  align-items: start;
+  gap: 0.7rem;
+  font-size: var(--fs-small);
+  line-height: var(--lh-tight);
+
+  .entry__card {
+    padding: 0.55rem 0.7rem;
+    background: var(--cell);
+  }
+
+  .entry__head {
+    margin-inline: -0.1875rem;
+    padding-inline: 0.1875rem;
+  }
+
+  .entry__meta {
+    display: contents;
+    overflow-x: visible;
+    font-size: var(--fs-tiny);
+  }
+
+  .entry__head::after {
+    content: '';
+    flex-basis: 100%;
+    order: 1;
+  }
+
+  .entry__contract,
+  .entry__place {
+    order: 2;
+  }
+
+  .entry__title {
+    flex: 0 0 100%;
+    font-size: var(--fs-side);
+  }
+
+  .entry__summary,
+  .entry__highlights {
+    margin-top: 0.25rem;
+  }
+
+  .entry__about {
+    font-size: var(--fs-tiny);
+  }
+
+  .tags {
+    margin-top: 0.4rem;
+  }
+}
+
+/* ---------- Technologies : de petits boutons gris ---------- */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: var(--space-tags);
+}
+
+.tag {
+  padding: 0.1rem 0.5rem;
+  background: var(--face);
+  color: var(--ink);
+  font: 400 var(--fs-tiny) / 1.4 var(--font-ui);
+  box-shadow: var(--raised);
+}
+
+/* ---------- Bas de page : « meilleur affichage », puis la barre d'état ---------- */
+
+.sheet__main::after {
+  content: 'Meilleur affichage en 800 \00D7  600, 16 millions de couleurs\A Page faite à la main avec le Bloc-notes' / '';
+  padding: 0.3rem 0 0.2rem;
+  color: #c8d8ff;
+  font: italic 400 0.75rem/1.6 var(--font);
+  text-align: center;
+  white-space: pre-line;
+}
+
+/* La barre d'état du navigateur : « Terminé », puis des cases creusées, puis la zone Internet. */
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 2px;
+  max-width: var(--sheet-w);
+  margin: 0 auto;
+  padding: 2px var(--frame) var(--frame);
+  border-top: 1px solid var(--hilite);
+  background: var(--face);
+  color: var(--ink);
+  font: 400 var(--fs-small) / 1.5 var(--font-ui);
+  box-shadow:
+    1px 0 var(--dark),
+    -1px 0 var(--light),
+    0 1px var(--dark);
+
+  &::before,
+  &::after {
+    padding: 0.15rem 0.5rem 0.15rem 1.6rem;
+    background: var(--page-icon) 0.3rem 50% / 1rem 1rem no-repeat;
+  }
+
+  &::before {
+    content: 'Terminé' / '';
+  }
+
+  &::after {
+    content: 'Internet' / '';
+    margin-inline-start: auto;
+    padding-inline-end: 1rem;
+    background-image: var(--globe);
+    box-shadow: var(--sunken);
+  }
+}
+
+.colophon__updated,
+.colophon__formats li {
+  padding: 0.15rem 0.6rem;
+  box-shadow: var(--sunken);
+}
+
+.colophon__updated {
+  flex: 1 1 auto;
+}
+
+.colophon__formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+/* ---------- Jusqu'à 639 px : la fenêtre est agrandie, plein écran ---------- */
+
+@media screen and (width < 40em) {
+  :root {
+    --pad: 0.875rem;
+    --gap: 0.5rem;
+    --photo: 5.25rem;
+    --frame: 0px;
+  }
+
+  /* Le bouton du sélecteur de thème est posé sur la barre de titre : rien en dessous. */
+  .sheet::before {
+    padding-right: 60px;
+    background:
+      var(--globe) 4px 50% / 16px 16px no-repeat,
+      linear-gradient(to right, var(--title-a), var(--title-b));
+  }
+
+  .sheet::after {
+    padding-right: 56px;
+  }
+
+  .identity__links li {
+    flex: 1 1 auto;
+  }
+
+  .action {
+    width: 100%;
+  }
+}
+
+@media screen and (width < 30em) {
+  .identity__links li:has(> [href^='mailto:']) {
+    flex-basis: 100%;
+  }
+}
+
+/* ---------- À partir de 480 px : dates à droite de l'intitulé ---------- */
+
+@media print, (width >= 30em) {
+  .timeline--postes,
+  .timeline--formations {
+    .entry__head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'title meta'
+        'org meta';
+      column-gap: 1rem;
+    }
+
+    .entry__title {
+      grid-area: title;
+    }
+
+    .entry__org {
+      grid-area: org;
+    }
+
+    .entry__meta {
+      grid-area: meta;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-content: start;
+      justify-items: end;
+      column-gap: 0;
+      padding-top: 0.2rem;
+    }
+
+    .entry__period {
+      grid-column: 1 / -1;
+    }
+
+    .entry__meta li::before {
+      margin-inline-start: 0;
+    }
+
+    .entry__period::before,
+    .entry__period + li::before {
+      content: none;
+    }
+  }
+}
+
+/* ---------- À partir de 640 px : une fenêtre posée sur le bureau ---------- */
+
+@media screen and (width >= 40em) {
+  :root {
+    --frame: 4px;
+    --photo: 7rem;
+  }
+
+  /* De la place en haut pour le bouton du sélecteur, en bas pour la barre des tâches. */
+  body {
+    padding: 3.5rem 1.5rem 3rem;
+  }
+
+  .timeline--compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile__highlights {
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+}
+
+/* ---------- De 640 à 927 px : les repères côte à côte, intitulé au-dessus ---------- */
+
+@media screen and (40em <= width < 58em) {
+  .facts {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+
+  .fact {
+    grid-template-columns: none;
+    grid-template-rows: auto 1fr;
+  }
+}
+
+/* ---------- À partir de 928 px : identité sur deux blocs, colonne des compétences à gauche ---------- */
+
+@media print, (width >= 58em) {
+  :root {
+    --sheet-w: 60rem;
+    --pad: 1.15rem;
+    --photo: 8rem;
+  }
+
+  .sheet {
+    grid-template-columns: var(--side-w) minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-areas:
+      'title title'
+      'menu menu'
+      'identity identity'
+      'side profil'
+      'side main';
+  }
+
+  .sheet::before {
+    grid-area: title;
+  }
+
+  .sheet::after {
+    grid-area: menu;
+  }
+
+  .identity {
+    grid-area: identity;
+    grid-template-columns: auto minmax(0, 1fr) fit-content(26rem);
+    gap: 0.9rem 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .sheet > .section {
+    grid-area: profil;
+  }
+
+  .sheet__side {
+    grid-area: side;
+  }
+
+  .sheet__main {
+    grid-area: main;
+  }
+}
+
+@media screen and (width >= 58em) {
+  .identity {
+    grid-template-areas:
+      'photo heading facts'
+      'status status links';
+  }
+
+  /* La colonne des compétences reste en vue pendant la lecture du parcours (voir le thème Pro :
+     --side-height est la hauteur réelle de la colonne, mesurée par app.js). */
+  .sheet__side {
+    position: sticky;
+    top: min(0.75rem, 100vh - var(--side-height, 6250rem) - 1rem);
+    align-self: start;
+  }
+}
+
+/* ---------- Contrastes forcés : la barre de progression garde ses pavés ---------- */
+
+@media (forced-colors: active) {
+  .skill__meter {
+    forced-color-adjust: none;
+    background: Canvas;
+    box-shadow: inset 0 0 0 1px CanvasText;
+
+    &::before {
+      background: repeating-linear-gradient(to right, CanvasText 0 0.375rem, transparent 0.375rem 0.5rem);
+    }
+  }
+}
+
+/* ---------- Mouvement : le texte défile, les étoiles tournent, « NOUVEAU ! » clignote ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .identity::after {
+    animation: retro-marquee 22s linear infinite;
+  }
+
+  .identity:hover::after {
+    animation-play-state: paused;
+  }
+
+  .section__title::before {
+    animation: retro-spin 4s linear infinite;
+  }
+
+  .entry[data-current] > .entry__card::before {
+    animation: retro-blink 1.2s steps(1, end) 5;
+  }
+}
+
+/* Sans animation, le texte du bandeau reste lisible à sa place. */
+@media (prefers-reduced-motion: reduce) {
+  .identity::after {
+    right: 0;
+    padding-left: 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@keyframes retro-marquee {
+  to {
+    translate: -100% 0;
+  }
+}
+
+@keyframes retro-spin {
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+@keyframes retro-blink {
+  60% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Impression : la page sans le navigateur, sur papier blanc ---------- */
+
+@page {
+  size: A4;
+  margin: 10mm;
+}
+
+@media print {
+  :root {
+    font-size: 9.4pt;
+
+    --gap: 0.5rem;
+    --pad: 0.75rem;
+    --space-entry: 0.6rem;
+    --space-tags: 0.35rem;
+    --lh: 1.42;
+    --lh-tight: 1.4;
+    --fs-tiny: 0.78rem;
+    --side-w: 15.5rem;
+    --photo: 6.5rem;
+  }
+
+  body {
+    background: none;
+  }
+
+  /* Ni chrome du navigateur, ni bandeau, ni compteur : seulement le CV. */
+  .sheet::before,
+  .sheet::after,
+  .identity::before,
+  .identity::after,
+  .identity__heading::before,
+  .sheet__main::after,
+  .section[data-section='projets']::after,
+  .section[data-section='projets'] .section__title::after,
+  .colophon::before,
+  .colophon::after {
+    content: none;
+  }
+
+  .sheet {
+    max-width: none;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    grid-template-rows: none;
+    grid-template-areas:
+      'identity identity'
+      'side profil'
+      'side main';
+    print-color-adjust: exact;
+  }
+
+  .identity,
+  .section {
+    border: 1px solid var(--shade);
+  }
+
+  .identity {
+    grid-template-areas:
+      'photo heading facts'
+      'photo status links';
+    column-gap: 1.25rem;
+    padding-top: var(--pad);
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .identity__name {
+    color: var(--navy);
+    text-shadow: none;
+  }
+
+  .identity__title {
+    color: var(--red);
+  }
+
+  .identity__tagline {
+    color: var(--ink-soft);
+  }
+
+  .identity__photo {
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .section__title,
+  .profile__summary::first-letter {
+    text-shadow: none;
+  }
+
+  .entry[data-current] > .entry__card::before {
+    border-color: var(--red);
+    rotate: none;
+  }
+
+  /* Les boutons deviennent des lignes de coordonnées : libellé, puis adresse en clair. */
+  .identity__links {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .identity .action {
+    display: grid;
+    grid-template-columns: var(--label-w) minmax(0, 1fr);
+    column-gap: 0.75rem;
+    align-items: baseline;
+    justify-content: start;
+    min-height: 0;
+    padding: 0;
+    background: none;
+    color: var(--ink);
+    font-size: var(--fs-tiny);
+    box-shadow: none;
+  }
+
+  .identity .action:not([href^='mailto:']),
+  .identity .action[href^='mailto:']::before {
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  .identity .action:not([href^='mailto:'])::after,
+  .identity .action[href^='mailto:'] {
+    color: var(--ink);
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+
+  .identity .action:not([href^='mailto:'])::after {
+    content: attr(href);
+  }
+
+  /* L'enveloppe du bouton de contact devient le libellé de la ligne. */
+  .identity .action[href^='mailto:']::before {
+    content: 'E-mail';
+    width: auto;
+    height: auto;
+    margin: 0;
+    border: 0;
+    background: none;
+  }
+
+  a:not(.action),
+  a:not(.action):visited {
+    color: var(--ink);
+  }
+
+  .timeline--compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tag {
+    box-shadow: inset 0 0 0 1px var(--shade);
+    background: var(--paper);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+
+  .entry,
+  .skill-group,
+  .language,
+  .profile__highlights li {
+    break-inside: avoid;
+  }
+
+  p,
+  li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .colophon {
+    max-width: none;
+    margin: 0.5rem 0 0;
+    padding: 0.4rem 0 0;
+    border-top: 1px solid var(--shade);
+    background: none;
+    box-shadow: none;
+    font-size: var(--fs-tiny);
+  }
+
+  .colophon__updated,
+  .colophon__formats li {
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .colophon__formats {
+    gap: 0.25rem 1.25rem;
+  }
+}
+
+/* ---------- Animation de construction : une télé cathodique qui s'allume (build.js) ----------
+   Écran noir, puis le point lumineux qui s'étire en trait et s'ouvre sur la neige d'une chaîne
+   sans signal, pendant que la télé cherche la chaîne (affichage vert en haut à gauche). Le signal
+   s'accroche : l'image arrive floue, en gros pixels, terne et mal calée, puis les pixels
+   rapetissent jusqu'à l'image nette. Des lignes de balayage et le bord sombre du tube restent
+   jusqu'au bout, puis « PR 01 » s'affiche une seconde. Les blocs de la page sont posés sous la
+   neige : ils apparaissent tous ensemble, avec l'image. */
+
+/* Porte la définition du filtre : invisible, mais pas masquée (un filtre masqué ne s'applique pas). */
+.cv-build__fx {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.cv-build__snow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* L'écran éteint : deux moitiés noires qui s'écartent quand le trait s'ouvre. */
+.cv-build__tube {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(#000, #000) top / 100% 50% no-repeat,
+    linear-gradient(#000, #000) bottom / 100% 50% no-repeat;
+}
+
+.cv-build__beam {
+  position: absolute;
+  top: calc(50% - 1px);
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: #fff;
+  box-shadow:
+    0 0 6px 2px #fff,
+    0 0 22px 6px #9cf;
+  opacity: 0;
+}
+
+.cv-build[data-tv] .cv-build__tube {
+  animation: retro-tube 0.24s cubic-bezier(0.7, 0, 0.3, 1) 0.36s both;
+}
+
+.cv-build[data-tv] .cv-build__beam {
+  animation: retro-beam 0.66s ease-out both;
+}
+
+/* Lignes de balayage et bord du tube : coins arrondis et noirs, plus sombre vers les bords. */
+.cv-build__scan {
+  position: absolute;
+  inset: 4px;
+  border-radius: 32px / 26px;
+  background:
+    radial-gradient(ellipse 75% 70% at 50% 50%, transparent 62%, rgb(0 0 0 / 0.55) 100%),
+    repeating-linear-gradient(to bottom, rgb(0 0 0 / 0.28) 0 1px, transparent 1px 3px);
+  box-shadow: 0 0 0 48px #000;
+  transition: opacity 0.45s ease;
+}
+
+/* Bande plus claire qui remonte l'écran, comme une image mal calée. */
+.cv-build__roll {
+  position: absolute;
+  top: -20%;
+  right: 0;
+  left: 0;
+  height: 16%;
+  background: linear-gradient(transparent, rgb(255 255 255 / 0.06) 45%, rgb(255 255 255 / 0.1) 55%, transparent);
+  animation: retro-roll 1.3s linear infinite;
+  transition: opacity 0.45s ease;
+}
+
+.cv-build[data-out] :is(.cv-build__scan, .cv-build__roll) {
+  opacity: 0;
+}
+
+/* Affichage de la télé : vert vif, ombré, en capitales. */
+.cv-build__osd,
+.cv-build-flash__osd {
+  position: absolute;
+  top: max(24px, 4vh);
+  left: max(28px, 4vw);
+  color: #3f3;
+  font: 700 clamp(18px, 2.4vw, 30px) / 1.1 var(--font-lcd);
+  letter-spacing: 0.08em;
+  text-shadow:
+    2px 2px 0 #030,
+    0 0 6px rgb(60 255 60 / 0.7);
+  text-transform: uppercase;
+  white-space: pre;
+}
+
+/* Les blocs arrivent sous la neige : pas d'apparition à eux. */
+@media screen {
+  [data-layer='in'] {
+    animation: none;
+  }
+
+  /* L'image qui s'accroche : floue, en gros pixels, terne (filtre redessiné par build.js),
+     et qui roule d'abord un peu avant de se caler. */
+  html[data-tube] :is(main, .colophon, .cv-ambient) {
+    filter: url('#cv-tube');
+    animation: retro-hold 0.5s steps(6, end) both;
+  }
+}
+
+.cv-build-flash {
+  animation: retro-flash 1.5s steps(1, end) both;
+}
+
+@keyframes retro-beam {
+  0% {
+    opacity: 1;
+    transform: scale(0.004, 1);
+  }
+
+  45% {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1, 60);
+  }
+}
+
+@keyframes retro-tube {
+  to {
+    background-size:
+      100% 0,
+      100% 0;
+  }
+}
+
+@keyframes retro-roll {
+  to {
+    transform: translateY(800%);
+  }
+}
+
+@keyframes retro-hold {
+  0% {
+    translate: 0 -14vh;
+  }
+
+  35% {
+    translate: 0 5vh;
+  }
+
+  60% {
+    translate: 0 -2vh;
+  }
+
+  100% {
+    translate: 0 0;
+  }
+}
+
+@keyframes retro-flash {
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Décor animé : le bureau d'un PC de l'an 2000 (ambient.js) ----------
+   Fond bleu canard, icônes du bureau dans la colonne de gauche quand la place le permet, barre
+   des tâches en bas avec son horloge. Dans l'espace libre de part et d'autre de la fenêtre,
+   des fenêtres s'ouvrent et se ferment : messagerie qui « wizze », téléchargement interminable,
+   connexion par modem, chaîne de courriels, défragmentation, lecteur de musique et, parfois, le
+   programme qui « a effectué une opération non conforme » et laisse sa traînée de fenêtres. */
+
+.cv-ambient[data-scene='retro'] {
+  background: var(--desk);
+  font: 400 11px/1.35 var(--font-ui);
+
+  & > * {
+    position: absolute;
+  }
+}
+
+.cv-ambient__icons {
+  display: none;
+  top: 8px;
+  left: 6px;
+  width: 84px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cv-ambient[data-wide] .cv-ambient__icons {
+  display: grid;
+  gap: 10px;
+}
+
+.cv-ambient__icon {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  color: #fff;
+  text-align: center;
+
+  svg {
+    display: block;
+    width: 32px;
+    height: 32px;
+  }
+
+  span {
+    padding: 0 2px;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Barre des tâches : bouton « Démarrer », fenêtres ouvertes, horloge. */
+.cv-ambient__taskbar {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 2px 2px 0;
+  background: var(--face);
+  box-shadow:
+    inset 0 1px var(--light),
+    inset 0 2px var(--hilite);
+  color: var(--ink);
+}
+
+.cv-ambient__start {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 6px 0 4px;
+  font-weight: 700;
+  box-shadow: var(--raised);
+}
+
+.cv-ambient__start svg,
+.cv-ambient__tray svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.cv-ambient__task {
+  max-width: 150px;
+  height: 22px;
+  padding: 0 6px;
+  overflow: hidden;
+  line-height: 22px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: var(--raised);
+}
+
+.cv-ambient__tray {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  margin-left: auto;
+  padding: 0 8px;
+  box-shadow: var(--sunken);
+}
+
+/* Le modem : ses deux petits écrans s'allument à tour de rôle. */
+.cv-ambient__led {
+  animation: retro-led 0.9s steps(1, end) infinite;
+}
+
+.cv-ambient__led ~ .cv-ambient__led {
+  animation-delay: -0.45s;
+}
+
+/* Fenêtres du bureau : cadre gris en relief, barre de titre bleue. */
+.cv-ambient__win {
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+  background: var(--face);
+  box-shadow:
+    inset -1px -1px var(--dark),
+    inset 1px 1px var(--light),
+    inset -2px -2px var(--shade),
+    inset 2px 2px var(--hilite),
+    2px 3px 0 rgb(0 0 0 / 0.25);
+  color: var(--ink);
+  animation: retro-open 0.22s steps(4, end) both;
+
+  /* « Wizz » : la fenêtre de messagerie tremble. */
+  &[data-wizz] {
+    animation:
+      retro-open 0.22s steps(4, end) both,
+      retro-wizz 0.5s steps(10, end) 0.3s 2;
+  }
+
+  &[data-out] {
+    animation: retro-close 0.2s steps(4, end) both;
+  }
+
+  &[data-inactive] .cv-ambient__bar {
+    background: linear-gradient(to right, #808080, #b5b5b5);
+    color: #d4d0c8;
+  }
+}
+
+.cv-ambient__bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 18px;
+  padding: 0 2px 0 4px;
+  background: linear-gradient(to right, var(--title-a), var(--title-b));
+  color: #fff;
+  font-weight: 700;
+  white-space: nowrap;
+
+  span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Bouton de fermeture. */
+  &::after {
+    content: '';
+    flex: none;
+    width: 16px;
+    height: 14px;
+    background: var(--caption-buttons) right 0 top 0 / 52px 14px no-repeat;
+  }
+}
+
+.cv-ambient__body {
+  display: grid;
+  gap: 6px;
+  padding: 8px 6px 4px;
+}
+
+.cv-ambient__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  svg {
+    flex: none;
+    width: 32px;
+    height: 32px;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.cv-ambient__buttons {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+
+  span {
+    min-width: 64px;
+    padding: 3px 8px;
+    text-align: center;
+    box-shadow: var(--raised);
+  }
+
+  span:first-child {
+    box-shadow:
+      0 0 0 1px var(--dark),
+      var(--raised);
+  }
+
+  /* Les petits boutons d'un lecteur se partagent la largeur. */
+  &:has(> :nth-child(4)) span {
+    flex: 1;
+    min-width: 0;
+    padding-inline: 2px;
+  }
+}
+
+/* Barre de progression : pavés bleus dans une case creusée. */
+.cv-ambient__progress {
+  height: 16px;
+  padding: 3px;
+  background: var(--paper);
+  box-shadow: var(--sunken);
+
+  i {
+    display: block;
+    width: calc(var(--p, 0) * 100%);
+    height: 100%;
+    background: repeating-linear-gradient(to right, var(--navy) 0 7px, transparent 7px 9px);
+    transition: width 0.4s steps(3, end);
+  }
+}
+
+.cv-ambient__small {
+  color: #333;
+}
+
+/* Défragmentation : une grille de pavés, bleus, rouges ou vides, qui se rangent. */
+.cv-ambient__disk {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 7px);
+  gap: 1px;
+  height: 70px;
+  overflow: hidden;
+  padding: 3px;
+  background: var(--paper);
+  box-shadow: var(--sunken);
+
+  i {
+    height: 9px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px #ccc;
+  }
+
+  i[data-s='1'] {
+    background: #00a;
+    box-shadow: inset -1px -1px #005, inset 1px 1px #66f;
+  }
+
+  i[data-s='2'] {
+    background: #0aa;
+    box-shadow: inset -1px -1px #055, inset 1px 1px #6ff;
+  }
+
+  i[data-s='3'] {
+    background: #c00;
+    box-shadow: inset -1px -1px #600, inset 1px 1px #f66;
+  }
+}
+
+/* Lecteur de musique : écran noir, titre vert, petit égaliseur qui saute. */
+.cv-ambient__screen {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  padding: 5px 6px;
+  background: #000;
+  color: #3f3;
+  font: 700 11px/1.3 var(--font-lcd);
+  box-shadow: var(--sunken);
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.cv-ambient__eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 22px;
+
+  i {
+    flex: 1;
+    height: 100%;
+    background: linear-gradient(to top, #0c0 0 55%, #ff0 55% 80%, #f30 80%);
+    transform-origin: bottom;
+    animation: retro-eq 0.45s steps(4, end) infinite alternate;
+  }
+}
+
+@keyframes retro-open {
+  from {
+    clip-path: inset(0 100% 100% 0);
+  }
+
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes retro-close {
+  from {
+    clip-path: inset(0);
+  }
+
+  to {
+    clip-path: inset(0 100% 100% 0);
+  }
+}
+
+@keyframes retro-wizz {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  20% {
+    translate: -5px 2px;
+  }
+
+  40% {
+    translate: 4px -3px;
+  }
+
+  60% {
+    translate: -3px -2px;
+  }
+
+  80% {
+    translate: 5px 3px;
+  }
+}
+
+@keyframes retro-eq {
+  from {
+    transform: scaleY(0.25);
+  }
+}
+
+@keyframes retro-led {
+  50% {
+    fill: #063;
+  }
+}

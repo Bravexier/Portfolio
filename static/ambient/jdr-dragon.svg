@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 200">
+<!-- Dragon en vol, de profil vers la droite : ailes battantes, souffle de feu de temps en temps. -->
+<style>
+.b{animation:bob .95s ease-in-out infinite alternate}
+.w{transform-box:view-box;transform-origin:176px 98px;animation:flap .95s ease-in-out infinite alternate}
+.w2{transform-origin:166px 96px;animation-delay:-.12s}
+.fire{transform-box:view-box;transform-origin:287px 72px;animation:fire 9s ease-out infinite}
+@keyframes flap{from{transform:scaleY(1)}to{transform:scaleY(-.6) skewX(-8deg)}}
+@keyframes bob{from{transform:translateY(3px)}to{transform:translateY(-3px)}}
+@keyframes fire{0%,70%{opacity:0;transform:scale(.1,.4)}75%{opacity:1;transform:scale(1)}88%{opacity:.9;transform:scale(1.1,1.25)}96%,100%{opacity:0;transform:scale(1.2,1.4)}}
+</style>
+<defs>
+<linearGradient id="flame" x1="0" x2="1"><stop offset="0" stop-color="#fff4b8"/><stop offset=".35" stop-color="#ffb347"/><stop offset=".75" stop-color="#e2452a" stop-opacity=".8"/><stop offset="1" stop-color="#a0201a" stop-opacity="0"/></linearGradient>
+<linearGradient id="mem" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#62273d"/><stop offset="1" stop-color="#2c1626"/></linearGradient>
+</defs>
+<g class="b">
+<g class="w w2" fill="#21121d"><path d="M166 96 150 52 132 26 78 20Q98 38 70 50 94 62 86 80 108 84 116 96 136 96 146 102Z"/></g>
+<g fill="#2a1a2b">
+<path d="M118 104C92 100 72 116 48 122 34 125 24 121 15 116L4 111 10 124 1 134 17 128C30 133 46 133 62 130 82 127 100 122 121 118Z"/>
+<path d="M110 104C126 90 176 88 200 96 213 100 215 113 204 119 180 129 130 129 112 121Z"/>
+<path d="M194 98C210 86 224 74 238 66 246 59 258 58 266 62L286 67 288 71 272 75 280 82 264 80C256 82 248 82 244 78 232 86 222 98 208 114Z"/>
+<path d="M247 61 236 45 254 58ZM256 59 253 42 262 59Z"/>
+<path d="M186 116 194 134 201 140 195 141 190 137 182 120ZM132 122 124 138 132 146 126 147 118 140 124 120Z"/>
+<path d="M130 94l5-7 3 7ZM146 91l5-8 3 8ZM162 90l5-8 3 8ZM178 91l5-7 3 7ZM212 84l6-6 1 7ZM226 74l6-6 1 7Z"/>
+</g>
+<circle cx="263" cy="66" r="1.8" fill="#ffcf5a"/>
+<path fill="none" stroke="#c0674a" stroke-opacity=".55" stroke-width="1.2" d="M112 103C128 91 176 89 199 96M196 96C210 86 224 74 238 66 246 60 257 59 265 62L285 67"/>
+<g class="w">
+<path fill="url(#mem)" d="M176 98 160 50 140 20 80 12Q102 32 70 46 98 58 88 80 112 82 122 96 142 96 152 104Z"/>
+<path fill="none" stroke="#2a1a2b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M176 98 160 50 140 20 80 12M140 20 70 46M140 20 88 80M160 50 122 96"/>
+<path fill="none" stroke="#c0674a" stroke-opacity=".5" d="M160 50 140 20 80 12"/>
+</g>
+<path class="fire" fill="url(#flame)" d="M287 71C300 62 318 60 340 54 330 64 352 66 358 72 346 76 334 78 344 88 322 84 304 82 287 75Z"/>
+</g>
+</svg>

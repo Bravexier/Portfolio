@@ -6,7 +6,9 @@
 //     avec une seule feuille de style à la fois, et s'en souvient ;
 //   - la page ne s'affiche jamais avant la feuille de son thème, même sur réseau lent ;
 //   - l'animation de construction démarre au chargement, finit seule et rend la page entière.
-//     Partout ailleurs, l'audit la passe (bouton « Passer ») et juge la page finie.
+//     Partout ailleurs, l'audit la passe (bouton « Passer ») et juge la page finie ;
+//   - le décor animé suit le thème, reste sous la fiche et ne capte pas la souris. Son texte,
+//     décoratif, n'entre pas dans les vérifications de lisibilité.
 //   npm run audit
 //   node tools/audit.mjs --theme jdr --width 360
 // Limites : le survol réel de la souris et le contraste sur une image ou un dégradé
@@ -94,7 +96,7 @@ function inspect(doc, win, minFontSize) {
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
     const text = node.nodeValue;
     const element = node.parentElement;
-    if (!text.trim() || element.closest('script, style, noscript, [data-theme-switcher], .skip-link, .visually-hidden')) continue;
+    if (!text.trim() || element.closest('script, style, noscript, [data-theme-switcher], .skip-link, .visually-hidden, .cv-ambient, .cv-build-flash')) continue;
 
     const range = doc.createRange();
     range.selectNodeContents(node);
@@ -292,6 +294,7 @@ async function exerciseSwitcher(doc, win, storageKey) {
       .filter((href) => href.includes('/themes/')),
     pressed: options.filter((option) => option.getAttribute('aria-pressed') === 'true').map((option) => option.dataset.setTheme),
     stored: win.localStorage.getItem(storageKey),
+    scene: doc.querySelector('.cv-ambient')?.dataset.scene ?? null,
     address: new win.URLSearchParams(win.location.search).get('theme'),
   });
 
@@ -362,30 +365,61 @@ async function runAudit({ jobs, minFontSize, storageKey }) {
   };
 
   // L'animation de construction doit démarrer au chargement, puis finir seule sans rien laisser
-  // de masqué ni de dessiné par-dessus la page.
-  const buildsAlone = async () => {
+  // de masqué, de dessiné par-dessus la page ni de décalé (à-coups du thème Tech). Le thème Tech
+  // n'a pas d'équipe : aucun agent ne doit y apparaître. Un agent ne porte que son nom, un rôle
+  // et un numéro (Instance-1), et ne dit rien : pas de bulle.
+  const AGENT_NAME = /^\p{L}+-\d+$/u;
+  const buildsAlone = async (theme) => {
     const doc = frame.contentWindow.document;
-    const state = doc.documentElement.dataset.build;
+    const root = doc.documentElement;
+    const state = root.dataset.build;
     if (state !== 'running') return [`pas lancée au chargement (data-build : ${state ?? 'absent'})`];
+    const failures = [];
+    let agents = 0;
+    let bubbles = 0;
+    const names = new Set();
     for (let waited = 0; waited < 8000; waited += 100) {
+      if (theme === 'tech') agents = Math.max(agents, doc.querySelectorAll('.cv-build__agent').length);
+      bubbles = Math.max(bubbles, doc.querySelectorAll('.cv-build__say').length);
+      for (const name of doc.querySelectorAll('.cv-build__name')) names.add(name.textContent);
       await pause(100);
-      if (!doc.documentElement.hasAttribute('data-build') && !doc.querySelector('[data-layer], .cv-build')) return [];
+      if (!root.hasAttribute('data-build') && !doc.querySelector('[data-layer], .cv-build')) {
+        if (agents) failures.push(`${agents} agents dessinés`);
+        if (bubbles) failures.push(`${bubbles} bulles de dialogue`);
+        const odd = [...names].filter((name) => !AGENT_NAME.test(name));
+        if (odd.length) failures.push(`noms d'agents hors format : ${odd.slice(0, 3).join(', ')}`);
+        if (root.hasAttribute('data-glitch')) failures.push('à-coup de page resté actif');
+        return failures;
+      }
     }
     return ['toujours en cours après 8 s'];
   };
 
+  // Le décor animé : celui du thème, peint sous la fiche, sans capter la souris.
+  const ambientOf = (win, theme) => {
+    const layer = win.document.querySelector('.cv-ambient');
+    if (!layer) return ['absent'];
+    const style = win.getComputedStyle(layer);
+    const failures = [];
+    if (layer.dataset.scene !== theme) failures.push(`scène ${layer.dataset.scene} au lieu de ${theme}`);
+    if (style.position !== 'fixed' || !(parseInt(style.zIndex, 10) < 0)) failures.push(`pas sous la fiche (position ${style.position}, z-index ${style.zIndex})`);
+    if (style.pointerEvents !== 'none') failures.push('capte la souris');
+    return failures;
+  };
+
   const results = [];
   for (const job of jobs) {
-    const result = { ...job, problems: [], steps: [], panel: [], firstPaint: [], sticky: [], build: [] };
+    const result = { ...job, problems: [], steps: [], panel: [], firstPaint: [], sticky: [], build: [], ambient: [] };
     results.push(result);
     try {
       frame.style.cssText = `width:${job.width}px;height:900px;border:0`;
       if (job.full) result.firstPaint = await firstPaint(job.theme);
       await load(`/index.html?theme=${job.theme}`);
-      if (job.full) result.build = await buildsAlone();
+      if (job.full) result.build = await buildsAlone(job.theme);
       let win = await settle();
       result.applied = win.document.documentElement.dataset.theme;
       result.sheet = win.document.getElementById('theme-css')?.getAttribute('href');
+      if (job.full) result.ambient = ambientOf(win, job.theme);
       result.problems = inspect(win.document, win, minFontSize);
       // Deux hauteurs de fenêtre : une où la colonne dépasse, une où elle tient.
       result.sticky = await checkSticky(frame, win, [720, 1300]);
@@ -431,6 +465,7 @@ function checkSwitcher(result, failures) {
       step.sheets.length === 1 &&
       step.sheets[0].endsWith(`/${step.expected}.css`) &&
       step.pressed.join() === step.expected &&
+      step.scene === step.expected &&
       step.stored === step.expected &&
       step.address === (step.expected === THEMES[0].id ? null : step.expected);
     if (!ok) failures.push(`sélecteur, ${step.label} : ${JSON.stringify(step)}`);
@@ -459,6 +494,7 @@ function report(result) {
   if (result.full) {
     failures.push(...result.firstPaint.map((failure) => `premier affichage : ${failure}`));
     failures.push(...result.build.map((failure) => `animation de construction : ${failure}`));
+    failures.push(...result.ambient.map((failure) => `décor animé : ${failure}`));
     failures.push(...result.panel.map((failure) => `sélecteur, ${failure}`));
     checkSwitcher(result, failures);
   }

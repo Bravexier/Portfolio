@@ -1337,3 +1337,563 @@ a:hover {
     widows: 2;
   }
 }
+
+/* ---------- Animation de construction : une image numérique qui décroche (build.js) ----------
+   Comme le chargement d'un jeu vidéo : la page reste nette entre deux salves de distorsion
+   d'un dixième de seconde, où elle se découpe en tranches décalées et ses couleurs se séparent
+   (filtre SVG #cv-glitch), traversée de blocs de couleur corrompus. La première salve découpe
+   l'écran noir ; les blocs apparaissent par salves, chacun avec ses ratés. Puis « ACCÈS
+   AUTORISÉ » s'affiche une seconde. Ni éclair plein écran ni clignotement régulier. */
+
+/* Porte la définition du filtre : invisible, mais pas masquée (un filtre masqué ne s'applique pas). */
+.cv-build__fx {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Écran noir du départ, coupé en tranches qui sautent de côté puis disparaissent. */
+.cv-build__blackout {
+  position: absolute;
+  inset: 0;
+  background: var(--void);
+  animation: tech-cut 0.14s steps(1, end) 0.04s forwards;
+}
+
+/* Déchirure : la bande recolore ce qu'elle couvre et saute de côté. */
+.cv-build__tear {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  border-block: 1px solid color-mix(in srgb, var(--_c) 70%, transparent);
+  background: color-mix(in srgb, var(--_c) 16%, transparent);
+  backdrop-filter: hue-rotate(var(--_hue)) saturate(3) brightness(1.3);
+  animation: tech-tear 0.12s steps(1, end) both;
+}
+
+/* Éclat de pixels corrompus sur un bloc qui apparaît. */
+.cv-build__shard {
+  position: absolute;
+  background: var(--_c);
+  box-shadow: 0 0 8px var(--_c);
+  animation: tech-shard 0.16s steps(1, end) both;
+}
+
+.cv-build-flash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(closest-side, rgb(4 6 5 / 0.7), transparent);
+  color: var(--accent);
+  font: 700 clamp(26px, 6vw, 80px) / 1 var(--mono);
+  letter-spacing: 0.16em;
+  text-align: center;
+  animation: tech-granted 1.3s steps(1, end) both;
+}
+
+/* Les blocs arrivent par sauts, sans transition douce : trois variantes de ratés, réparties
+   d'après la place du bloc parmi ses voisins. */
+@media screen {
+  [data-layer='in'] {
+    animation: tech-glitch-a 0.5s steps(1, end) both;
+  }
+
+  [data-layer='in']:nth-child(3n + 2) {
+    animation-name: tech-glitch-b;
+  }
+
+  [data-layer='in']:nth-child(3n) {
+    animation-name: tech-glitch-c;
+  }
+
+  /* Salve : la page entière se découpe en tranches décalées et ses couleurs se séparent
+     (filtre redessiné par build.js), avec un saut d'ensemble. Un dixième de seconde. */
+  html[data-glitch] :is(main, .colophon) {
+    filter: url('#cv-glitch');
+    transform: translateX(-5px);
+  }
+
+  html[data-glitch='b'] :is(main, .colophon) {
+    transform: translate(6px, -2px);
+  }
+
+  html[data-glitch='c'] :is(main, .colophon) {
+    transform: translateX(3px) scaleY(1.01);
+  }
+}
+
+@keyframes tech-cut {
+  0% {
+    clip-path: inset(0 0 46% 0);
+    transform: translateX(-24px);
+  }
+
+  25% {
+    clip-path: inset(38% 0 0 0);
+    transform: translateX(18px);
+  }
+
+  50% {
+    clip-path: inset(12% 0 64% 0);
+    transform: translateX(-10px);
+  }
+
+  75% {
+    clip-path: inset(70% 0 8% 0);
+    transform: translateX(30px);
+  }
+
+  100% {
+    visibility: hidden;
+  }
+}
+
+@keyframes tech-tear {
+  0% {
+    transform: translateX(var(--_shift));
+  }
+
+  50% {
+    transform: translateX(calc(var(--_shift) * -0.6));
+  }
+}
+
+@keyframes tech-shard {
+  0% {
+    transform: translateX(-10px);
+  }
+
+  35% {
+    opacity: 0;
+  }
+
+  60% {
+    opacity: 1;
+    transform: translateX(8px) scaleX(0.6);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes tech-glitch-a {
+  0% {
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 1;
+    clip-path: inset(18% 0 52% 0);
+    text-shadow:
+      -3px 0 #ff2bd6,
+      3px 0 #22d3ee;
+    transform: translateX(-8px);
+  }
+
+  14% {
+    opacity: 0;
+  }
+
+  22% {
+    opacity: 1;
+    clip-path: inset(55% 0 8% 0);
+    text-shadow:
+      3px 0 #ff2bd6,
+      -3px 0 #22d3ee;
+    transform: translateX(6px) skewX(-8deg);
+  }
+
+  32% {
+    clip-path: inset(0 0 62% 0);
+    transform: translateX(-3px);
+  }
+
+  42% {
+    opacity: 0.45;
+    clip-path: inset(0);
+    text-shadow:
+      -2px 0 #ff2bd6,
+      2px 0 #22d3ee;
+    transform: translateX(2px);
+  }
+
+  52% {
+    opacity: 1;
+    transform: none;
+  }
+
+  68% {
+    text-shadow:
+      -1px 0 #ff2bd6,
+      1px 0 #22d3ee;
+    transform: translateX(-1px);
+  }
+
+  80% {
+    text-shadow:
+      1px 0 #ff2bd6,
+      -1px 0 #22d3ee;
+    transform: none;
+  }
+}
+
+@keyframes tech-glitch-b {
+  0% {
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 1;
+    clip-path: inset(0 0 70% 0);
+    filter: brightness(1.8);
+    text-shadow:
+      4px 0 #22d3ee,
+      -4px 0 #ff2bd6;
+    transform: translate(9px, -2px);
+  }
+
+  16% {
+    clip-path: inset(40% 0 20% 0);
+    filter: none;
+    transform: translate(-5px, 1px);
+  }
+
+  26% {
+    opacity: 0;
+  }
+
+  34% {
+    opacity: 1;
+    clip-path: inset(10% 0 45% 0);
+    transform: translateX(3px) skewX(10deg);
+  }
+
+  46% {
+    clip-path: inset(0);
+    text-shadow:
+      -2px 0 #ff2bd6,
+      2px 0 #22d3ee;
+    transform: translateX(-2px);
+  }
+
+  60% {
+    transform: none;
+  }
+
+  74% {
+    text-shadow:
+      1px 0 #ff2bd6,
+      -1px 0 #22d3ee;
+  }
+}
+
+@keyframes tech-glitch-c {
+  0% {
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.7;
+    text-shadow:
+      -5px 0 #ff2bd6,
+      5px 0 #22d3ee;
+    transform: scaleY(0.4);
+  }
+
+  18% {
+    opacity: 0;
+  }
+
+  28% {
+    opacity: 1;
+    clip-path: inset(30% 0 30% 0);
+    transform: translateX(-6px);
+  }
+
+  38% {
+    opacity: 0.3;
+    clip-path: inset(0);
+    transform: translateX(4px);
+  }
+
+  48% {
+    opacity: 1;
+    text-shadow:
+      -2px 0 #ff2bd6,
+      2px 0 #22d3ee;
+    transform: none;
+  }
+
+  70% {
+    text-shadow:
+      1px 0 #22d3ee,
+      -1px 0 #ff2bd6;
+  }
+}
+
+@keyframes tech-granted {
+  0% {
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 1;
+    text-shadow:
+      -4px 0 #ff2bd6,
+      4px 0 #22d3ee,
+      0 0 30px var(--accent);
+    transform: skewX(-12deg) translateX(-8px);
+  }
+
+  16% {
+    text-shadow: 0 0 24px var(--accent);
+    transform: none;
+  }
+
+  44% {
+    text-shadow:
+      3px 0 #ff2bd6,
+      -3px 0 #22d3ee,
+      0 0 24px var(--accent);
+    transform: translateX(5px);
+  }
+
+  50% {
+    text-shadow: 0 0 24px var(--accent);
+    transform: none;
+  }
+
+  84% {
+    opacity: 1;
+  }
+
+  92% {
+    opacity: 0.3;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Décor animé : la salle des serveurs (ambient.js) ----------
+   Sur les côtés de la fenêtre : la pluie de glyphes, une grille néon au sol, et des fenêtres
+   de terminal et d'éditeur qui s'ouvrent, défilent et se ferment. Atténué : la fiche reste
+   la seule chose à lire. */
+
+.cv-ambient[data-scene='tech'] {
+  background:
+    radial-gradient(ellipse 60% 40% at 0 100%, rgb(255 43 214 / 0.1), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgb(34 211 238 / 0.1), transparent),
+    var(--void);
+}
+
+.cv-ambient__rain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+}
+
+.cv-ambient__grid {
+  position: absolute;
+  right: -50%;
+  bottom: 0;
+  left: -50%;
+  height: 30vh;
+  background:
+    repeating-linear-gradient(90deg, rgb(255 43 214 / 0.55) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, rgb(34 211 238 / 0.45) 0 1px, transparent 1px 42px);
+  transform: perspective(320px) rotateX(62deg);
+  transform-origin: 50% 100%;
+  opacity: 0.35;
+  mask-image: linear-gradient(to top, #000 10%, transparent);
+  animation: tech-grid 2.4s linear infinite;
+}
+
+.cv-ambient__win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--rule-strong);
+  border-radius: 6px;
+  background: rgb(10 15 12 / 0.94);
+  box-shadow:
+    0 0 0 1px rgb(75 239 136 / 0.06),
+    0 0 26px rgb(34 211 238 / 0.1);
+  color: var(--dim);
+  font: 400 11px/14px var(--mono);
+  opacity: 0.6;
+  animation: tech-win-in 0.45s steps(5, end) both;
+
+  &[data-out] {
+    animation: tech-win-out 0.5s steps(5, end) both;
+  }
+
+  &[data-kind='ide'] {
+    border-color: #2b3440;
+    background: rgb(24 26 31 / 0.96);
+  }
+}
+
+.cv-ambient__bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  height: 20px;
+  padding: 0 8px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bar-bg);
+  font-size: 10px;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 30px;
+    height: 8px;
+    background:
+      radial-gradient(circle at 4px 4px, #ff5f57 3.5px, transparent 4px),
+      radial-gradient(circle at 15px 4px, #febc2e 3.5px, transparent 4px),
+      radial-gradient(circle at 26px 4px, #28c840 3.5px, transparent 4px);
+    opacity: 0.8;
+  }
+}
+
+.cv-ambient__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cv-ambient__screen {
+  flex: 1;
+  padding: 5px 8px;
+  overflow: hidden;
+  white-space: pre;
+
+  & .p {
+    color: var(--accent);
+  }
+
+  & .ok {
+    color: #22d3ee;
+  }
+
+  & .warn {
+    color: var(--meta);
+  }
+
+  & .err {
+    color: #ff2bd6;
+  }
+
+  & .k {
+    color: #c792ea;
+  }
+
+  & .s {
+    color: #c3e88d;
+  }
+
+  & .c {
+    color: #64766b;
+    font-style: italic;
+  }
+
+  & .n {
+    color: #f78c6c;
+  }
+
+  & [data-line]::before {
+    content: attr(data-line) / '';
+    display: inline-block;
+    width: 3ch;
+    margin-right: 1.2ch;
+    color: #4d5a63;
+    text-align: right;
+  }
+
+  & [data-active] {
+    background: rgb(255 255 255 / 0.05);
+
+    &::after {
+      content: '';
+      display: inline-block;
+      width: 7px;
+      height: 12px;
+      background: var(--accent);
+      vertical-align: -2px;
+      animation: curseur-bloc 0.9s steps(1, end) infinite;
+    }
+  }
+}
+
+.cv-ambient__status {
+  flex: none;
+  height: 16px;
+  padding: 0 8px;
+  overflow: hidden;
+  background: #3b2a8f;
+  color: #e9e6ff;
+  font-size: 10px;
+  line-height: 16px;
+  white-space: nowrap;
+
+  [data-flavor='vim'] & {
+    background: transparent;
+    color: var(--fg);
+    font-weight: 700;
+  }
+}
+
+@keyframes curseur-bloc {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes tech-grid {
+  to {
+    background-position: 0 0, 0 42px;
+  }
+}
+
+@keyframes tech-win-in {
+  0% {
+    opacity: 0;
+    clip-path: inset(50% 0 50% 0);
+  }
+
+  40% {
+    opacity: 0.6;
+    clip-path: inset(49% 0 49% 0);
+  }
+
+  100% {
+    opacity: 0.6;
+    clip-path: inset(0);
+  }
+}
+
+@keyframes tech-win-out {
+  0% {
+    opacity: 0.6;
+    clip-path: inset(0);
+  }
+
+  60% {
+    opacity: 0.6;
+    clip-path: inset(49% 0 49% 0);
+  }
+
+  100% {
+    opacity: 0;
+    clip-path: inset(50% 0 50% 0);
+  }
+}

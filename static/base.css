@@ -1,5 +1,5 @@
-/* Socle commun aux trois thèmes : rien de visuel ici, à part le sélecteur de thème et
-   l'animation de construction.
+/* Socle commun à tous les thèmes : rien de visuel ici, à part le sélecteur de thème, le
+   socle de l'animation de construction et celui du décor animé.
    Toute la mise en page et l'habillage vivent dans themes/<id>.css. */
 
 *,
@@ -440,12 +440,47 @@ body {
   }
 }
 
+/* Salut final d'un habillage (build.js) : posé une seconde par-dessus la page, sans jamais
+   capter la souris. La feuille du thème le dessine. */
+.cv-build-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  pointer-events: none;
+}
+
+/* ---------- Décor animé (ambient.js) ----------
+   Un calque fixe, à la taille de la fenêtre, peint sous la fiche (z-index négatif) : il ne se
+   voit que dans l'espace libre autour d'elle et ne passe jamais devant le texte. Il expose
+   --room-left et --room-right, la largeur libre de chaque côté de la fiche, et [data-wide]
+   quand le côté gauche dépasse 220 px. La feuille du thème habille la scène
+   (.cv-ambient[data-scene="<thème>"]). */
+
+.cv-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-ambient,
+  .cv-build-flash {
+    display: none;
+  }
+}
+
 @media print {
   .theme-switcher,
   .skip-link,
   [data-requires-js],
   .cv-build,
-  .cv-build-hud {
+  .cv-build-hud,
+  .cv-build-flash,
+  .cv-ambient {
     display: none !important;
   }
 }

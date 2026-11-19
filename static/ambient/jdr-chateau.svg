@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700">
+<!-- Falaise et château au crépuscule : tour de mage, donjon, fenêtres éclairées qui vacillent,
+     bannières au vent. -->
+<style>
+.lit{animation:flicker 2.6s ease-in-out infinite alternate}
+.l2{animation-delay:-.9s}.l3{animation-delay:-1.7s}
+.aura{animation:aura 4s ease-in-out infinite alternate}
+.flag{transform-box:fill-box;transform-origin:0 50%;animation:wave 1.4s ease-in-out infinite alternate}
+@keyframes flicker{from{opacity:.55}to{opacity:1}}
+@keyframes aura{from{opacity:.25}to{opacity:.7}}
+@keyframes wave{from{transform:skewY(-7deg) scaleX(.92)}to{transform:skewY(6deg)}}
+</style>
+<defs>
+<linearGradient id="cliff" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2d52"/><stop offset="1" stop-color="#1c1630"/></linearGradient>
+<radialGradient id="window"><stop offset="0" stop-color="#ffd27a" stop-opacity=".8"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient>
+<radialGradient id="magic"><stop offset="0" stop-color="#c9a6ff" stop-opacity=".9"/><stop offset="1" stop-color="#7a4cff" stop-opacity="0"/></radialGradient>
+</defs>
+<circle class="aura" cx="372" cy="70" r="46" fill="url(#magic)"/>
+<path fill="url(#cliff)" d="M0 700V650C40 640 80 628 120 600 150 580 170 540 196 500 214 470 236 448 252 420L276 404 300 410 322 386 350 380 600 372V700Z"/>
+<path fill="none" stroke="#8a6c9e" stroke-opacity=".5" stroke-width="2" d="M120 600C150 580 170 540 196 500 214 470 236 448 252 420L276 404 300 410 322 386 350 380"/>
+<path fill="none" stroke="#17122a" stroke-width="2" opacity=".7" d="M260 440 250 500 262 560M300 420 296 470 310 520 300 600M380 400 372 460 388 540M470 392 480 450 466 520 476 620M540 390 532 470 548 560"/>
+<g fill="#241c36">
+<path d="M350 382 354 136H390L394 382Z"/>
+<path d="M344 200h56v6h-56ZM346 136h52v-12h-52Z"/>
+<path d="M346 124h6v-8h-6ZM358 124h6v-8h-6ZM370 124h6v-8h-6ZM382 124h6v-8h-6ZM392 124h6v-8h-6Z"/>
+<path d="M392 382V318H600V382Z"/>
+<path d="M420 382V228H500V382Z"/>
+<path d="M420 228h7v-12h-7ZM432 228h7v-12h-7ZM444 228h7v-12h-7ZM456 228h7v-12h-7ZM468 228h7v-12h-7ZM480 228h7v-12h-7ZM493 228h7v-12h-7Z"/>
+<path d="M396 318h7v-10h-7ZM408 318h7v-10h-7ZM508 318h7v-10h-7ZM580 318h7v-10h-7ZM592 318h8v-10h-8Z"/>
+<path d="M520 382V250H566V382Z"/>
+</g>
+<g fill="#2f2347">
+<path d="M342 116 372 34 402 116Z"/>
+<path d="M514 250 543 186 572 250Z"/>
+</g>
+<path fill="none" stroke="#8a6c9e" stroke-opacity=".55" stroke-width="1.5" d="M342 116 372 34M354 136 350 382M420 382V228M514 250 543 186M520 250V382"/>
+<path fill="#120d1c" d="M455 382V358a11 11 0 0 1 22 0V382Z"/>
+<path fill="none" stroke="#3a2d52" stroke-width="2" d="M372 34V12M543 186V166"/>
+<path class="flag" fill="#8f271b" d="M373 12 396 17 373 23Z"/>
+<path class="flag" fill="#b8963f" d="M544 166 563 170 544 175Z"/>
+<g class="lit">
+<circle cx="370" cy="167" r="13" fill="url(#window)"/>
+<circle cx="444" cy="257" r="13" fill="url(#window)"/>
+<circle cx="542" cy="287" r="13" fill="url(#window)"/>
+</g>
+<g class="lit l2">
+<circle cx="370" cy="227" r="13" fill="url(#window)"/>
+<circle cx="472" cy="257" r="13" fill="url(#window)"/>
+<circle cx="458" cy="307" r="13" fill="url(#window)"/>
+</g>
+<g class="lit l3">
+<circle cx="373" cy="285" r="11" fill="url(#window)"/>
+<circle cx="542" cy="326" r="12" fill="url(#window)"/>
+</g>
+<g fill="#ffcc6a">
+<path d="M366 174V164a4 4 0 0 1 8 0V174ZM366 234V224a4 4 0 0 1 8 0V234ZM370 291V283a3 3 0 0 1 6 0V291Z"/>
+<path d="M440 264V254a4 4 0 0 1 8 0V264ZM468 264V254a4 4 0 0 1 8 0V264ZM454 314V304a4 4 0 0 1 8 0V314Z"/>
+<path d="M538 294V284a4 4 0 0 1 8 0V294ZM538 332V323a4 4 0 0 1 8 0V332Z"/>
+</g>
+</svg>

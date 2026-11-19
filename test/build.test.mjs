@@ -258,6 +258,24 @@ test('l’animation de construction se prépare au démarrage et se relance à c
   assert.doesNotMatch(body, /data-layer|data-build/);
 });
 
+test('le décor animé suit le thème, reste sous la fiche et ses dessins existent', async () => {
+  const ambient = await readFile(join(ROOT, 'static', 'ambient.js'), 'utf8');
+  const css = await readFile(join(ROOT, 'static', 'base.css'), 'utf8');
+  assert.ok(html.includes('<script src="assets/ambient.js" defer></script>'));
+  assert.ok(ambient.includes("'cv:theme'"));
+  // Sous la fiche, sans capter la souris ; absent à l'impression et pour qui veut moins d'animations.
+  assert.match(css, /\.cv-ambient \{[^}]*z-index: -1;[^}]*pointer-events: none;/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{\s*\.cv-ambient,[^}]*display: none;/);
+  assert.match(css, /@media print \{[^}]*\.cv-ambient \{\s*display: none !important;/);
+  // Chaque dessin cité par une feuille de thème existe.
+  for (const theme of THEMES) {
+    const sheet = await readFile(join(ROOT, 'static', 'themes', `${theme.id}.css`), 'utf8');
+    for (const [, file] of sheet.matchAll(/url\('\.\.\/ambient\/([^']+)'\)/g)) {
+      assert.ok(existsSync(join(ROOT, 'static', 'ambient', file)), `static/ambient/${file} manquant (${theme.id}.css)`);
+    }
+  }
+});
+
 test('aucun texte n’est caché aux humains dans la page', () => {
   // Seuls le libellé du bouton de thème et les éléments en attente de JavaScript sont masqués.
   const hidden = html.match(/<[^>]+(?:\shidden|class="[^"]*visually-hidden[^"]*")[^>]*>/g) ?? [];

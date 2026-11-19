@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 380">
+<!-- Archimage debout sur un rocher, plongé dans un grimoire qui flotte et luit : les pages
+     tournent, des runes s'en échappent, le cristal du bâton pulse. -->
+<style>
+.glow{animation:pulse 3.2s ease-in-out infinite alternate}
+.crystal{animation:pulse 2.4s ease-in-out infinite alternate}
+.book{animation:float 4s ease-in-out infinite alternate}
+.page{transform-box:view-box;transform-origin:224px 0;animation:flip 7s ease-in-out infinite}
+.beard{transform-box:view-box;transform-origin:138px 128px;animation:sway 5s ease-in-out infinite alternate}
+.rune{opacity:0;fill:none;stroke:#ffd77a;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;animation:rise 3.6s ease-out infinite}
+.r2{animation-delay:-.7s}.r3{animation-delay:-1.4s}.r4{animation-delay:-2.1s}.r5{animation-delay:-2.8s}
+.spark{fill:#dffbff;animation:twinkle 1.8s ease-in-out infinite alternate}
+.s2{animation-delay:-.6s}.s3{animation-delay:-1.2s}
+@keyframes pulse{from{opacity:.45}to{opacity:1}}
+@keyframes float{from{transform:translateY(2px)}to{transform:translateY(-4px)}}
+@keyframes flip{0%,78%{transform:scaleX(1);opacity:0}80%{opacity:1}90%{transform:scaleX(-1);opacity:1}92%,100%{transform:scaleX(-1);opacity:0}}
+@keyframes sway{from{transform:rotate(-1.5deg)}to{transform:rotate(1.5deg)}}
+@keyframes rise{0%{opacity:0;transform:translate(0,0)}20%{opacity:1}100%{opacity:0;transform:translate(6px,-70px)}}
+@keyframes twinkle{from{opacity:.15}to{opacity:1}}
+</style>
+<defs>
+<radialGradient id="bookglow"><stop offset="0" stop-color="#ffe7a3" stop-opacity=".9"/><stop offset="1" stop-color="#ffb84d" stop-opacity="0"/></radialGradient>
+<radialGradient id="crystalglow"><stop offset="0" stop-color="#bff7ff" stop-opacity=".95"/><stop offset="1" stop-color="#5fd0ff" stop-opacity="0"/></radialGradient>
+<radialGradient id="facelight" cx=".9" cy=".6" r=".7"><stop offset="0" stop-color="#ffd58a" stop-opacity=".55"/><stop offset="1" stop-color="#ffd58a" stop-opacity="0"/></radialGradient>
+<linearGradient id="robe" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f3fa3"/><stop offset="1" stop-color="#231a56"/></linearGradient>
+<linearGradient id="hat" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#271d5c"/><stop offset="1" stop-color="#4a3a9a"/></linearGradient>
+<linearGradient id="beard" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6f3ec"/><stop offset="1" stop-color="#c9c3b6"/></linearGradient>
+<linearGradient id="rock" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3e3253"/><stop offset="1" stop-color="#1d1629"/></linearGradient>
+</defs>
+<path fill="url(#rock)" d="M0 380V336C24 326 58 322 92 326 132 318 176 320 214 328 246 334 276 342 300 352V380Z"/>
+<path fill="none" stroke="#6a5888" stroke-width="2" d="M0 336C24 326 58 322 92 326 132 318 176 320 214 328 246 334 276 342 300 352"/>
+<path fill="#1f1747" d="M118 150C92 186 70 250 50 334L96 336C100 280 108 220 124 176Z"/>
+<circle class="crystal" cx="96" cy="77" r="28" fill="url(#crystalglow)"/>
+<path fill="none" stroke="#5b3b22" stroke-width="5" stroke-linecap="round" d="M82 334 96 94"/>
+<path fill="none" stroke="#7a5233" stroke-width="1.5" d="M85 300l4-2M88 250l4-2M91 200l4-2M93 150l4-2"/>
+<path fill="none" stroke="#5b3b22" stroke-width="3" stroke-linecap="round" d="M96 96C88 90 86 80 90 70M96 96C104 90 106 80 102 70"/>
+<path fill="#9ff3ff" stroke="#e8feff" stroke-width=".8" d="M96 62 103 78 96 92 89 78Z"/>
+<path fill="#e8feff" opacity=".7" d="M96 64 99 78 96 88Z"/>
+<path fill="url(#robe)" d="M120 146C106 160 98 196 94 236 90 276 82 306 70 334H196C188 304 180 272 176 236 172 200 164 166 152 146Z"/>
+<path fill="none" stroke="#231a56" stroke-width="2" opacity=".7" d="M112 204C108 250 100 296 90 332M166 214C170 260 176 298 184 332M128 250C128 280 126 306 124 332"/>
+<path fill="none" stroke="#d9b45a" stroke-width="2.5" d="M140 160C142 220 146 280 150 334"/>
+<path fill="none" stroke="#d9b45a" stroke-width="3" d="M71 331C110 336 156 336 195 331"/>
+<path fill="none" stroke="#d9b45a" stroke-width="4" d="M104 214C128 221 152 221 172 212"/>
+<circle cx="139" cy="219" r="4" fill="#f0d27a"/>
+<path fill="#33287a" d="M118 158C104 170 96 184 92 194L104 202C110 190 118 178 126 170Z"/>
+<circle cx="94" cy="197" r="6" fill="#e3bf98"/>
+<ellipse cx="138" cy="120" rx="12" ry="13" fill="#e8c39b"/>
+<path fill="#d9a77f" d="M148 117C154 120 154 126 148 128Z"/>
+<g class="beard">
+<path fill="url(#beard)" d="M126 124C122 152 128 196 142 238 148 214 154 188 154 162 154 146 152 134 148 128 140 136 132 134 126 124Z"/>
+<path fill="none" stroke="#b8b1a3" stroke-width=".8" d="M134 142C134 170 138 200 142 228M146 140C147 168 146 194 144 220M128 140C128 160 132 182 136 200"/>
+</g>
+<path fill="#f4f1ea" d="M140 128C146 125 152 129 157 136 151 134 146 132 140 132Z"/>
+<path fill="none" stroke="#3b2a20" stroke-width="1.4" stroke-linecap="round" d="M141 115q3 2 6 0"/>
+<path fill="none" stroke="#f4f1ea" stroke-width="2.6" stroke-linecap="round" d="M137 110q6-4 13-1"/>
+<ellipse cx="136" cy="106" rx="38" ry="8" fill="#2b2063" transform="rotate(-5 136 106)"/>
+<path fill="url(#hat)" d="M104 104Q130 60 122 18 118 8 96 16 114 20 120 30 138 64 168 101Z"/>
+<path fill="none" stroke="#d9b45a" stroke-width="4" d="M106 98Q136 104 166 95"/>
+<path fill="#f0d27a" d="M128 75l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5ZM137 55l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8-2.8-1.2 2.8-1.2ZM123 38l1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"/>
+<path fill="#f0d27a" d="M150 78a7 7 0 1 0 0 12 5 5 0 1 1 0-12Z"/>
+<path fill="#3a2e86" d="M146 150C162 160 178 172 192 184L198 198C186 202 170 198 158 190 148 182 142 170 140 160Z"/>
+<path fill="none" stroke="#d9b45a" stroke-width="3" d="M192 184 198 198"/>
+<ellipse cx="204" cy="192" rx="7" ry="5" fill="#e8c39b"/>
+<path fill="none" stroke="#c9a17a" stroke-width="1" d="M206 188l3-4M209 190l4-3"/>
+<g class="book">
+<ellipse class="glow" cx="224" cy="172" rx="50" ry="38" fill="url(#bookglow)"/>
+<path fill="#6b1f2a" d="M195 166Q210 157 224 165 238 157 253 166V191Q238 183 224 191 210 183 195 191Z"/>
+<path fill="#d9b45a" d="M195 166h5l-5 4ZM253 166h-5l5 4ZM195 191h5l-5-4ZM253 191h-5l5-4Z"/>
+<path fill="#f6e9c8" d="M199 165Q211 158 224 165V186Q211 180 199 186Z"/>
+<path fill="#efe0bb" d="M224 165Q237 158 249 165V186Q237 180 224 186Z"/>
+<path fill="none" stroke="#8a6a48" stroke-width=".8" d="M203 168Q211 164 220 168M203 172Q211 168 220 172M203 176Q211 172 220 176M203 180Q211 176 216 179"/>
+<circle class="glow" cx="236.5" cy="174" r="9" fill="#ffd27a" opacity=".4"/>
+<circle cx="236.5" cy="174" r="6" fill="none" stroke="#c8892a" stroke-width=".9"/>
+<path fill="none" stroke="#c8892a" stroke-width=".7" d="M236.5 169 241 177H232Z"/>
+<path class="page" fill="#fbf1d6" stroke="#d8c49a" stroke-width=".5" d="M224 165Q237 158 249 165V186Q237 180 224 186Z"/>
+<path class="rune" d="M214 156v-8l4 3m-4 1 4 3"/>
+<path class="rune r2" d="M226 152l4-8 4 8"/>
+<path class="rune r3" d="M238 156v-8l4 4-4 4"/>
+<path class="rune r4" d="M219 146h6l-6 6h6"/>
+<path class="rune r5" d="M232 142l3 4-3 4-3-4Z"/>
+</g>
+<ellipse cx="146" cy="122" rx="14" ry="16" fill="url(#facelight)"/>
+<path class="spark" d="M78 58l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8-2.8-1.2 2.8-1.2Z"/>
+<path class="spark s2" d="M114 70l1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"/>
+<path class="spark s3" d="M84 106l1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"/>
+</svg>

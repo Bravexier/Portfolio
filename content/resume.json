@@ -202,10 +202,10 @@
     { "category": "IA et agents (projets personnels)", "name": "Pilotage d'agents IA", "level": "Bon niveau" },
     { "category": "IA et agents (projets personnels)", "name": "Claude Code", "level": "Avancé" },
     { "category": "IA et agents (projets personnels)", "name": "Orchestration multi-agents", "level": "Bon niveau" },
-    { "category": "Domaines", "name": "Back web", "level": "Avancé" },
-    { "category": "Domaines", "name": "Bases de données", "level": "Bon niveau" },
-    { "category": "Domaines", "name": "Scripts", "level": "Bon niveau" },
-    { "category": "Domaines", "name": "Front web", "level": "Intermédiaire" },
+    { "category": "Domaines", "name": "Back web", "level": "Expert" },
+    { "category": "Domaines", "name": "Bases de données", "level": "Avancé" },
+    { "category": "Domaines", "name": "Scripts", "level": "Avancé" },
+    { "category": "Domaines", "name": "Front web", "level": "Bon niveau" },
     { "category": "Langages", "name": "C# / .NET", "level": "Expert" },
     { "category": "Langages", "name": "JavaScript", "level": "Expert" },
     { "category": "Langages", "name": "SQL", "level": "Expert" },
@@ -214,6 +214,7 @@
     { "category": "Langages", "name": "C / C++", "level": "Bon niveau" },
     { "category": "Logiciels", "name": "Visual Studio", "level": "Expert" },
     { "category": "Logiciels", "name": "Visual Studio Code", "level": "Avancé" },
+    { "category": "Logiciels", "name": "GitHub Copilot", "level": "Avancé" },
     { "category": "Logiciels", "name": "Unity", "level": "Bon niveau" },
     { "category": "Logiciels", "name": "Word / Excel / PowerPoint", "level": "Bon niveau" }
   ],
@@ -227,36 +228,22 @@
   ],
   "projects": [
     {
-      "name": "Maverick Center",
+      "name": "Site Maverick JDR",
       "startDate": "2026",
-      "description": "Wiki et générateur de fiches de personnage pour le jeu de rôle Maverick JDR.",
-      "highlights": [
-        "Site statique Astro : pages reliées par mots-clés, rétroliens, recherche, générateur de fiches piloté par des données de règles.",
-        "Contenu importé par scripts depuis Google Docs et Google Sheets.",
-        "Intégration continue GitHub Actions, déploiement Docker et nginx sur un NAS.",
-        "Développé en pilotant des agents Claude Code : plus de 100 pull requests fusionnées et plus de 400 commits la première semaine."
-      ],
-      "keywords": ["Astro", "JavaScript", "Node.js", "Python", "Docker", "nginx", "GitHub Actions", "Claude Code"]
+      "description": "Wiki et générateur de fiches de personnage du jeu de rôle, développé en pilotant des agents Claude Code.",
+      "keywords": ["Astro", "Docker", "GitHub Actions", "Claude Code"]
     },
     {
       "name": "Ce portfolio",
       "startDate": "2026",
       "endDate": "2026",
-      "description": "Ce CV en ligne : une page statique sans dépendance, le même contenu décliné en trois thèmes.",
-      "highlights": [
-        "Trois thèmes écrits en parallèle par des agents Claude Code, chacun repris par un agent critique puis par un agent de recette indépendants.",
-        "Tests automatisés et audit dans un vrai navigateur : texte masqué ou rogné, contraste, débordement, bascule de thème."
-      ],
-      "keywords": ["Node.js", "HTML", "CSS", "JavaScript", "Claude Code"]
+      "description": "Ce CV en ligne : une page statique en quatre thèmes, écrite et testée par des agents Claude Code.",
+      "keywords": ["HTML", "CSS", "JavaScript", "Claude Code"]
     },
     {
       "name": "Domotique",
-      "description": "Maison pilotée par Home Assistant sur Raspberry Pi : automatisations, tableaux de bord, capteurs Zigbee et ESPHome.",
-      "highlights": [
-        "Filtrage DNS AdGuard et services Docker hébergés sur un NAS Synology.",
-        "Quatre agents Claude Code spécialisés : deux pour l'usage courant, limités à la consultation et aux commandes existantes, deux experts appelés sur demande."
-      ],
-      "keywords": ["Home Assistant", "YAML", "Zigbee2MQTT", "ESPHome", "Docker", "Claude Code"]
+      "description": "Maison pilotée par Home Assistant sur Raspberry Pi, avec des agents Claude Code spécialisés.",
+      "keywords": ["Home Assistant", "Docker", "Claude Code"]
     }
   ],
   "organisations": [

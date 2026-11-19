@@ -148,11 +148,11 @@ Le balisage est produit par [src/render-html.mjs](src/render-html.mjs) ; `dist/i
 | `.section[data-section]` | `.section__title`, `.section__body` |
 | `.skill-group[data-group]` | Une catégorie de compétences ; `[data-display="compact"]` sur celles à passer au second plan |
 | `.skill[data-level="1…5"]` | `--level`, `.skill__name`, `.skill__level`, `.skill__meter` (vide, décoratif) |
-| `.entry[data-kind]` | `cdi`, `cdd`, `stage`, `formation` ; `[data-current]` sur le poste en cours ; `--i` (rang) |
-| `.entry__*` | `title`, `org`, `meta` (`period`, `contract`, `place`), `summary`, `highlights`, `about` |
+| `.timeline--*` | `postes`, `compact` (stages et projets, au second plan), `formations` |
+| `.entry[data-kind]` | `cdi`, `cdd`, `stage`, `formation`, `projet` ; `[data-current]` sur le poste en cours ; `--i` (rang) |
+| `.entry__*` | `title`, `org`, `meta` (`period`, `contract`, `place`), `summary`, `highlights`, `about` ; un projet n'a ni `org` ni contrat |
 | `a.mention` | Organisation citée dans le texte d'un poste (client, donneur d'ordre) |
 | `.tags > .tag` | Technologies |
-| `.project` | `.project__name`, `__period`, `__desc`, `__highlights`, `__link` |
 | `.colophon` | Pied de page |
 | `html[data-build]`, `[data-layer]` | Posés par `build.js` pendant l'animation de construction, retirés à la fin |
 | `.cv-build`, `.cv-build-flash` | Dessins de l'animation de construction et salut final d'un habillage, à mettre en forme par le thème |

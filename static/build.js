@@ -27,7 +27,7 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const SCOPE = 'main, .colophon';
   // Cadres esquissés pendant la construction.
-  const FRAMES = '.identity, .section, .skill-group, .entry, .project';
+  const FRAMES = '.identity, .section, .skill-group, .entry';
   // Au-delà, le visiteur a déjà trop attendu la page : elle s'affiche sans animation.
   const LATE_START = 2500;
   // Durée maximale de la construction, en millisecondes.

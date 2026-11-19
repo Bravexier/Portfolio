@@ -760,8 +760,7 @@ a {
    au lieu d'élargir la page. */
 
 #profil .section__body::before,
-.profile__summary::after,
-.project__desc::before {
+.profile__summary::after {
   content: '';
   display: block;
   height: 0.3125rem;
@@ -770,8 +769,7 @@ a {
 }
 
 .profile__highlights,
-.entry__highlights,
-.project__highlights {
+.entry__highlights {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-1);
@@ -1085,7 +1083,7 @@ a {
   color: var(--ink-soft);
 }
 
-/* ---------- Journal de quêtes : expériences, stages, formations ---------- */
+/* ---------- Journal de quêtes : expériences, stages, formations, projets ---------- */
 
 .timeline {
   display: grid;
@@ -1093,15 +1091,15 @@ a {
   gap: var(--space-5);
 }
 
-/* Marqueur : un losange, plein pour un poste, évidé pour un stage, doré pour une formation ;
-   le poste en cours porte un sceau de cire. */
+/* Marqueur : un losange, plein pour un poste, évidé pour un stage ou un projet, doré pour une
+   formation ; le poste en cours porte un sceau de cire. */
 .entry {
   --marker: var(--mark-poste);
 
   padding-left: 1.75rem;
   background: var(--marker) 0 0.0625rem / var(--mark) no-repeat;
 
-  &[data-kind='stage'] {
+  &:is([data-kind='stage'], [data-kind='projet']) {
     --marker: var(--mark-stage);
   }
 
@@ -1117,7 +1115,7 @@ a {
 /* À l'écran, un fil relie les quêtes d'une même liste tant qu'elle tient en une colonne. */
 @media screen {
   .timeline--postes .entry:not(:last-child),
-  .timeline--stages .entry:not(:last-child) {
+  .timeline--compact .entry:not(:last-child) {
     position: relative;
 
     &::after {
@@ -1132,7 +1130,7 @@ a {
 }
 
 @media screen and (min-width: 64rem) {
-  .timeline--stages .entry:not(:last-child)::after {
+  .timeline--compact .entry:not(:last-child)::after {
     content: none;
   }
 }
@@ -1178,7 +1176,7 @@ a {
   }
 }
 
-.timeline--stages .entry__title {
+.timeline--compact .entry__title {
   font-size: var(--fs-lead);
 }
 
@@ -1319,7 +1317,7 @@ a {
 }
 
 @media screen and (min-width: 64rem), print {
-  .timeline--stages {
+  .timeline--compact {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: var(--space-6);
   }
@@ -1331,71 +1329,6 @@ a {
     grid-auto-flow: column;
     grid-auto-columns: minmax(0, 1fr);
   }
-}
-
-/* ---------- Projets : des cartes, comme les objets d'un manuel ---------- */
-
-.projects {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-5);
-}
-
-@media screen and (min-width: 44rem), print {
-  .projects {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.project {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-}
-
-/* Nombre impair de cartes : la première prend la rangée entière, les suivantes vont par deux
-   et aucune ne reste seule devant une case vide. */
-.project:first-child:nth-last-child(odd) {
-  grid-column: 1 / -1;
-}
-
-.project__card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4) var(--space-4);
-  border-block: 0.3125rem solid var(--gold);
-  background: var(--panel);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--ink-soft) 45%, transparent),
-    var(--shadow);
-}
-
-.project__name {
-  font-size: var(--fs-h3);
-  line-height: 1.2;
-  color: var(--crimson-deep);
-}
-
-.project__period {
-  margin-top: calc(-1 * var(--space-2));
-  font-size: var(--fs-small);
-  font-style: italic;
-  color: var(--ink-soft);
-}
-
-.project__desc::before {
-  margin-bottom: var(--space-2);
-}
-
-.project .tags {
-  margin-top: auto;
-  padding-top: var(--space-2);
-}
-
-.project__link a {
-  font-weight: 700;
-  font-variant-caps: small-caps;
-  letter-spacing: 0.03em;
 }
 
 /* ---------- Pied de page ---------- */
@@ -1489,7 +1422,6 @@ a {
   .sheet__side,
   .entry,
   .timeline--formations,
-  .project,
   .colophon {
     break-inside: avoid;
   }
@@ -1576,18 +1508,13 @@ a {
     color: var(--crimson-deep);
   }
 
-  .action[href^='http']::after,
-  .project__link a::after {
+  .action[href^='http']::after {
     content: attr(href);
     font-size: var(--fs-small);
     font-weight: 400;
     font-variant-caps: normal;
     letter-spacing: 0;
     color: var(--ink);
-  }
-
-  .project__link a::after {
-    display: block;
   }
 
   .section__title {
@@ -1661,8 +1588,7 @@ a {
   }
 
   /* Journal : espacements resserrés. */
-  .timeline,
-  .projects {
+  .timeline {
     gap: var(--space-4) var(--space-6);
   }
 
@@ -1674,13 +1600,6 @@ a {
 
   .tags {
     margin-top: var(--space-2);
-  }
-
-  /* Un vrai filet sur les côtés : une ombre déborderait de la page et s'y ferait rogner. */
-  .project__card {
-    border-block-width: 0.1875rem;
-    border-inline: 1px solid var(--gold-pale);
-    box-shadow: none;
   }
 
   .colophon {
